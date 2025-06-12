@@ -7,7 +7,7 @@ This repository can be a starting point and template for projects using the Key4
 ## Dependencies
 
 * key4hep stack
-* OpenDataDetector
+* OpenDataDetector (https://gitlab.cern.ch/azaborow/OpenDataDetector/-/commit/f1f7a723f3e9c066c32ca97c929e451f6a49622d)
 
 ## Preparation
 
