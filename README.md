@@ -6,65 +6,34 @@ This repository can be a starting point and template for projects using the Key4
 
 ## Dependencies
 
-* ROOT
+* key4hep stack
+* OpenDataDetector
 
-* PODIO
-
-* Gaudi
-
-* k4FWCore
-
-## Installation
-
-Run, from the `k4-project-template` directory:
+## Preparation
 
 ``` bash
-source /cvmfs/sw.hsf.org/key4hep/setup.sh
-k4_local_repo
-mkdir build
-cd build
-cmake .. -DCMAKE_INSTALL_PREFIX=../install -G Ninja
-ninja install
-```
-
-Alternatively you can source the nightlies instead of the releases:
-
-``` bash
+export OpenDataDetector=<Where_ODD_is>
+source $OpenDataDetector/install/bin/this_odd.sh
 source /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
+# temporary, fix implemented
+export PYTHONPATH=/cvmfs/sw-nightlies.hsf.org/key4hep/releases/2025-06-07/x86_64-almalinux9-gcc14.2.0-opt/k4gaudipandora/9b484e6a736829c3ef6558a4a77e689c864699cd_develop-la2gxj/python/:$PYTHONPATH
 ```
 
-Note that if you source the releases and use the current version of this
-repository this is not guaranteed to work as there could be changes since this
-repository was built for the release. What you can do in this case is to
-checkout a previous tag, for example:
+## Simulation
+
+```
+ddsim --steeringFile k4ODD/options/ODDsimulation.py  --enableGun --gun.distribution uniform --gun.etaMin 0 --gun.etaMax 0 --gun.energy "10*GeV" --gun.particle gamma --numberOfEvents 100 --outputFile gamma_10GeV_eta0_100ev_edm4hep.root --random.seed 123
+```
+
+## Digitisation
 
 ``` bash
-git checkout v0.3.0
+k4run k4ODD/options/ODDdigitisation.py
 ```
 
-This is because the releases are only built with tagged versions of the
-packages. With the nightlies this repository should always work; if it doesn't
-please [open an
-issue](https://github.com/key4hep/k4-project-template/issues/new/choose).
-
-## Execute Examples
-
-Make sure that `../install/lib` and `../install/python` are in `LD_LIBRARY_PATH`
-and `PYTHONPATH` respectively (`k4_local_repo` should take care of this).
-If they are not, they can be added by running:
-``` bash
-export LD_LIBRARY_PATH=$PWD/../install/lib:$LD_LIBRARY_PATH
-export PYTHONPATH=$PWD/../install/python:$PYTHONPATH
-```
-and then run the examples like this:
+## Validation
 
 ``` bash
-k4run ../k4ProjectTemplate/options/createHelloWorld.py
-k4run ../k4ProjectTemplate/options/createExampleEventData.py
+python $OpenDataDetector/ci/analyse_single_shower.py -i gamma_10GeV_eta0_100ev_edm4hep.root
 ```
 
-
-## References:
-These could perhaps be usefule for newcomers.
-1. [lhcb-98-064 COMP](https://cds.cern.ch/record/691746/files/lhcb-98-064.pdf)
-2. [Hello World in the Gaudi Framework](https://lhcb.github.io/DevelopKit/02a-gaudi-helloworld)
