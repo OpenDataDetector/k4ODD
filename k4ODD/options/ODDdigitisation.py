@@ -63,17 +63,17 @@ inputcollections = [
 ]
 
 outputcollections = [
-    ["GaudiECALBarrel"],
-    ["GaudiECALEndcap"],
-    ["GaudiHCALBarrel"],
-    ["GaudiHCALEndcap"],
+    ["digiECalBarrelCollection"],
+    ["digiECalEndcapCollection"],
+    ["digiHCalBarrelCollection"],
+    ["digiHCalEndcapCollection"],
 ]
 
 relcollections = [
-    ["GaudiLinkCaloHitECALBarrel"],
-    ["GaudiLinkCaloHitECALEndcap"],
-    ["GaudiLinkCaloHitHCALBarrel"],
-    ["GaudiLinkCaloHitHCALEndcap"],
+    ["digiLinkCaloHitECALBarrel"],
+    ["digiLinkCaloHitECALEndcap"],
+    ["digiLinkCaloHitHCALBarrel"],
+    ["digiLinkCaloHitHCALEndcap"],
 ]
 
 for calodigicol, ecalorhcal, inputcol, outputcol, relcol in zip(
@@ -158,12 +158,12 @@ for calodigicol, ecalorhcal, inputcol, outputcol, relcol in zip(
 merger = CollectionMerger(
     "CollectionMerger",
     InputCollections=[
-        "GaudiLinkCaloHitECALBarrel",
-        "GaudiLinkCaloHitECALEndcap",
-        "GaudiLinkCaloHitHCALBarrel",
-        "GaudiLinkCaloHitHCALEndcap",
+        "digiLinkCaloHitECALBarrel",
+        "digiLinkCaloHitECALEndcap",
+        "digiLinkCaloHitHCALBarrel",
+        "digiLinkCaloHitHCALEndcap",
     ],
-    OutputCollection=["GaudiRelationCaloHit"],
+    OutputCollection=["digiRelationCaloHit"],
 )
 
 hps = RootHistSvc("HistogramPersistencySvc")
@@ -173,7 +173,7 @@ root_hist_svc.FileName = "ddcalodigi_hist.root"
 ApplicationMgr(
     TopAlg=calodigi + [merger],
     EvtSel="NONE",
-    EvtMax=1,
+    EvtMax=100,
     ExtSvc=[EventDataSvc("EventDataSvc"), root_hist_svc],
     OutputLevel=INFO,
 )
