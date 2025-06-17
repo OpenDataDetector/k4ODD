@@ -19,7 +19,7 @@ limitations under the License.
 CMAKE_MINIMUM_REQUIRED(VERSION 3.12)
 
 
-project(k4ProjectTemplate LANGUAGES CXX)
+project(k4ODD LANGUAGES CXX)
 
 # please keep this layout for version setting, used by the automatic tagging script
 set(PACKAGE_VERSION_MAJOR 1)
@@ -28,17 +28,29 @@ set(PACKAGE_VERSION_PATCH 3)
 
 set(PACKAGE_VERSION "${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}.${PACKAGE_VERSION_PATCH}")
 
-# dependencies are declared like this
-find_package(ROOT COMPONENTS RIO Tree)
-find_package(EDM4HEP)
-find_package(k4FWCore)
-find_package(Gaudi)
+message(${CMAKE_CURRENT_LIST_DIR}/${CMAKE_PROJECT_NAME}/)
+message(${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}/)
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/${CMAKE_PROJECT_NAME}/ DESTINATION ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME})
 #---------------------------------------------------------------
 
-include(cmake/Key4hepConfig.cmake)
-
 include(GNUInstallDirs)
-
 include(CTest)
 
-include(cmake/CreateProjectConfig.cmake)
+function(set_test_env testname)
+  set_property(TEST ${testname} APPEND PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}:${PROJECT_BINARY_DIR}/${PROJECT_NAME}:${PROJECT_BINARY_DIR}/${PROJECT_NAME}/genConfDir/${PROJECT_NAME}:${PROJECT_BINARY_DIR}/test/k4FWCoreTest:${PROJECT_BINARY_DIR}/test/k4FWCoreTest/genConfDir/k4FWCoreTest:$<$<TARGET_EXISTS:ROOT::Core>:$<TARGET_FILE_DIR:ROOT::Core>>:$<$<TARGET_EXISTS:EDM4HEP::edm4hep>:$<TARGET_FILE_DIR:EDM4HEP::edm4hep>>:$<$<TARGET_EXISTS:podio::podio>:$<TARGET_FILE_DIR:podio::podio>>:$ENV{LD_LIBRARY_PATH}")
+  set_property(TEST ${testname} APPEND PROPERTY ENVIRONMENT "PYTHONPATH=${PROJECT_SOURCE_DIR}/python:${PROJECT_BINARY_DIR}/${PROJECT_NAME}/genConfDir:/${PROJECT_NAME}/genConfDir:$ENV{PYTHONPATH}")
+endfunction()
+
+add_test(NAME "clone_ODD"
+  COMMAND bash -c "git clone --single-branch --branch addLayeredCaloData https://gitlab.cern.ch/azaborow/OpenDataDetector.git && cd OpenDataDetector && mkdir build install && cd build && cmake -S .. -B . -DCMAKE_INSTALL_PREFIX=../install && make install"
+)
+set_test_env("clone_ODD")
+
+set(DETECTOR ${PROJECT_BINARY_DIR}/OpenDataDetector/install/share/OpenDataDetector/xml/OpenDataDetector.xml)
+
+add_test(NAME ddsim_gamma
+  COMMAND bash -c "source ${PROJECT_BINARY_DIR}/OpenDataDetector/install/bin/this_odd.sh" && ddsim --steeringFile k4ODD/options/ODDsimulation.py  --enableGun --gun.distribution uniform --gun.etaMin 0 --gun.etaMax 0 --gun.energy "10*GeV" --gun.particle gamma --numberOfEvents 100 --outputFile gamma_10GeV_eta0_100ev_sim_edm4hep.root --random.seed 123 --compactFile ${DETECTOR}
+)
+
+set_test_env("ddsim_gamma")
+set_property(TEST "ddsim_gamma" APPEND PROPERTY DEPENDS "clone_ODD")
