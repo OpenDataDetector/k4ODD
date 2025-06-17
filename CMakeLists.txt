@@ -41,6 +41,4 @@ include(GNUInstallDirs)
 
 include(CTest)
 
-add_subdirectory(k4ProjectTemplate)
-
 include(cmake/CreateProjectConfig.cmake)
