@@ -40,9 +40,16 @@ iosvc.Output = digi_args.outputFile
 id_service = UniqueIDGenSvc("UniqueIDGenSvc")
 
 geoservice = GeoSvc("GeoSvc")
-geoservice.detectors = [
-    os.environ["OpenDataDetector"]+"/install/share/OpenDataDetector/xml//OpenDataDetector.xml"
-]
+
+if "OpenDataDetector" in os.environ:
+    geoservice.detectors = [
+        os.environ["OpenDataDetector"]+"/install/share/OpenDataDetector/xml/OpenDataDetector.xml"
+    ]
+else:
+    geoservice.detectors = [
+        "OpenDataDetector/install/share/OpenDataDetector/xml/OpenDataDetector.xml"
+    ]
+
 geoservice.OutputLevel = INFO
 geoservice.EnableGeant4Geo = False
 

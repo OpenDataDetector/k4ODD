@@ -47,7 +47,7 @@ set_test_env("clone_ODD")
 set(DETECTOR ${PROJECT_BINARY_DIR}/OpenDataDetector/install/share/OpenDataDetector/xml/OpenDataDetector.xml)
 
 add_test(NAME ddsim_gamma
-  COMMAND bash -c "source ${PROJECT_BINARY_DIR}/OpenDataDetector/install/bin/this_odd.sh" && ddsim --steeringFile k4ODD/options/ODDsimulation.py  --enableGun --gun.distribution uniform --gun.etaMin 0 --gun.etaMax 0 --gun.energy "10*GeV" --gun.particle gamma --numberOfEvents 100 --outputFile gamma_10GeV_eta0_100ev_sim_edm4hep.root --random.seed 123 --compactFile ${DETECTOR} && ls -la && pwd
+  COMMAND bash -c "source ${PROJECT_BINARY_DIR}/OpenDataDetector/install/bin/this_odd.sh && ddsim  --compactFile ${DETECTOR} --steeringFile k4ODD/options/ODDsimulation.py  --enableGun --gun.distribution uniform --gun.etaMin 0 --gun.etaMax 0 --gun.energy 10*GeV --gun.particle gamma --numberOfEvents 100 --outputFile gamma_10GeV_eta0_100ev_sim_edm4hep.root --random.seed 123"
 )
 set_test_env("ddsim_gamma")
 set_property(TEST "ddsim_gamma" APPEND PROPERTY DEPENDS "clone_ODD")
@@ -59,7 +59,7 @@ set_test_env("ddsim_gamma_validation")
 set_property(TEST "ddsim_gamma_validation" APPEND PROPERTY DEPENDS "ddsim_gamma")
 
 add_test(NAME digi_gamma
-  COMMAND bash -c "source ${PROJECT_BINARY_DIR}/OpenDataDetector/install/bin/this_odd.sh" && python `which k4run` k4ODD/options/ODDdigitisation.py --inputFile gamma_10GeV_eta0_100ev_sim_edm4hep.root --outputFile gamma_10GeV_eta0_100ev_digi_edm4hep.root
+  COMMAND bash -c "source ${PROJECT_BINARY_DIR}/OpenDataDetector/install/bin/this_odd.sh && export PYTHONPATH=/cvmfs/sw-nightlies.hsf.org/key4hep/releases/2025-06-07/x86_64-almalinux9-gcc14.2.0-opt/k4gaudipandora/9b484e6a736829c3ef6558a4a77e689c864699cd_develop-la2gxj/python/:$PYTHONPATH && python `which k4run` k4ODD/options/ODDdigitisation.py --inputFile ${PROJECT_BINARY_DIR}/gamma_10GeV_eta0_100ev_sim_edm4hep.root --outputFile gamma_10GeV_eta0_100ev_digi_edm4hep.root"
 
 )
 set_test_env("digi_gamma")

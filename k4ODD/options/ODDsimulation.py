@@ -23,7 +23,10 @@ from g4units import mm, GeV, MeV, m, deg
 SIM = DD4hepSimulation()
 
 ## The compact XML file
-SIM.compactFile = os.environ["OpenDataDetector"]+"/install/share/OpenDataDetector/xml//OpenDataDetector.xml"
+if "OpenDataDetector" in os.environ:
+    SIM.compactFile = os.environ["OpenDataDetector"]+"/install/share/OpenDataDetector/xml/OpenDataDetector.xml"
+else:
+    SIM.compactFile = "OpenDataDetector/install/share/OpenDataDetector/xml/OpenDataDetector.xml"
 ## Lorentz boost for the crossing angle, in radian!
 SIM.crossingAngleBoost = 0.0
 SIM.enableDetailedShowerMode = False
