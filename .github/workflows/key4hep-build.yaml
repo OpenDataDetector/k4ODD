@@ -42,7 +42,7 @@ jobs:
       with:
         name: ROOT_file
         path: |
-          ${{ github.workspace }}/gamma_10GeV_eta0_100ev_sim_edm4hep.root
+          ${{ github.workspace }}/build/gamma_10GeV_eta0_100ev_sim_edm4hep.root
         retention-days: 7
         overwrite: true
         if-no-files-found: error
