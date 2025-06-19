@@ -37,3 +37,12 @@ jobs:
         build_type: ${{ matrix.build_type }}
         image: ${{ matrix.image }}
         stack: ${{ matrix.stack }}
+
+    - name: Upload sim analysis
+      uses: actions/upload-artifact@v4
+      with:
+        name: AIDA ROOT File
+        path: |
+          ${{ github.workspace }}/gamma_10GeV_eta0_100ev_sim_edm4hep.root.root
+        retention-days: 7
+        overwrite: true
