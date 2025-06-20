@@ -53,8 +53,8 @@ set(PARAM_COMBINATIONS
   "50\\;100"
 )
 
-set(DDSIM_TEST_DEPENDENCIES "")  # Initialize an empty string/list
-set(DIGI_TEST_DEPENDENCIES "")  # Initialize an empty string/list
+set(DDSIM_TEST_DEPENDENCIES "clone_ODD")  # Initialize an empty string/list
+set(DIGI_TEST_DEPENDENCIES "clone_ODD")  # Initialize an empty string/list
 
 foreach(PAIR IN LISTS PARAM_COMBINATIONS)
   list(GET PAIR 0 PARAM1)
@@ -73,7 +73,7 @@ foreach(PAIR IN LISTS PARAM_COMBINATIONS)
   set_test_env("ddsim_gamma_validation_${SUFFIX}")
   set_property(TEST "ddsim_gamma_validation_${SUFFIX}" APPEND PROPERTY DEPENDS "ddsim_gamma_${SUFFIX}")
   # Accumulate test names for joint test dependency
-  list(APPEND DDSIM_TEST_DEPENDENCIES "ddsim_gamma_validation_${SUFFIX}")
+  list(APPEND DDSIM_TEST_DEPENDENCIES "\\;ddsim_gamma_validation_${SUFFIX}")
 
   add_test(NAME digi_gamma_${SUFFIX}
     COMMAND bash -c "source ${PROJECT_BINARY_DIR}/OpenDataDetector/install/bin/this_odd.sh && export PYTHONPATH=/cvmfs/sw-nightlies.hsf.org/key4hep/releases/2025-06-07/x86_64-almalinux9-gcc14.2.0-opt/k4gaudipandora/9b484e6a736829c3ef6558a4a77e689c864699cd_develop-la2gxj/python/:$PYTHONPATH && python `which k4run` k4ODD/options/ODDdigitisation.py --inputFile ${PROJECT_BINARY_DIR}/gamma_${PARAM1}GeV_eta0_${PARAM2}ev_sim_edm4hep.root --outputFile gamma_${PARAM1}GeV_eta0_${PARAM2}ev_digi_edm4hep.root"
@@ -88,8 +88,10 @@ foreach(PAIR IN LISTS PARAM_COMBINATIONS)
   set_test_env("digi_gamma_validation_${SUFFIX}")
   set_property(TEST "digi_gamma_validation_${SUFFIX}" APPEND PROPERTY DEPENDS "digi_gamma_${SUFFIX}")
   # Accumulate test names for joint test dependency
-  list(APPEND DIGI_TEST_DEPENDENCIES "digi_gamma_validation_${SUFFIX}")
+  list(APPEND DIGI_TEST_DEPENDENCIES "\\;digi_gamma_validation_${SUFFIX}")
 endforeach()
+
+message(${DDSIM_TEST_DEPENDENCIES})
 
 add_test(
   NAME ddsim_gamma_validation_join
