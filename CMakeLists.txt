@@ -69,17 +69,17 @@ foreach(PAIR IN LISTS PARAM_COMBINATIONS)
   )
   set_test_env("ddsim_gamma_validation_${SUFFIX}")
   set_property(TEST "ddsim_gamma_validation_${SUFFIX}" APPEND PROPERTY DEPENDS "ddsim_gamma_${SUFFIX}")
+
+  add_test(NAME digi_gamma_${SUFFIX}
+    COMMAND bash -c "source ${PROJECT_BINARY_DIR}/OpenDataDetector/install/bin/this_odd.sh && export PYTHONPATH=/cvmfs/sw-nightlies.hsf.org/key4hep/releases/2025-06-07/x86_64-almalinux9-gcc14.2.0-opt/k4gaudipandora/9b484e6a736829c3ef6558a4a77e689c864699cd_develop-la2gxj/python/:$PYTHONPATH && python `which k4run` k4ODD/options/ODDdigitisation.py --inputFile ${PROJECT_BINARY_DIR}/gamma_${PARAM1}GeV_eta0_${PARAM2}ev_sim_edm4hep.root --outputFile gamma_${PARAM1}GeV_eta0_${PARAM2}ev_digi_edm4hep.root"
+
+  )
+  set_test_env("digi_gamma_${SUFFIX}")
+  set_property(TEST "digi_gamma_${SUFFIX}" APPEND PROPERTY DEPENDS "ddsim_gamma_${SUFFIX}" "clone_ODD")
+
+  add_test(NAME digi_gamma_validation_${SUFFIX}
+    COMMAND python ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_single_shower.py -i gamma_${PARAM1}GeV_eta0_${PARAM2}ev_digi_edm4hep.root --digi
+  )
+  set_test_env("digi_gamma_validation_${SUFFIX}")
+  set_property(TEST "digi_gamma_validation_${SUFFIX}" APPEND PROPERTY DEPENDS "digi_gamma_${SUFFIX}")
 endforeach()
-
-add_test(NAME digi_gamma
-  COMMAND bash -c "source ${PROJECT_BINARY_DIR}/OpenDataDetector/install/bin/this_odd.sh && export PYTHONPATH=/cvmfs/sw-nightlies.hsf.org/key4hep/releases/2025-06-07/x86_64-almalinux9-gcc14.2.0-opt/k4gaudipandora/9b484e6a736829c3ef6558a4a77e689c864699cd_develop-la2gxj/python/:$PYTHONPATH && python `which k4run` k4ODD/options/ODDdigitisation.py --inputFile ${PROJECT_BINARY_DIR}/gamma_10GeV_eta0_100ev_sim_edm4hep.root --outputFile gamma_10GeV_eta0_100ev_digi_edm4hep.root"
-
-)
-set_test_env("digi_gamma")
-set_property(TEST "digi_gamma" APPEND PROPERTY DEPENDS "ddsim_gamma")
-
-add_test(NAME digi_gamma_validation
-  COMMAND python ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_single_shower.py -i gamma_10GeV_eta0_100ev_digi_edm4hep.root --digi
-)
-set_test_env("digi_gamma_validation")
-set_property(TEST "digi_gamma_validation" APPEND PROPERTY DEPENDS "digi_gamma")
