@@ -40,9 +40,11 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        name: ROOT_file
+        name: k4ODD_sim_digi
         path: |
-          ${{ github.workspace }}/build/gamma_10GeV_eta0_100ev_sim_edm4hep.root
+          ${{ github.workspace }}/build/gamma_*GeV_eta0_*ev_sim_edm4hep.root
+          ${{ github.workspace }}/build/gamma_*GeV_eta0_*ev_digi_edm4hep.root
+          ${{ github.workspace }}/build/preview_energyFit_gamma_*.pdf
         retention-days: 7
         overwrite: true
         if-no-files-found: error
