@@ -95,14 +95,14 @@ message(${DDSIM_TEST_DEPENDENCIES})
 
 add_test(
   NAME ddsim_gamma_validation_join
-  COMMAND bash -c "find .. -type f -name '*sim_edm4hep.root' -exec sh -c 'python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_single_shower.py -i {} -o '$(basename {} edm4hep.root)'results.root'  \; && python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_combine_showers.py -i *_results.root -o combined_performance.root && python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/graphCmp.py -i combined_performance.root ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/reference/combined_performance_ECalBarrel.root -l simulated ODD_reference"
+  COMMAND bash -c "ls&& find . -type f -name '*sim_edm4hep.root' -exec sh -c 'python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_single_shower.py -i {} -o '$(basename {} edm4hep.root)'results.root'  \; && python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_combine_showers.py -i *_results.root -o combined_performance.root && python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/graphCmp.py -i combined_performance.root ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/reference/combined_performance_ECalBarrel.root -l simulated ODD_reference"
 )
 set_test_env("ddsim_gamma_validation_join")
 set_property(TEST "ddsim_gamma_validation_join" APPEND PROPERTY DEPENDS DDSIM_TEST_DEPENDENCIES)
 
 add_test(
   NAME digi_gamma_validation_join
-  COMMAND bash -c "find .. -type f -name '*digi_edm4hep.root' -exec sh -c 'python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_single_shower.py -i {} -o '$(basename {} edm4hep.root)'results.root'  \; && python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_combine_showers.py -i *_results.root -o combined_performance.root && python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/graphCmp.py -i combined_performance.root ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/reference/combined_performance_ECalBarrel.root -l digitised ODD_reference"
+  COMMAND bash -c "find . -type f -name '*digi_edm4hep.root' -exec sh -c 'python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_single_shower.py -i {} -o '$(basename {} edm4hep.root)'results.root'  \; && python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_combine_showers.py -i *_results.root -o combined_performance.root && python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/graphCmp.py -i combined_performance.root ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/reference/combined_performance_ECalBarrel.root -l digitised ODD_reference"
 )
 set_test_env("digi_gamma_validation_join")
 set_property(TEST "digi_gamma_validation_join" APPEND PROPERTY DEPENDS DIGI_TEST_DEPENDENCIES)
