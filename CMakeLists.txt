@@ -43,6 +43,7 @@ add_test(NAME "clone_ODD"
   COMMAND bash -c "git clone --single-branch --branch addLayeredCaloData https://gitlab.cern.ch/azaborow/OpenDataDetector.git && cd OpenDataDetector && mkdir build install && cd build && cmake -S .. -B . -DCMAKE_INSTALL_PREFIX=../install && make install"
 )
 set_test_env("clone_ODD")
+set_property(TEST "clone_ODD" APPEND PROPERTY FIXTURES_SETUP ODD)
 
 set(DETECTOR ${PROJECT_BINARY_DIR}/OpenDataDetector/install/share/OpenDataDetector/xml/OpenDataDetector.xml)
 # Define combinations of parameters for simulation
@@ -53,8 +54,8 @@ set(PARAM_COMBINATIONS
   "50\\;100"
 )
 
-set(DDSIM_TEST_DEPENDENCIES "clone_ODD")  # Initialize an empty string/list
-set(DIGI_TEST_DEPENDENCIES "clone_ODD")  # Initialize an empty string/list
+set(DDSIM_TEST_DEPENDENCIES "")  # Initialize an empty string/list
+set(DIGI_TEST_DEPENDENCIES "")  # Initialize an empty string/list
 
 foreach(PAIR IN LISTS PARAM_COMBINATIONS)
   list(GET PAIR 0 PARAM1)
@@ -66,12 +67,12 @@ foreach(PAIR IN LISTS PARAM_COMBINATIONS)
     COMMAND bash -c "source ${PROJECT_BINARY_DIR}/OpenDataDetector/install/bin/this_odd.sh && ddsim  --compactFile ${DETECTOR} --steeringFile k4ODD/options/ODDsimulation.py  --enableGun --gun.distribution uniform --gun.etaMin 0 --gun.etaMax 0 --gun.energy ${PARAM1}*GeV --gun.particle gamma --numberOfEvents ${PARAM2} --outputFile gamma_${PARAM1}GeV_eta0_${PARAM2}ev_sim_edm4hep.root --random.seed 123"
   )
   set_test_env("ddsim_gamma_${SUFFIX}")
-  set_property(TEST "ddsim_gamma_${SUFFIX}" APPEND PROPERTY DEPENDS "clone_ODD")
+  set_property(TEST "ddsim_gamma_${SUFFIX}" APPEND PROPERTY FIXTURES_REQUIRED ODD)
   add_test(NAME ddsim_gamma_validation_${SUFFIX}
     COMMAND python ${PROJECT_BINARY_DIR}/OpenDataDetector//ci/analyse_single_shower.py -i gamma_${PARAM1}GeV_eta0_${PARAM2}ev_sim_edm4hep.root
   )
   set_test_env("ddsim_gamma_validation_${SUFFIX}")
-  set_property(TEST "ddsim_gamma_validation_${SUFFIX}" APPEND PROPERTY DEPENDS "ddsim_gamma_${SUFFIX}")
+  set_property(TEST "ddsim_gamma_validation_${SUFFIX}" APPEND PROPERTY FIXTURES_REQUIRED "ddsim_gamma_${SUFFIX}")
   # Accumulate test names for joint test dependency
   list(APPEND DDSIM_TEST_DEPENDENCIES "\\;ddsim_gamma_validation_${SUFFIX}")
 
@@ -80,27 +81,27 @@ foreach(PAIR IN LISTS PARAM_COMBINATIONS)
 
   )
   set_test_env("digi_gamma_${SUFFIX}")
-  set_property(TEST "digi_gamma_${SUFFIX}" APPEND PROPERTY DEPENDS "ddsim_gamma_${SUFFIX};clone_ODD")
+  set_property(TEST "digi_gamma_${SUFFIX}" APPEND PROPERTY FIXTURES_REQUIRED "ddsim_gamma_${SUFFIX};ODD")
 
   add_test(NAME digi_gamma_validation_${SUFFIX}
     COMMAND python ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_single_shower.py -i gamma_${PARAM1}GeV_eta0_${PARAM2}ev_digi_edm4hep.root --digi
   )
   set_test_env("digi_gamma_validation_${SUFFIX}")
-  set_property(TEST "digi_gamma_validation_${SUFFIX}" APPEND PROPERTY DEPENDS "digi_gamma_${SUFFIX}")
+  set_property(TEST "digi_gamma_validation_${SUFFIX}" APPEND PROPERTY FIXTURES_REQUIRED "digi_gamma_${SUFFIX}")
   # Accumulate test names for joint test dependency
   list(APPEND DIGI_TEST_DEPENDENCIES "\\;digi_gamma_validation_${SUFFIX}")
 endforeach()
 
 add_test(
   NAME ddsim_gamma_validation_join
-  COMMAND bash -c "ls&& find . -type f -name '*sim_edm4hep.root' -exec sh -c 'python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_single_shower.py -i {} -o `basename {} edm4hep.root`results.root'  \; && python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_combine_showers.py -i *sim_results.root -o combined_performance.root && python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/graphCmp.py -i combined_performance.root ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/reference/combined_performance_ECalBarrel.root -l simulated ODD_reference"
+  COMMAND bash -c "find . -type f -name '*sim_edm4hep.root' -exec sh -c 'python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_single_shower.py -i {} -o `basename {} edm4hep.root`results.root'  \; && python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_combine_showers.py -i *sim_results.root -o combined_performance.root && python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/graphCmp.py -i combined_performance.root ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/reference/combined_performance_ECalBarrel.root -l simulated ODD_reference"
 )
 set_test_env("ddsim_gamma_validation_join")
-set_property(TEST "ddsim_gamma_validation_join" APPEND PROPERTY DEPENDS DDSIM_TEST_DEPENDENCIES)
+set_property(TEST "ddsim_gamma_validation_join" APPEND PROPERTY FIXTURES_REQUIRED DDSIM_TEST_DEPENDENCIES)
 
 add_test(
   NAME digi_gamma_validation_join
   COMMAND bash -c "find . -type f -name '*digi_edm4hep.root' -exec sh -c 'python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_single_shower.py -i {} -o `basename {} edm4hep.root`results.root'  \; && python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_combine_showers.py -i *digi_results.root -o combined_performance.root && python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/graphCmp.py -i combined_performance.root ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/reference/combined_performance_ECalBarrel.root -l digitised ODD_reference"
 )
 set_test_env("digi_gamma_validation_join")
-set_property(TEST "digi_gamma_validation_join" APPEND PROPERTY DEPENDS DIGI_TEST_DEPENDENCIES)
+set_property(TEST "digi_gamma_validation_join" APPEND PROPERTY FIXTURES_REQUIRED DIGI_TEST_DEPENDENCIES)
