@@ -48,10 +48,11 @@ set_property(TEST "clone_ODD" APPEND PROPERTY FIXTURES_SETUP ODD)
 set(DETECTOR ${PROJECT_BINARY_DIR}/OpenDataDetector/install/share/OpenDataDetector/xml/OpenDataDetector.xml)
 # Define combinations of parameters for simulation
 set(PARAM_COMBINATIONS
-  "5\\;100"
-  "10\\;100"
-  "20\\;100"
-  "50\\;100"
+  "5\\;1000"
+  "10\\;1000"
+  "20\\;1000"
+  "50\\;1000"
+  "100\\;500"
 )
 
 foreach(PAIR IN LISTS PARAM_COMBINATIONS)
