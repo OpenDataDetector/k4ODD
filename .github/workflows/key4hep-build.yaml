@@ -45,6 +45,8 @@ jobs:
           ${{ github.workspace }}/build/gamma_*GeV_eta0_*ev_sim_edm4hep.root
           ${{ github.workspace }}/build/gamma_*GeV_eta0_*ev_digi_edm4hep.root
           ${{ github.workspace }}/build/preview_energyFit_gamma_*.pdf
+          ${{ github.workspace }}/build/*combined_performance*
+          ${{ github.workspace }}/build/*compare_to_ref*
         retention-days: 7
         overwrite: true
         if-no-files-found: error
