@@ -51,8 +51,8 @@ set(PARAM_COMBINATIONS
   "5\\;1000"
   "10\\;1000"
   "20\\;1000"
-  "50\\;1000"
-  "100\\;500"
+  "50\\;500"
+  "100\\;250"
 )
 
 foreach(PAIR IN LISTS PARAM_COMBINATIONS)
