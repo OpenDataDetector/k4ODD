@@ -68,7 +68,7 @@ foreach(PAIR IN LISTS PARAM_COMBINATIONS)
   set_property(TEST "ddsim_gamma_${SUFFIX}" APPEND PROPERTY FIXTURES_REQUIRED ODD)
   set_property(TEST "ddsim_gamma_${SUFFIX}" APPEND PROPERTY FIXTURES_SETUP "ddsim_gamma_${SUFFIX}")
   add_test(NAME ddsim_gamma_validation_${SUFFIX}
-    COMMAND python ${PROJECT_BINARY_DIR}/OpenDataDetector//ci/analyse_single_shower.py -i gamma_${PARAM1}GeV_eta0_${PARAM2}ev_sim_edm4hep.root
+    COMMAND python ${PROJECT_BINARY_DIR}/OpenDataDetector//ci/analyse_single_shower.py -i gamma_${PARAM1}GeV_eta0_${PARAM2}ev_sim_edm4hep.root -o gamma_${PARAM1}GeV_eta0_${PARAM2}ev_simVal_results.root
   )
   set_test_env("ddsim_gamma_validation_${SUFFIX}")
   set_property(TEST "ddsim_gamma_validation_${SUFFIX}" APPEND PROPERTY FIXTURES_SETUP ddsim_gamma)
@@ -83,7 +83,7 @@ foreach(PAIR IN LISTS PARAM_COMBINATIONS)
   set_property(TEST "digi_gamma_${SUFFIX}" APPEND PROPERTY FIXTURES_SETUP "digi_gamma_${SUFFIX}")
 
   add_test(NAME digi_gamma_validation_${SUFFIX}
-    COMMAND python ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_single_shower.py -i gamma_${PARAM1}GeV_eta0_${PARAM2}ev_digi_edm4hep.root --digi
+    COMMAND python ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_single_shower.py -i gamma_${PARAM1}GeV_eta0_${PARAM2}ev_digi_edm4hep.root --digi -o gamma_${PARAM1}GeV_eta0_${PARAM2}ev_digiVal_results.root
   )
   set_test_env("digi_gamma_validation_${SUFFIX}")
   set_property(TEST "digi_gamma_validation_${SUFFIX}" APPEND PROPERTY FIXTURES_SETUP digi_gamma)
@@ -92,14 +92,14 @@ endforeach()
 
 add_test(
   NAME ddsim_gamma_validation_join
-  COMMAND bash -c "python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_combine_showers.py -i *sim_results.root -o combined_performance_sim_gamma.root && python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/graphCmp.py -o compare_to_ref_performance_sim_gamma -i combined_performance_sim_gamma.root ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/reference/combined_performance_ECalBarrel.root -l simulated ODD_reference"
+  COMMAND bash -c "python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_combine_showers.py -i *simVal_results.root -o combined_performance_sim_gamma.root && python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/graphCmp.py -o compare_to_ref_performance_sim_gamma -i combined_performance_sim_gamma.root ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/reference/combined_performance_ECalBarrel.root -l simulated ODD_reference"
 )
 set_test_env("ddsim_gamma_validation_join")
 set_property(TEST "ddsim_gamma_validation_join" APPEND PROPERTY FIXTURES_REQUIRED ddsim_gamma)
 
 add_test(
   NAME digi_gamma_validation_join
-  COMMAND bash -c "python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_combine_showers.py -i *digi_results.root -o combined_performance_digi_gamma.root && python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/graphCmp.py -o compare_to_ref_performance_digi_gamma -i combined_performance_digi_gamma.root ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/reference/combined_performance_ECalBarrel.root -l digitised ODD_reference"
+  COMMAND bash -c "python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/analyse_combine_showers.py -i *digiVal_results.root -o combined_performance_digi_gamma.root && python3 ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/graphCmp.py -o compare_to_ref_performance_digi_gamma -i combined_performance_digi_gamma.root ${PROJECT_BINARY_DIR}/OpenDataDetector/ci/reference/combined_performance_ECalBarrel.root -l digitised ODD_reference"
 )
 set_test_env("digi_gamma_validation_join")
 set_property(TEST "digi_gamma_validation_join" APPEND PROPERTY FIXTURES_REQUIRED digi_gamma)
