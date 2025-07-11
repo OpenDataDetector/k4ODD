@@ -29,6 +29,8 @@ set(PACKAGE_VERSION_PATCH 3)
 set(PACKAGE_VERSION "${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}.${PACKAGE_VERSION_PATCH}")
 
 install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/${CMAKE_PROJECT_NAME}/ DESTINATION ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME})
+
+add_subdirectory(ddODD)
 #---------------------------------------------------------------
 
 include(GNUInstallDirs)
