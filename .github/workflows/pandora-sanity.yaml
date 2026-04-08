@@ -1,0 +1,85 @@
+name: Pandora Sanity
+
+on:
+  workflow_dispatch:
+    inputs:
+      odd_ref:
+        description: OpenDataDetector ref
+        required: false
+        default: main
+      pandora_ref:
+        description: k4GaudiPandora ref
+        required: false
+        default: main
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pandora-sanity:
+    runs-on: ubuntu-latest
+    env:
+      BUILD_DIR_NAME: build-ci
+      INSTALL_DIR_NAME: install-ci
+      ODD_DIR: ${{ github.workspace }}/OpenDataDetector
+      K4GAUDIPANDORA_DIR: ${{ github.workspace }}/k4GaudiPandora
+      ODD_URL: ${{ vars.ODD_URL }}
+      K4GAUDIPANDORA_URL: ${{ vars.K4GAUDIPANDORA_URL }}
+      ODD_REF: ${{ inputs.odd_ref || vars.ODD_REF || 'main' }}
+      K4GAUDIPANDORA_REF: ${{ inputs.pandora_ref || vars.K4GAUDIPANDORA_REF || 'main' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate external repo configuration
+        run: |
+          test -n "$ODD_URL"
+          test -n "$K4GAUDIPANDORA_URL"
+
+      - name: Clone OpenDataDetector
+        env:
+          CLONE_TOKEN: ${{ secrets.CI_CLONE_TOKEN }}
+        run: |
+          if [ -n "${CLONE_TOKEN:-}" ]; then
+            odd_url="${ODD_URL/https:\/\//https:\/\/oauth2:${CLONE_TOKEN}@}"
+          else
+            odd_url="$ODD_URL"
+          fi
+          git clone --depth 1 --branch "$ODD_REF" "$odd_url" "$ODD_DIR"
+
+      - name: Clone k4GaudiPandora
+        env:
+          CLONE_TOKEN: ${{ secrets.CI_CLONE_TOKEN }}
+        run: |
+          if [ -n "${CLONE_TOKEN:-}" ]; then
+            pandora_url="${K4GAUDIPANDORA_URL/https:\/\//https:\/\/oauth2:${CLONE_TOKEN}@}"
+          else
+            pandora_url="$K4GAUDIPANDORA_URL"
+          fi
+          git clone --depth 1 --branch "$K4GAUDIPANDORA_REF" "$pandora_url" "$K4GAUDIPANDORA_DIR"
+
+      - uses: key4hep/key4hep-actions/cache-external-data@main
+
+      - name: Rebuild local stack
+        run: |
+          ./ci/rebuild_local_stack.sh
+
+      - name: Run Pandora sanity test
+        run: |
+          ./ci/run_pandora_sanity.sh
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pandora-sanity-artifacts
+          path: |
+            ${{ github.workspace }}/build-ci/pandora_sanity_sim.root
+            ${{ github.workspace }}/build-ci/pandora_sanity_reco.root
+            ${{ github.workspace }}/ddcalodigi_hist.root
+          retention-days: 7
+          overwrite: true
+          if-no-files-found: warn

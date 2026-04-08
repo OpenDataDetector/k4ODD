@@ -23,14 +23,18 @@ project(k4ODD LANGUAGES CXX)
 
 # please keep this layout for version setting, used by the automatic tagging script
 set(PACKAGE_VERSION_MAJOR 1)
-set(PACKAGE_VERSION_MINOR 2)
-set(PACKAGE_VERSION_PATCH 3)
+set(PACKAGE_VERSION_MINOR 0)
+set(PACKAGE_VERSION_PATCH 0)
 
 set(PACKAGE_VERSION "${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}.${PACKAGE_VERSION_PATCH}")
 
 install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/${CMAKE_PROJECT_NAME}/ DESTINATION ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME})
 
+find_package(EDM4HEP)
+find_package(k4FWCore)
+find_package(Gaudi)
 add_subdirectory(ddODD)
+add_subdirectory(k4ODD)
 #---------------------------------------------------------------
 
 include(GNUInstallDirs)

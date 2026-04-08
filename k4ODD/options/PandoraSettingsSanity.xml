@@ -1,0 +1,36 @@
+<!-- Pandora settings xml file -->
+<pandora>
+  <IsMonitoringEnabled>true</IsMonitoringEnabled>
+  <ShouldDisplayAlgorithmInfo>false</ShouldDisplayAlgorithmInfo>
+  <ShouldCollapseMCParticlesToPfoTarget>true</ShouldCollapseMCParticlesToPfoTarget>
+
+  <algorithm type="CaloHitPreparation"/>
+
+  <algorithm type="EventPreparation">
+    <OutputTrackListName>Tracks</OutputTrackListName>
+    <OutputCaloHitListName>CaloHits</OutputCaloHitListName>
+    <OutputMuonCaloHitListName>MuonYokeHits</OutputMuonCaloHitListName>
+    <ReplacementTrackListName>Tracks</ReplacementTrackListName>
+    <ReplacementCaloHitListName>CaloHits</ReplacementCaloHitListName>
+  </algorithm>
+
+  <algorithm type="ClusteringParent">
+    <algorithm type="ConeClustering" description="ClusterFormation"/>
+    <ClusterListName>PrimaryClusters</ClusterListName>
+    <ReplaceCurrentClusterList>true</ReplaceCurrentClusterList>
+  </algorithm>
+
+  <algorithm type="ClusterPreparation">
+    <CandidateListNames>PrimaryClusters</CandidateListNames>
+    <MergedCandidateListName>PfoCreation</MergedCandidateListName>
+  </algorithm>
+
+  <algorithm type="PfoCreation">
+    <OutputPfoListName>PrimaryPfos</OutputPfoListName>
+  </algorithm>
+
+  <algorithm type="PfoPreparation">
+    <CandidateListNames>PrimaryPfos</CandidateListNames>
+    <MergedCandidateListName>OutputPfos</MergedCandidateListName>
+  </algorithm>
+</pandora>

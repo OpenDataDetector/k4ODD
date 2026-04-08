@@ -1,41 +1,82 @@
-# k4-project-template
+# k4ODD
 
-
-This repository can be a starting point and template for projects using the Key4hep software stack, in particular those writing Gaudi algorithms.
-
+This repository started from the Key4hep project template.
 
 ## Dependencies
 
 * key4hep stack
-* OpenDataDetector (https://gitlab.cern.ch/azaborow/OpenDataDetector/-/commit/f1f7a723f3e9c066c32ca97c929e451f6a49622d)
+* OpenDataDetector (geometry)
+* k4GaudiPandora (digitisation and reconstruction)
 
 ## Preparation
 
-``` bash
-export OpenDataDetector=<Where_ODD_is>
-source $OpenDataDetector/install/bin/this_odd.sh
-source /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh # checked with         source /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh -r 2025-06-16
-source $OpenDataDetector/install/bin/this_odd.sh # For unknown reasons needed twice (otherwise factory complaint)
+By default the helper scripts look for:
+
+* `OpenDataDetector` in `./OpenDataDetector` or `../OpenDataDetector`
+* `k4GaudiPandora` in `../k4GaudiPandora` or `./k4GaudiPandora`
+
+The recommended setup is:
+
+```bash
+source setup.sh
+```
+
+This will:
+
+* source the Key4hep stack
+* source the newest local `OpenDataDetector/install*`
+* prepend the newest local `k4GaudiPandora/install*`
+* prepend the newest local `k4ODD/install*`
+
+You can override repo locations with `ODD_DIR` and `K4GAUDIPANDORA_DIR`.
+
+## Rebuild
+
+To rebuild the local `OpenDataDetector`, `k4GaudiPandora`, and `k4ODD` repos against the currently sourced Key4hep stack:
+
+```bash
+./ci/rebuild_local_stack.sh
 ```
 
 ## Simulation
 
-```
-ddsim --steeringFile k4ODD/options/ODDsimulation.py  --enableGun --gun.distribution uniform --gun.etaMin 0 --gun.etaMax 0 --gun.energy "10*GeV" --gun.particle gamma --numberOfEvents 100 --outputFile gamma_10GeV_eta0_100ev_sim_edm4hep.root --random.seed 123
+```bash
+ddsim --steeringFile k4ODD/options/ODDsimulation.py --enableGun --gun.distribution uniform --gun.etaMin 0 --gun.etaMax 0 --gun.energy "10*GeV" --gun.particle gamma --numberOfEvents 100 --outputFile gamma_10GeV_eta0_100ev_sim_edm4hep.root --random.seed 123
 ```
 
 ## Digitisation
 
-``` bash
+```bash
 k4run k4ODD/options/ODDdigitisation.py --inputFile gamma_10GeV_eta0_100ev_sim_edm4hep.root --outputFile gamma_10GeV_eta0_100ev_digi_edm4hep.root
 ```
 
-## Validation
+## Reconstruction
+[Work In Progress]
 
-``` bash
+For the current Pandora sanity path:
+
+```bash
+./ci/run_pandora_sanity.sh
+```
+
+This generates a fresh one-event simulation file and checks that the reconstruction output contains:
+
+* `GaudiPandoraClusters`
+* `GaudiPandoraPFOs`
+* `GaudiPandoraStartVertices`
+
+For development = if you want the script to start by rebuilding all three repos first:
+
+```bash
+REBUILD_STACK=1 ./ci/run_pandora_sanity.sh
+```
+
+## Validation
+Implemented only for simulation and digitisation at the moment.
+
+```bash
 python $OpenDataDetector/ci/analyse_single_shower.py -i gamma_10GeV_eta0_100ev_sim_edm4hep.root
 python $OpenDataDetector/ci/analyse_single_shower.py -i gamma_10GeV_eta0_100ev_digi_edm4hep.root --digi
 ```
 
 Please note that the collections are rewritten so both analyses can be performed on the same (second) file.
-
