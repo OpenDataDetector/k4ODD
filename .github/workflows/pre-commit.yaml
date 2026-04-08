@@ -6,25 +6,12 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+    - uses: actions/checkout@v3
     - uses: cvmfs-contrib/github-action-cvmfs@v3
     - name: Run pre-commit
       run: |
         source /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
         cd ${GITHUB_WORKSPACE}
-        if [ "${{ github.event_name }}" = "pull_request" ]; then
-          from_ref="${{ github.event.pull_request.base.sha }}"
-          to_ref="${{ github.event.pull_request.head.sha }}"
-        else
-          from_ref="${{ github.event.before }}"
-          to_ref="${{ github.sha }}"
-        fi
-        if [ "${from_ref}" = "0000000000000000000000000000000000000000" ]; then
-          from_ref="$(git hash-object -t tree /dev/null)"
-        fi
         pre-commit run --show-diff-on-failure \
           --color=always \
-          --from-ref "${from_ref}" \
-          --to-ref "${to_ref}"
+          --all-files
