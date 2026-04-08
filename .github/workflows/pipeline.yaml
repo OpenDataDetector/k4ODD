@@ -55,11 +55,31 @@ jobs:
       - uses: actions/checkout@v4
       - uses: cvmfs-contrib/github-action-cvmfs@v3
 
+      - name: Clone OpenDataDetector
+        env:
+          CLONE_TOKEN: ${{ secrets.CI_CLONE_TOKEN }}
+        run: |
+          if [ -n "${CLONE_TOKEN:-}" ]; then
+            odd_url="${ODD_URL/https:\/\//https:\/\/oauth2:${CLONE_TOKEN}@}"
+          else
+            odd_url="$ODD_URL"
+          fi
+          git clone --depth 1 --branch "$ODD_REF" "$odd_url" "$ODD_DIR"
+
       - uses: key4hep/key4hep-actions/cache-external-data@main
+
+      - name: Build OpenDataDetector
+        run: |
+          source /cvmfs/sw.hsf.org/key4hep/setup.sh
+          cmake -S "$ODD_DIR" -B "$ODD_DIR/$BUILD_DIR_NAME" -GNinja -DCMAKE_INSTALL_PREFIX="$ODD_DIR/$INSTALL_DIR_NAME"
+          cmake --build "$ODD_DIR/$BUILD_DIR_NAME" -j4
+          cmake --install "$ODD_DIR/$BUILD_DIR_NAME"
 
       - name: Run simulation
         run: |
           source /cvmfs/sw.hsf.org/key4hep/setup.sh
+          export OpenDataDetector="$ODD_DIR"
+          source "$ODD_DIR/$INSTALL_DIR_NAME/bin/this_odd.sh"
           ddsim \
             --steeringFile k4ODD/options/ODDsimulation.py \
             --enableGun \
