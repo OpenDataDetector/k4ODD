@@ -200,10 +200,10 @@ SIM.output.random = 6
 ## Configuration for the Particle Handler/ MCTruth treatment
 ################################################################################
 
-SIM.part.userParticleHandler = "Geant4TCUserParticleHandler"
+SIM.part.userParticleHandler = "Geant4KeepAllUserParticleHandler"
 
 ##  Keep all created particles
-SIM.part.keepAllParticles = False
+SIM.part.keepAllParticles = True
 
 ## Minimal distance between particle vertex and endpoint of parent after
 ##     which the vertexIsNotEndpointOfParent flag is set
