@@ -58,7 +58,17 @@ build_repo() {
   cmake --install "$build_dir"
 }
 
+had_nounset=0
+if [[ $- == *u* ]]; then
+  had_nounset=1
+  set +u
+fi
+
 source "$stack_setup"
+
+if [[ "$had_nounset" -eq 1 ]]; then
+  set -u
+fi
 
 odd_repo="$(resolve_repo_dir "${ODD_DIR:-}" "$repo_root/OpenDataDetector" "$repo_root/../OpenDataDetector")"
 pandora_repo="$(resolve_repo_dir "${K4GAUDIPANDORA_DIR:-}" "$repo_root/../k4GaudiPandora" "$repo_root/k4GaudiPandora")"
