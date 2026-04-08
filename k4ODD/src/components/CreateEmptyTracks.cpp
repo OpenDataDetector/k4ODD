@@ -32,7 +32,6 @@ struct CreateEmptyTracks final : k4FWCore::Producer<edm4hep::TrackCollection()> 
     auto coll = edm4hep::TrackCollection();
     return coll;
   }
-
 };
 
 DECLARE_COMPONENT(CreateEmptyTracks)
