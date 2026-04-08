@@ -53,6 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: cvmfs-contrib/github-action-cvmfs@v3
 
       - uses: key4hep/key4hep-actions/cache-external-data@main
 
@@ -85,6 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: cvmfs-contrib/github-action-cvmfs@v3
 
       - uses: actions/download-artifact@v4
         with:
@@ -144,6 +146,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: cvmfs-contrib/github-action-cvmfs@v3
 
       - uses: actions/download-artifact@v4
         with:
@@ -205,10 +208,11 @@ jobs:
           if-no-files-found: ignore
 
   simulation-validation:
-    needs: pandora
+    needs: simulation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: cvmfs-contrib/github-action-cvmfs@v3
 
       - uses: actions/download-artifact@v4
         with:
@@ -250,6 +254,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: cvmfs-contrib/github-action-cvmfs@v3
 
       - uses: actions/download-artifact@v4
         with:
