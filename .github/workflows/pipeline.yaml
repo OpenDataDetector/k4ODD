@@ -71,7 +71,7 @@ jobs:
       - name: Build OpenDataDetector
         run: |
           source /cvmfs/sw.hsf.org/key4hep/setup.sh
-          cmake -S "$ODD_DIR" -B "$ODD_DIR/$BUILD_DIR_NAME" -GNinja -DCMAKE_INSTALL_PREFIX="$ODD_DIR/$INSTALL_DIR_NAME"
+          cmake -S "$ODD_DIR" -B "$ODD_DIR/$BUILD_DIR_NAME" -GNinja -DCMAKE_INSTALL_PREFIX="$ODD_DIR/install"
           cmake --build "$ODD_DIR/$BUILD_DIR_NAME" -j4
           cmake --install "$ODD_DIR/$BUILD_DIR_NAME"
 
@@ -79,7 +79,7 @@ jobs:
         run: |
           source /cvmfs/sw.hsf.org/key4hep/setup.sh
           export OpenDataDetector="$ODD_DIR"
-          source "$ODD_DIR/$INSTALL_DIR_NAME/bin/this_odd.sh"
+          source "$ODD_DIR/install/bin/this_odd.sh"
           ddsim \
             --steeringFile k4ODD/options/ODDsimulation.py \
             --enableGun \
