@@ -81,11 +81,11 @@ jobs:
 
       - name: Rebuild local stack
         run: |
-          ./ci/rebuild_local_stack.sh
+          bash ./ci/rebuild_local_stack.sh
 
       - name: Run Pandora sanity test
         run: |
-          ./ci/run_pandora_sanity.sh
+          bash ./ci/run_pandora_sanity.sh
 
       - uses: actions/upload-artifact@v4
         if: always()
