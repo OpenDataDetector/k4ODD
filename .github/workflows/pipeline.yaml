@@ -50,7 +50,7 @@ env:
 
 jobs:
   simulation:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: cvmfs-contrib/github-action-cvmfs@v3
@@ -83,7 +83,7 @@ jobs:
 
   digitisation:
     needs: simulation
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: cvmfs-contrib/github-action-cvmfs@v3
@@ -143,7 +143,7 @@ jobs:
 
   pandora:
     needs: digitisation
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: cvmfs-contrib/github-action-cvmfs@v3
@@ -209,7 +209,7 @@ jobs:
 
   simulation-validation:
     needs: simulation
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: cvmfs-contrib/github-action-cvmfs@v3
@@ -251,7 +251,7 @@ jobs:
 
   digitisation-validation:
     needs: pandora
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: cvmfs-contrib/github-action-cvmfs@v3
