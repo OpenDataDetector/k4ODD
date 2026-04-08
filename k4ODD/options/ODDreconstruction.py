@@ -28,7 +28,6 @@ from Configurables import UniqueIDGenSvc
 from Configurables import RootHistSvc
 from Configurables import Gaudi__Histograming__Sink__Root as RootHistoSink
 import os
-from odd_geometry import odd_compact_xml
 
 from k4FWCore.parseArgs import parser
 parser_group = parser.add_argument_group("ODDreconstruction.py custom options")
@@ -44,7 +43,14 @@ id_service = UniqueIDGenSvc("UniqueIDGenSvc")
 
 geoservice = GeoSvc("GeoSvc")
 
-geoservice.detectors = [odd_compact_xml()]
+if "OpenDataDetector" in os.environ:
+    geoservice.detectors = [
+        os.environ["OpenDataDetector"]+"/install/share/OpenDataDetector/xml/OpenDataDetector.xml"
+    ]
+else:
+    geoservice.detectors = [
+        "OpenDataDetector/install/share/OpenDataDetector/xml/OpenDataDetector.xml"
+    ]
 
 geoservice.OutputLevel = INFO
 geoservice.EnableGeant4Geo = False

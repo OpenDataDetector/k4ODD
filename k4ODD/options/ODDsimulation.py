@@ -20,14 +20,16 @@ import os
 
 from DDSim.DD4hepSimulation import DD4hepSimulation
 from g4units import mm, GeV, MeV, m, deg
-from odd_geometry import odd_compact_xml
 SIM = DD4hepSimulation()
 
 ## The compact XML file
-SIM.compactFile = odd_compact_xml()
+if "OpenDataDetector" in os.environ:
+    SIM.compactFile = os.environ["OpenDataDetector"]+"/install/share/OpenDataDetector/xml/OpenDataDetector.xml"
+else:
+    SIM.compactFile = "OpenDataDetector/install/share/OpenDataDetector/xml/OpenDataDetector.xml"
 ## Lorentz boost for the crossing angle, in radian!
 SIM.crossingAngleBoost = 0.0
-SIM.enableDetailedShowerMode = True
+SIM.enableDetailedShowerMode = False
 SIM.enableG4GPS = False
 SIM.enableG4Gun = False
 SIM.enableGun = False
