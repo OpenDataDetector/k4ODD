@@ -22,7 +22,7 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-stack_setup="${KEY4HEP_SETUP:-/cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh}"
+stack_setup="${KEY4HEP_SETUP:-/cvmfs/sw.hsf.org/key4hep/setup.sh}"
 build_name="${BUILD_DIR_NAME:-build-ci}"
 install_name="${INSTALL_DIR_NAME:-install-ci}"
 jobs="${CMAKE_BUILD_PARALLEL_LEVEL:-4}"

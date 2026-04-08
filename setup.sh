@@ -27,7 +27,7 @@ fi
 set -eo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-stack_setup="${KEY4HEP_SETUP:-/cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh}"
+stack_setup="${KEY4HEP_SETUP:-/cvmfs/sw.hsf.org/key4hep/setup.sh}"
 
 resolve_repo_dir() {
   local explicit="${1:-}"
