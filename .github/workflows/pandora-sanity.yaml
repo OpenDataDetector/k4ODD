@@ -13,8 +13,6 @@ on:
         default: main
   pull_request:
   push:
-    branches:
-      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
