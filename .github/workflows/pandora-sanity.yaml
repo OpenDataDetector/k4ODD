@@ -43,10 +43,10 @@ jobs:
       INSTALL_DIR_NAME: install-ci
       ODD_DIR: ${{ github.workspace }}/OpenDataDetector
       K4GAUDIPANDORA_DIR: ${{ github.workspace }}/k4GaudiPandora
-      ODD_URL: ${{ vars.ODD_URL }}
-      K4GAUDIPANDORA_URL: ${{ vars.K4GAUDIPANDORA_URL }}
+      ODD_URL: ${{ vars.ODD_URL || 'https://gitlab.cern.ch/acts/OpenDataDetector.git' }}
+      K4GAUDIPANDORA_URL: ${{ vars.K4GAUDIPANDORA_URL || 'https://github.com/zaborowska/k4GaudiPandora.git' }}
       ODD_REF: ${{ inputs.odd_ref || vars.ODD_REF || 'main' }}
-      K4GAUDIPANDORA_REF: ${{ inputs.pandora_ref || vars.K4GAUDIPANDORA_REF || 'main' }}
+      K4GAUDIPANDORA_REF: ${{ inputs.pandora_ref || vars.K4GAUDIPANDORA_REF || 'odd_edits' }}
     steps:
       - uses: actions/checkout@v4
 
