@@ -84,7 +84,7 @@ jobs:
                      --privileged \
                      -v "${GITHUB_WORKSPACE}:/Package" \
                      -d "ghcr.io/key4hep/key4hep-images/${{ matrix.os }}-cvmfs" \
-                     /bin/bash
+                     tail -f /dev/null
 
       - name: Mount CVMFS
         run: |
@@ -178,7 +178,7 @@ jobs:
                      --privileged \
                      -v "${GITHUB_WORKSPACE}:/Package" \
                      -d "ghcr.io/key4hep/key4hep-images/${{ matrix.os }}-cvmfs" \
-                     /bin/bash
+                     tail -f /dev/null
 
       - name: Mount CVMFS
         run: |
@@ -262,7 +262,7 @@ jobs:
                      --privileged \
                      -v "${GITHUB_WORKSPACE}:/Package" \
                      -d "ghcr.io/key4hep/key4hep-images/${{ matrix.os }}-cvmfs" \
-                     /bin/bash
+                     tail -f /dev/null
 
       - name: Mount CVMFS
         run: |
@@ -347,7 +347,7 @@ jobs:
                      --privileged \
                      -v "${GITHUB_WORKSPACE}:/Package" \
                      -d "ghcr.io/key4hep/key4hep-images/${{ matrix.os }}-cvmfs" \
-                     /bin/bash
+                     tail -f /dev/null
 
       - name: Mount CVMFS
         run: |
@@ -436,7 +436,7 @@ jobs:
                      --privileged \
                      -v "${GITHUB_WORKSPACE}:/Package" \
                      -d "ghcr.io/key4hep/key4hep-images/${{ matrix.os }}-cvmfs" \
-                     /bin/bash
+                     tail -f /dev/null
 
       - name: Mount CVMFS
         run: |
