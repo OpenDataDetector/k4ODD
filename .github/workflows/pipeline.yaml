@@ -388,10 +388,9 @@ jobs:
           docker exec k4odd-ci /bin/bash -lc '
             cd /Package
             export KEY4HEP_SETUP="${{ matrix.stack }}"
-            export OpenDataDetector="/Package/OpenDataDetector"
             export DIGI_FILE="${{ env.DIGI_FILE }}"
             source "${KEY4HEP_SETUP}"
-            python "${OpenDataDetector}/ci/analyse_single_shower.py" -i "${DIGI_FILE}" --digi -o digiVal_results.root
+            python ci/analyse_single_shower_podio.py -i "${DIGI_FILE}" --digi -o digiVal_results.root
           '
 
       - uses: actions/upload-artifact@v4

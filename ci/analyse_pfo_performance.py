@@ -18,6 +18,7 @@
 import argparse
 import numpy
 import ROOT
+from podio.data_source import CreateDataFrame
 
 parser = argparse.ArgumentParser(description="Analyse Pandora PFO output")
 parser.add_argument("--infile", "-i", required=True, type=str, nargs="+", help="EDM4hep file to analyse")
@@ -34,8 +35,8 @@ args = parser.parse_args()
 ROOT.gSystem.Load("libedm4hep")
 ROOT.gInterpreter.Declare(
     """
-#include "edm4hep/MCParticleData.h"
-#include "edm4hep/ReconstructedParticleData.h"
+#include "edm4hep/MCParticleCollection.h"
+#include "edm4hep/ReconstructedParticleCollection.h"
 #include <cmath>
 """
 )
@@ -46,17 +47,17 @@ def run(inputlist, outname, ncpu, collection_name):
         outname += ".root"
 
     ROOT.ROOT.EnableImplicitMT(ncpu)
-    df = ROOT.RDataFrame("events", inputlist)
+    df = CreateDataFrame(inputlist)
     print("Initialization done")
 
     df_pfo = (
         df.Define(
             "pfoEnergy",
-            f"ROOT::VecOps::RVec<float> result; for (auto& p : {collection_name}) {{ result.push_back(p.energy); }} return result;",
+            f"ROOT::VecOps::RVec<float> result; for (auto p : {collection_name}) {{ result.push_back(p.getEnergy()); }} return result;",
         )
         .Define(
             "pfoCharge",
-            f"ROOT::VecOps::RVec<float> result; for (auto& p : {collection_name}) {{ result.push_back(p.charge); }} return result;",
+            f"ROOT::VecOps::RVec<float> result; for (auto p : {collection_name}) {{ result.push_back(p.getCharge()); }} return result;",
         )
         .Define("sumPfoEnergy", "std::accumulate(pfoEnergy.begin(), pfoEnergy.end(), 0.)")
         .Define("leadPfoEnergy", "pfoEnergy.empty() ? 0.f : *std::max_element(pfoEnergy.begin(), pfoEnergy.end())")
@@ -68,7 +69,7 @@ def run(inputlist, outname, ncpu, collection_name):
         .Define("nNeutralPfo", "nPfo - nChargedPfo")
         .Define(
             "gunMC",
-            "std::sqrt(MCParticles[0].momentum.x * MCParticles[0].momentum.x + MCParticles[0].momentum.y * MCParticles[0].momentum.y + MCParticles[0].momentum.z * MCParticles[0].momentum.z)",
+            "std::sqrt(MCParticles[0].getMomentum().x * MCParticles[0].getMomentum().x + MCParticles[0].getMomentum().y * MCParticles[0].getMomentum().y + MCParticles[0].getMomentum().z * MCParticles[0].getMomentum().z)",
         )
         .Define("sumPfoRatio", "gunMC > 0 ? sumPfoEnergy / gunMC : 0.")
         .Define("leadPfoRatio", "gunMC > 0 ? leadPfoEnergy / gunMC : 0.")
