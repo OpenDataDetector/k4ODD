@@ -194,7 +194,6 @@ jobs:
             export SIM_FILE="${{ env.SIM_FILE }}"
             source "${KEY4HEP_SETUP}"
             python "${OpenDataDetector}/ci/analyse_single_shower.py" -i "${SIM_FILE}" -o simVal_results.root
-            python ci/check_validation_results.py -i simVal_results.root -p simulation
           '
 
       - uses: actions/upload-artifact@v4
@@ -212,6 +211,32 @@ jobs:
         if: always()
         run: |
           docker rm -f k4odd-ci
+
+  simulation-regression:
+    needs: simulation-validation
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        stack:
+          - /cvmfs/sw.hsf.org/key4hep/setup.sh
+          - /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
+        os:
+          - alma9
+        include:
+          - stack: /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
+            os: ubuntu24
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: sim-validation-${{ matrix.os }}-${{ contains(matrix.stack, 'nightlies') && 'nightly' || 'release' }}
+          path: ${{ github.workspace }}
+
+      - name: Run simulation regression check
+        run: |
+          python ci/check_validation_results.py -i simVal_results.root -p simulation
 
   digitisation:
     needs: simulation
@@ -367,7 +392,6 @@ jobs:
             export DIGI_FILE="${{ env.DIGI_FILE }}"
             source "${KEY4HEP_SETUP}"
             python "${OpenDataDetector}/ci/analyse_single_shower.py" -i "${DIGI_FILE}" --digi -o digiVal_results.root
-            python ci/check_validation_results.py -i digiVal_results.root -p digitisation
           '
 
       - uses: actions/upload-artifact@v4
@@ -385,6 +409,32 @@ jobs:
         if: always()
         run: |
           docker rm -f k4odd-ci
+
+  digitisation-regression:
+    needs: digitisation-validation
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        stack:
+          - /cvmfs/sw.hsf.org/key4hep/setup.sh
+          - /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
+        os:
+          - alma9
+        include:
+          - stack: /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
+            os: ubuntu24
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: digi-validation-${{ matrix.os }}-${{ contains(matrix.stack, 'nightlies') && 'nightly' || 'release' }}
+          path: ${{ github.workspace }}
+
+      - name: Run digitisation regression check
+        run: |
+          python ci/check_validation_results.py -i digiVal_results.root -p digitisation
 
   pandora:
     needs:
@@ -529,7 +579,6 @@ jobs:
             export RECO_FILE="${{ env.RECO_FILE }}"
             source "${KEY4HEP_SETUP}"
             python ci/analyse_pfo_performance.py -i "${RECO_FILE}" -o pandoraVal_results.root
-            python ci/check_validation_results.py -i pandoraVal_results.root -p pandora
           '
 
       - uses: actions/upload-artifact@v4
@@ -547,3 +596,29 @@ jobs:
         if: always()
         run: |
           docker rm -f k4odd-ci
+
+  pandora-regression:
+    needs: pandora-validation
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        stack:
+          - /cvmfs/sw.hsf.org/key4hep/setup.sh
+          - /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
+        os:
+          - alma9
+        include:
+          - stack: /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
+            os: ubuntu24
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: pandora-validation-${{ matrix.os }}-${{ contains(matrix.stack, 'nightlies') && 'nightly' || 'release' }}
+          path: ${{ github.workspace }}
+
+      - name: Run Pandora regression check
+        run: |
+          python ci/check_validation_results.py -i pandoraVal_results.root -p pandora
