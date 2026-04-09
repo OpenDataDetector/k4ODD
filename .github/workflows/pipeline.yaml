@@ -234,9 +234,31 @@ jobs:
           name: sim-validation-${{ matrix.os }}-${{ contains(matrix.stack, 'nightlies') && 'nightly' || 'release' }}
           path: ${{ github.workspace }}
 
+      - name: Start container
+        run: |
+          docker run --name k4odd-ci \
+                     --privileged \
+                     -v "${GITHUB_WORKSPACE}:/Package" \
+                     -d "ghcr.io/key4hep/key4hep-images/${{ matrix.os }}-cvmfs" \
+                     tail -f /dev/null
+
+      - name: Mount CVMFS
+        run: |
+          docker exec k4odd-ci /bin/bash -c '/mount.sh'
+
       - name: Run simulation regression check
         run: |
-          python ci/check_validation_results.py -i simVal_results.root -p simulation
+          docker exec k4odd-ci /bin/bash -lc '
+            cd /Package
+            export KEY4HEP_SETUP="${{ matrix.stack }}"
+            source "${KEY4HEP_SETUP}"
+            python ci/check_validation_results.py -i simVal_results.root -p simulation
+          '
+
+      - name: Stop container
+        if: always()
+        run: |
+          docker rm -f k4odd-ci
 
   digitisation:
     needs: simulation
@@ -431,9 +453,31 @@ jobs:
           name: digi-validation-${{ matrix.os }}-${{ contains(matrix.stack, 'nightlies') && 'nightly' || 'release' }}
           path: ${{ github.workspace }}
 
+      - name: Start container
+        run: |
+          docker run --name k4odd-ci \
+                     --privileged \
+                     -v "${GITHUB_WORKSPACE}:/Package" \
+                     -d "ghcr.io/key4hep/key4hep-images/${{ matrix.os }}-cvmfs" \
+                     tail -f /dev/null
+
+      - name: Mount CVMFS
+        run: |
+          docker exec k4odd-ci /bin/bash -c '/mount.sh'
+
       - name: Run digitisation regression check
         run: |
-          python ci/check_validation_results.py -i digiVal_results.root -p digitisation
+          docker exec k4odd-ci /bin/bash -lc '
+            cd /Package
+            export KEY4HEP_SETUP="${{ matrix.stack }}"
+            source "${KEY4HEP_SETUP}"
+            python ci/check_validation_results.py -i digiVal_results.root -p digitisation
+          '
+
+      - name: Stop container
+        if: always()
+        run: |
+          docker rm -f k4odd-ci
 
   pandora:
     needs:
@@ -616,6 +660,28 @@ jobs:
           name: pandora-validation-${{ matrix.os }}-${{ contains(matrix.stack, 'nightlies') && 'nightly' || 'release' }}
           path: ${{ github.workspace }}
 
+      - name: Start container
+        run: |
+          docker run --name k4odd-ci \
+                     --privileged \
+                     -v "${GITHUB_WORKSPACE}:/Package" \
+                     -d "ghcr.io/key4hep/key4hep-images/${{ matrix.os }}-cvmfs" \
+                     tail -f /dev/null
+
+      - name: Mount CVMFS
+        run: |
+          docker exec k4odd-ci /bin/bash -c '/mount.sh'
+
       - name: Run Pandora regression check
         run: |
-          python ci/check_validation_results.py -i pandoraVal_results.root -p pandora
+          docker exec k4odd-ci /bin/bash -lc '
+            cd /Package
+            export KEY4HEP_SETUP="${{ matrix.stack }}"
+            source "${KEY4HEP_SETUP}"
+            python ci/check_validation_results.py -i pandoraVal_results.root -p pandora
+          '
+
+      - name: Stop container
+        if: always()
+        run: |
+          docker rm -f k4odd-ci
