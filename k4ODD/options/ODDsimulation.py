@@ -17,16 +17,35 @@
 # limitations under the License.
 #
 import os
+from pathlib import Path
 
 from DDSim.DD4hepSimulation import DD4hepSimulation
 from g4units import mm, GeV, MeV, m, deg
 SIM = DD4hepSimulation()
 
 ## The compact XML file
-if "OpenDataDetector" in os.environ:
-    SIM.compactFile = os.environ["OpenDataDetector"]+"/install/share/OpenDataDetector/xml/OpenDataDetector.xml"
-else:
-    SIM.compactFile = "OpenDataDetector/install/share/OpenDataDetector/xml/OpenDataDetector.xml"
+
+def resolve_odd_xml():
+    install_dir = os.environ.get("ODD_INSTALL_DIR")
+    if install_dir:
+        candidate = Path(install_dir) / "share" / "OpenDataDetector" / "xml" / "OpenDataDetector.xml"
+        if candidate.is_file():
+            return str(candidate)
+
+    repo_dir = os.environ.get("OpenDataDetector")
+    if repo_dir:
+        repo_path = Path(repo_dir)
+        preferred = [repo_path / "install-ci", repo_path / "install"]
+        installs = sorted(repo_path.glob("install-*"))
+        for candidate_dir in preferred + installs:
+            candidate = candidate_dir / "share" / "OpenDataDetector" / "xml" / "OpenDataDetector.xml"
+            if candidate.is_file():
+                return str(candidate)
+
+    return "OpenDataDetector/install/share/OpenDataDetector/xml/OpenDataDetector.xml"
+
+
+SIM.compactFile = resolve_odd_xml()
 ## Lorentz boost for the crossing angle, in radian!
 SIM.crossingAngleBoost = 0.0
 SIM.enableDetailedShowerMode = False

@@ -24,7 +24,22 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   exit 1
 fi
 
-set -eo pipefail
+had_errexit=0
+had_nounset=0
+had_pipefail=0
+
+if [[ $- == *e* ]]; then
+  had_errexit=1
+fi
+if [[ $- == *u* ]]; then
+  had_nounset=1
+fi
+if set -o | rg -q '^pipefail[[:space:]]+on$'; then
+  had_pipefail=1
+fi
+
+set -e
+set -o pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 stack_setup="${KEY4HEP_SETUP:-/cvmfs/sw.hsf.org/key4hep/setup.sh}"
@@ -67,9 +82,7 @@ find_install_dir() {
   printf '%s\n' "$found"
 }
 
-had_nounset=0
 if [[ $- == *u* ]]; then
-  had_nounset=1
   set +u
 fi
 
@@ -83,6 +96,9 @@ repo_install_dir="${K4ODD_INSTALL_DIR:-$(find_install_dir "$repo_root")}"
 pandora_install_dir="${K4GAUDIPANDORA_INSTALL_DIR:-$(find_install_dir "$pandora_repo")}"
 
 export OpenDataDetector="$odd_repo"
+export ODD_INSTALL_DIR="$odd_install_dir"
+export K4ODD_INSTALL_DIR="$repo_install_dir"
+export K4GAUDIPANDORA_INSTALL_DIR="$pandora_install_dir"
 source "$odd_install_dir/bin/this_odd.sh"
 
 setup_pwd="$PWD"
@@ -96,6 +112,12 @@ export K4ODD_PANDORA_SETTINGS="${K4ODD_PANDORA_SETTINGS:-$repo_root/k4ODD/option
 
 if [[ "$had_nounset" -eq 1 ]]; then
   set -u
+fi
+if [[ "$had_errexit" -eq 0 ]]; then
+  set +e
+fi
+if [[ "$had_pipefail" -eq 0 ]]; then
+  set +o pipefail
 fi
 
 echo "Key4hep stack: $KEY4HEP_STACK"

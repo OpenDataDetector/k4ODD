@@ -19,6 +19,7 @@ import argparse
 import numpy
 import ROOT
 from podio.data_source import CreateDataFrame
+from podio import root_io
 
 parser = argparse.ArgumentParser(description="Analyse Pandora PFO output")
 parser.add_argument("--infile", "-i", required=True, type=str, nargs="+", help="EDM4hep file to analyse")
@@ -47,48 +48,16 @@ def run(inputlist, outname, ncpu, collection_name):
         outname += ".root"
 
     ROOT.ROOT.EnableImplicitMT(ncpu)
-    df = CreateDataFrame(inputlist)
-    print("Initialization done")
+    try:
+        df = CreateDataFrame(inputlist)
+        print("Initialization done")
+        return run_rdf(df, inputlist, outname, collection_name)
+    except Exception as exc:
+        print(f"Falling back to podio.root_io.Reader because CreateDataFrame failed: {exc}")
+        return run_podio(inputlist, outname, collection_name)
 
-    df_pfo = (
-        df.Define(
-            "pfoEnergy",
-            f"ROOT::VecOps::RVec<float> result; for (auto p : {collection_name}) {{ result.push_back(p.getEnergy()); }} return result;",
-        )
-        .Define(
-            "pfoCharge",
-            f"ROOT::VecOps::RVec<float> result; for (auto p : {collection_name}) {{ result.push_back(p.getCharge()); }} return result;",
-        )
-        .Define("sumPfoEnergy", "std::accumulate(pfoEnergy.begin(), pfoEnergy.end(), 0.)")
-        .Define("leadPfoEnergy", "pfoEnergy.empty() ? 0.f : *std::max_element(pfoEnergy.begin(), pfoEnergy.end())")
-        .Define("nPfo", "static_cast<int>(pfoEnergy.size())")
-        .Define(
-            "nChargedPfo",
-            "return static_cast<int>(std::count_if(pfoCharge.begin(), pfoCharge.end(), [](float q) { return std::abs(q) > 1.e-6; }));",
-        )
-        .Define("nNeutralPfo", "nPfo - nChargedPfo")
-        .Define(
-            "gunMC",
-            "std::sqrt(MCParticles[0].getMomentum().x * MCParticles[0].getMomentum().x + MCParticles[0].getMomentum().y * MCParticles[0].getMomentum().y + MCParticles[0].getMomentum().z * MCParticles[0].getMomentum().z)",
-        )
-        .Define("sumPfoRatio", "gunMC > 0 ? sumPfoEnergy / gunMC : 0.")
-        .Define("leadPfoRatio", "gunMC > 0 ? leadPfoEnergy / gunMC : 0.")
-    )
 
-    h_n_pfo = df_pfo.Histo1D(("nPfo", "Number of Pandora PFOs;N PFOs;Events", 20, 0, 20), "nPfo")
-    h_sum = df_pfo.Histo1D(("sumPfoEnergy", "Summed Pandora PFO energy;E [GeV];Events", 100, 0, 20), "sumPfoEnergy")
-    h_sum_ratio = df_pfo.Histo1D(("sumPfoRatio", "Summed Pandora PFO energy / E_{MC};E_{PFO}/E_{MC};Events", 100, 0, 2), "sumPfoRatio")
-    h_lead_ratio = df_pfo.Histo1D(("leadPfoRatio", "Leading Pandora PFO energy / E_{MC};E^{lead}_{PFO}/E_{MC};Events", 100, 0, 2), "leadPfoRatio")
-    h_charged = df_pfo.Histo1D(("nChargedPfo", "Number of charged Pandora PFOs;N charged PFOs;Events", 20, 0, 20), "nChargedPfo")
-    h_neutral = df_pfo.Histo1D(("nNeutralPfo", "Number of neutral Pandora PFOs;N neutral PFOs;Events", 20, 0, 20), "nNeutralPfo")
-
-    print(f"PFO multiplicity: <N>= {h_n_pfo.GetMean()}\t RMS= {h_n_pfo.GetRMS()}")
-    print(f"Summed PFO energy: <E>= {h_sum.GetMean()}\t RMS= {h_sum.GetRMS()}")
-    print(f"Summed PFO response: <E_PFO/E_MC>= {h_sum_ratio.GetMean()}\t RMS= {h_sum_ratio.GetRMS()}")
-    print(f"Leading PFO response: <E_lead/E_MC>= {h_lead_ratio.GetMean()}\t RMS= {h_lead_ratio.GetRMS()}")
-    print(f"Charged PFO multiplicity: <N>= {h_charged.GetMean()}")
-    print(f"Neutral PFO multiplicity: <N>= {h_neutral.GetMean()}")
-
+def write_output(outname, inputlist, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, h_charged, h_neutral):
     outfile = ROOT.TFile(outname, "RECREATE")
     outfile.cd()
     h_n_pfo.Write()
@@ -125,6 +94,104 @@ def run(inputlist, outname, ncpu, collection_name):
     canv.cd()
     h_sum.Draw()
     canv.SaveAs(f"preview_pfoEnergyFit_{inputlist[0].split('/')[-1:][0][:-5]}.pdf")
+
+
+def finish_analysis(inputlist, outname, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, h_charged, h_neutral):
+    print(f"PFO multiplicity: <N>= {h_n_pfo.GetMean()}\t RMS= {h_n_pfo.GetRMS()}")
+    print(f"Summed PFO energy: <E>= {h_sum.GetMean()}\t RMS= {h_sum.GetRMS()}")
+    print(f"Summed PFO response: <E_PFO/E_MC>= {h_sum_ratio.GetMean()}\t RMS= {h_sum_ratio.GetRMS()}")
+    print(f"Leading PFO response: <E_lead/E_MC>= {h_lead_ratio.GetMean()}\t RMS= {h_lead_ratio.GetRMS()}")
+    print(f"Charged PFO multiplicity: <N>= {h_charged.GetMean()}")
+    print(f"Neutral PFO multiplicity: <N>= {h_neutral.GetMean()}")
+    write_output(outname, inputlist, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, h_charged, h_neutral)
+
+
+def run_rdf(df, inputlist, outname, collection_name):
+    df_pfo = (
+        df.Define(
+            "pfoEnergy",
+            f"ROOT::VecOps::RVec<float> result; for (auto p : {collection_name}) {{ result.push_back(p.getEnergy()); }} return result;",
+        )
+        .Define(
+            "pfoCharge",
+            f"ROOT::VecOps::RVec<float> result; for (auto p : {collection_name}) {{ result.push_back(p.getCharge()); }} return result;",
+        )
+        .Define("sumPfoEnergy", "std::accumulate(pfoEnergy.begin(), pfoEnergy.end(), 0.)")
+        .Define("leadPfoEnergy", "pfoEnergy.empty() ? 0.f : *std::max_element(pfoEnergy.begin(), pfoEnergy.end())")
+        .Define("nPfo", "static_cast<int>(pfoEnergy.size())")
+        .Define(
+            "nChargedPfo",
+            "return static_cast<int>(std::count_if(pfoCharge.begin(), pfoCharge.end(), [](float q) { return std::abs(q) > 1.e-6; }));",
+        )
+        .Define("nNeutralPfo", "nPfo - nChargedPfo")
+        .Define(
+            "gunMC",
+            "std::sqrt(MCParticles[0].getMomentum().x * MCParticles[0].getMomentum().x + MCParticles[0].getMomentum().y * MCParticles[0].getMomentum().y + MCParticles[0].getMomentum().z * MCParticles[0].getMomentum().z)",
+        )
+        .Define("sumPfoRatio", "gunMC > 0 ? sumPfoEnergy / gunMC : 0.")
+        .Define("leadPfoRatio", "gunMC > 0 ? leadPfoEnergy / gunMC : 0.")
+    )
+
+    h_n_pfo = df_pfo.Histo1D(("nPfo", "Number of Pandora PFOs;N PFOs;Events", 20, 0, 20), "nPfo")
+    h_sum = df_pfo.Histo1D(("sumPfoEnergy", "Summed Pandora PFO energy;E [GeV];Events", 100, 0, 20), "sumPfoEnergy")
+    h_sum_ratio = df_pfo.Histo1D(("sumPfoRatio", "Summed Pandora PFO energy / E_{MC};E_{PFO}/E_{MC};Events", 100, 0, 2), "sumPfoRatio")
+    h_lead_ratio = df_pfo.Histo1D(("leadPfoRatio", "Leading Pandora PFO energy / E_{MC};E^{lead}_{PFO}/E_{MC};Events", 100, 0, 2), "leadPfoRatio")
+    h_charged = df_pfo.Histo1D(("nChargedPfo", "Number of charged Pandora PFOs;N charged PFOs;Events", 20, 0, 20), "nChargedPfo")
+    h_neutral = df_pfo.Histo1D(("nNeutralPfo", "Number of neutral Pandora PFOs;N neutral PFOs;Events", 20, 0, 20), "nNeutralPfo")
+    finish_analysis(inputlist, outname, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, h_charged, h_neutral)
+
+
+def run_podio(inputlist, outname, collection_name):
+    pfo_counts = []
+    pfo_sum_energies = []
+    pfo_sum_ratios = []
+    pfo_lead_ratios = []
+    pfo_charged_counts = []
+    pfo_neutral_counts = []
+
+    for filename in inputlist:
+        reader = root_io.Reader(filename)
+        for event in reader.get("events"):
+            pfos = event.get(collection_name)
+            pfo_energies = [p.getEnergy() for p in pfos]
+            pfo_charges = [p.getCharge() for p in pfos]
+            momentum = event.get("MCParticles")[0].getMomentum()
+            gun_mc = ROOT.TMath.Sqrt(momentum.x * momentum.x + momentum.y * momentum.y + momentum.z * momentum.z)
+
+            n_pfo = len(pfo_energies)
+            n_charged = sum(1 for charge in pfo_charges if abs(charge) > 1.0e-6)
+            n_neutral = n_pfo - n_charged
+            sum_energy = sum(pfo_energies)
+            lead_energy = max(pfo_energies) if pfo_energies else 0.0
+
+            pfo_counts.append(n_pfo)
+            pfo_sum_energies.append(sum_energy)
+            pfo_sum_ratios.append(sum_energy / gun_mc if gun_mc > 0 else 0.0)
+            pfo_lead_ratios.append(lead_energy / gun_mc if gun_mc > 0 else 0.0)
+            pfo_charged_counts.append(n_charged)
+            pfo_neutral_counts.append(n_neutral)
+
+    h_n_pfo = ROOT.TH1D("nPfo", "Number of Pandora PFOs;N PFOs;Events", 20, 0, 20)
+    h_sum = ROOT.TH1D("sumPfoEnergy", "Summed Pandora PFO energy;E [GeV];Events", 100, 0, 20)
+    h_sum_ratio = ROOT.TH1D("sumPfoRatio", "Summed Pandora PFO energy / E_{MC};E_{PFO}/E_{MC};Events", 100, 0, 2)
+    h_lead_ratio = ROOT.TH1D("leadPfoRatio", "Leading Pandora PFO energy / E_{MC};E^{lead}_{PFO}/E_{MC};Events", 100, 0, 2)
+    h_charged = ROOT.TH1D("nChargedPfo", "Number of charged Pandora PFOs;N charged PFOs;Events", 20, 0, 20)
+    h_neutral = ROOT.TH1D("nNeutralPfo", "Number of neutral Pandora PFOs;N neutral PFOs;Events", 20, 0, 20)
+
+    for value in pfo_counts:
+        h_n_pfo.Fill(value)
+    for value in pfo_sum_energies:
+        h_sum.Fill(value)
+    for value in pfo_sum_ratios:
+        h_sum_ratio.Fill(value)
+    for value in pfo_lead_ratios:
+        h_lead_ratio.Fill(value)
+    for value in pfo_charged_counts:
+        h_charged.Fill(value)
+    for value in pfo_neutral_counts:
+        h_neutral.Fill(value)
+
+    finish_analysis(inputlist, outname, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, h_charged, h_neutral)
 
 
 if __name__ == "__main__":

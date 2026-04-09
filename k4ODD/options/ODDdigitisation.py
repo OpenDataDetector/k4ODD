@@ -26,6 +26,7 @@ from Configurables import UniqueIDGenSvc
 from Configurables import RootHistSvc
 from Configurables import Gaudi__Histograming__Sink__Root as RootHistoSink
 import os
+from pathlib import Path
 
 from k4FWCore.parseArgs import parser
 parser_group = parser.add_argument_group("CLDReconstruction.py custom options")
@@ -41,14 +42,28 @@ id_service = UniqueIDGenSvc("UniqueIDGenSvc")
 
 geoservice = GeoSvc("GeoSvc")
 
-if "OpenDataDetector" in os.environ:
-    geoservice.detectors = [
-        os.environ["OpenDataDetector"]+"/install/share/OpenDataDetector/xml/OpenDataDetector.xml"
-    ]
-else:
-    geoservice.detectors = [
-        "OpenDataDetector/install/share/OpenDataDetector/xml/OpenDataDetector.xml"
-    ]
+
+def resolve_odd_xml():
+    install_dir = os.environ.get("ODD_INSTALL_DIR")
+    if install_dir:
+        candidate = Path(install_dir) / "share" / "OpenDataDetector" / "xml" / "OpenDataDetector.xml"
+        if candidate.is_file():
+            return str(candidate)
+
+    repo_dir = os.environ.get("OpenDataDetector")
+    if repo_dir:
+        repo_path = Path(repo_dir)
+        preferred = [repo_path / "install-ci", repo_path / "install"]
+        installs = sorted(repo_path.glob("install-*"))
+        for candidate_dir in preferred + installs:
+            candidate = candidate_dir / "share" / "OpenDataDetector" / "xml" / "OpenDataDetector.xml"
+            if candidate.is_file():
+                return str(candidate)
+
+    return "OpenDataDetector/install/share/OpenDataDetector/xml/OpenDataDetector.xml"
+
+
+geoservice.detectors = [resolve_odd_xml()]
 
 geoservice.OutputLevel = INFO
 geoservice.EnableGeant4Geo = False
