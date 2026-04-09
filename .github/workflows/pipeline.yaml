@@ -577,7 +577,7 @@ jobs:
             export K4GAUDIPANDORA_DIR="/Package/k4GaudiPandora"
             export SIM_FILE="${{ env.SIM_FILE }}"
             export RECO_FILE="${{ env.RECO_FILE }}"
-            bash -lc "source ./setup.sh && k4run k4ODD/options/ODDreconstruction.py --inputFile \"${SIM_FILE}\" --outputFile \"${RECO_FILE}\" && test -f \"${RECO_FILE}\" && podio-dump \"${RECO_FILE}\" | rg \"GaudiPandoraClusters|GaudiPandoraPFOs|GaudiPandoraStartVertices\""
+            bash -lc "source ./setup.sh && k4run k4ODD/options/ODDreconstruction.py --inputFile \"${SIM_FILE}\" --outputFile \"${RECO_FILE}\" && test -f \"${RECO_FILE}\" && podio-dump \"${RECO_FILE}\" | grep -E \"GaudiPandoraClusters|GaudiPandoraPFOs|GaudiPandoraStartVertices\""
           '
 
       - uses: actions/upload-artifact@v4

@@ -34,7 +34,7 @@ fi
 if [[ $- == *u* ]]; then
   had_nounset=1
 fi
-if set -o | rg -q '^pipefail[[:space:]]+on$'; then
+if set -o | grep -Eq '^pipefail[[:space:]]+on$'; then
   had_pipefail=1
 fi
 

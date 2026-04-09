@@ -70,7 +70,7 @@ python "$(which k4run)" \
 reco_rc=$?
 set -e
 
-podio-dump "$reco_file" | rg "GaudiPandoraClusters|GaudiPandoraPFOs|GaudiPandoraStartVertices"
+podio-dump "$reco_file" | grep -E "GaudiPandoraClusters|GaudiPandoraPFOs|GaudiPandoraStartVertices"
 
 if [[ "$reco_rc" -ne 0 ]]; then
   echo "k4run exited with code $reco_rc after writing valid Pandora output" >&2
