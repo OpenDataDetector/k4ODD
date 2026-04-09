@@ -8,7 +8,7 @@
       },
       "en_resolution": {
         "min": 0.02,
-        "max": 0.08
+        "max": 0.15
       },
       "enMC": {
         "min": 9.5,
