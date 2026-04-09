@@ -26,28 +26,41 @@ build_name="${BUILD_DIR_NAME:-build-ci}"
 install_name="${INSTALL_DIR_NAME:-install-ci}"
 sim_file="${PANDORA_SANITY_SIM_FILE:-$repo_root/$build_name/pandora_sanity_sim.root}"
 reco_file="${PANDORA_SANITY_RECO_FILE:-$repo_root/$build_name/pandora_sanity_reco.root}"
+force_sim="${PANDORA_SANITY_FORCE_SIM:-0}"
 
 mkdir -p "$(dirname "$sim_file")"
 mkdir -p "$(dirname "$reco_file")"
 
 if [[ "${REBUILD_STACK:-0}" == "1" ]]; then
-  "$repo_root/ci/rebuild_local_stack.sh"
+  bash "$repo_root/ci/rebuild_local_stack.sh"
 fi
 
-source "$repo_root/setup.sh"
+if [[ -z "${OpenDataDetector:-}" ]]; then
+  echo "OpenDataDetector is not set. Source setup.sh before running this script." >&2
+  exit 1
+fi
 
-ddsim \
-  --compactFile "$OpenDataDetector/$install_name/share/OpenDataDetector/xml/OpenDataDetector.xml" \
-  --steeringFile "$repo_root/k4ODD/options/ODDsimulation.py" \
-  --enableGun \
-  --gun.distribution uniform \
-  --gun.etaMin 0 \
-  --gun.etaMax 0 \
-  --gun.energy 10*GeV \
-  --gun.particle gamma \
-  --numberOfEvents 1 \
-  --outputFile "$sim_file" \
-  --random.seed 123
+if ! command -v k4run >/dev/null 2>&1; then
+  echo "k4run is not on PATH. Source setup.sh before running this script." >&2
+  exit 1
+fi
+
+if [[ "$force_sim" != "1" && -f "$sim_file" ]]; then
+  echo "Reusing existing simulation file: $sim_file"
+else
+  ddsim \
+    --compactFile "$OpenDataDetector/$install_name/share/OpenDataDetector/xml/OpenDataDetector.xml" \
+    --steeringFile "$repo_root/k4ODD/options/ODDsimulation.py" \
+    --enableGun \
+    --gun.distribution uniform \
+    --gun.etaMin 0 \
+    --gun.etaMax 0 \
+    --gun.energy 10*GeV \
+    --gun.particle gamma \
+    --numberOfEvents 1 \
+    --outputFile "$sim_file" \
+    --random.seed 123
+fi
 
 set +e
 python "$(which k4run)" \

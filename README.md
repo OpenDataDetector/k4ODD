@@ -35,40 +35,42 @@ You can override repo locations with `ODD_DIR` and `K4GAUDIPANDORA_DIR`.
 To rebuild the local `OpenDataDetector`, `k4GaudiPandora`, and `k4ODD` repos against the currently sourced Key4hep stack:
 
 ```bash
-./ci/rebuild_local_stack.sh
+bash ./ci/rebuild_local_stack.sh
 ```
 
-## Simulation
+# Simulation
 
 ```bash
 ddsim --steeringFile k4ODD/options/ODDsimulation.py --enableGun --gun.distribution uniform --gun.etaMin 0 --gun.etaMax 0 --gun.energy "10*GeV" --gun.particle gamma --numberOfEvents 100 --outputFile gamma_10GeV_eta0_100ev_sim_edm4hep.root --random.seed 123
 ```
 
-## Digitisation
+# Digitisation
 
 ```bash
 k4run k4ODD/options/ODDdigitisation.py --inputFile gamma_10GeV_eta0_100ev_sim_edm4hep.root --outputFile gamma_10GeV_eta0_100ev_digi_edm4hep.root
 ```
 
-## Reconstruction
+# Reconstruction
 [Work In Progress]
 
-For the current Pandora sanity path:
+Then run Pandora reconstruction:
+Note: input is the simulation output, not digi!
 
 ```bash
-./ci/run_pandora_sanity.sh
+k4run k4ODD/options/ODDreconstruction.py --inputFile gamma_10GeV_eta0_100ev_sim_edm4hep.root --outputFile gamma_10GeV_eta0_100ev_reco_edm4hep.root
 ```
 
-This generates a fresh one-event simulation file and checks that the reconstruction output contains:
+Check that the reconstruction output contains:
 
 * `GaudiPandoraClusters`
 * `GaudiPandoraPFOs`
 * `GaudiPandoraStartVertices`
 
-For development = if you want the script to start by rebuilding all three repos first:
+
+For development = if you want the script to start by rebuilding all three repos first, and regenerate the simulation:
 
 ```bash
-REBUILD_STACK=1 ./ci/run_pandora_sanity.sh
+REBUILD_STACK=1 PANDORA_SANITY_FORCE_SIM=1 bash ./ci/run_pandora_sanity.sh
 ```
 
 ## Validation
