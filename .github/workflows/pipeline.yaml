@@ -108,6 +108,7 @@ jobs:
             cd /Package
             export KEY4HEP_SETUP="${{ matrix.stack }}"
             export OpenDataDetector="/Package/OpenDataDetector"
+            export SIM_FILE="${{ env.SIM_FILE }}"
             source "${KEY4HEP_SETUP}"
             source "${OpenDataDetector}/install/bin/this_odd.sh"
             ddsim \
@@ -190,6 +191,7 @@ jobs:
             cd /Package
             export KEY4HEP_SETUP="${{ matrix.stack }}"
             export OpenDataDetector="/Package/OpenDataDetector"
+            export SIM_FILE="${{ env.SIM_FILE }}"
             source "${KEY4HEP_SETUP}"
             python "${OpenDataDetector}/ci/analyse_single_shower.py" -i "${SIM_FILE}"
           '
@@ -287,6 +289,8 @@ jobs:
             export KEY4HEP_SETUP="${{ matrix.stack }}"
             export ODD_DIR="/Package/OpenDataDetector"
             export K4GAUDIPANDORA_DIR="/Package/k4GaudiPandora"
+            export SIM_FILE="${{ env.SIM_FILE }}"
+            export DIGI_FILE="${{ env.DIGI_FILE }}"
             bash -lc "source ./setup.sh && k4run k4ODD/options/ODDdigitisation.py --inputFile \"${SIM_FILE}\" --outputFile \"${DIGI_FILE}\""
             test -f "${DIGI_FILE}"
           '
@@ -359,6 +363,7 @@ jobs:
             cd /Package
             export KEY4HEP_SETUP="${{ matrix.stack }}"
             export OpenDataDetector="/Package/OpenDataDetector"
+            export DIGI_FILE="${{ env.DIGI_FILE }}"
             source "${KEY4HEP_SETUP}"
             python "${OpenDataDetector}/ci/analyse_single_shower.py" -i "${DIGI_FILE}" --digi
           '
@@ -461,6 +466,8 @@ jobs:
             export KEY4HEP_SETUP="${{ matrix.stack }}"
             export ODD_DIR="/Package/OpenDataDetector"
             export K4GAUDIPANDORA_DIR="/Package/k4GaudiPandora"
+            export SIM_FILE="${{ env.SIM_FILE }}"
+            export RECO_FILE="${{ env.RECO_FILE }}"
             bash -lc "source ./setup.sh && python \"$(which k4run)\" k4ODD/options/ODDreconstruction.py --inputFile \"${SIM_FILE}\" --outputFile \"${RECO_FILE}\""
             test -f "${RECO_FILE}"
             podio-dump "${RECO_FILE}" | rg "GaudiPandoraClusters|GaudiPandoraPFOs|GaudiPandoraStartVertices"
