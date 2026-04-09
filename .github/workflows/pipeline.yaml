@@ -637,7 +637,7 @@ jobs:
             export KEY4HEP_SETUP="${{ matrix.stack }}"
             export RECO_FILE="${{ env.RECO_FILE }}"
             source "${KEY4HEP_SETUP}"
-            python ci/analyse_pfo_performance.py -i "${RECO_FILE}" -o pandoraVal_results.root
+            python -u ci/analyse_pfo_performance.py -i "${RECO_FILE}" -o pandoraVal_results.root
           '
 
       - uses: actions/upload-artifact@v4

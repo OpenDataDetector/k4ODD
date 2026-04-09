@@ -47,7 +47,6 @@ def run(inputlist, outname, ncpu, collection_name):
     if ".root" not in outname:
         outname += ".root"
 
-    ROOT.ROOT.EnableImplicitMT(ncpu)
     try:
         df = CreateDataFrame(inputlist)
         print("Initialization done")
