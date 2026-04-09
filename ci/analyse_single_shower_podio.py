@@ -48,7 +48,10 @@ def run(inputlist, outname, ncpu, endcap_instead_of_barrel, hcal_instead_of_ecal
     collname = "Endcap" if endcap_instead_of_barrel else "Barrel"
     collprefix = "digi" if args.digi else ""
 
-    ROOT.ROOT.EnableImplicitMT(ncpu)
+    # PODIO-backed RDataFrame hangs on digi/reco files when implicit MT is enabled.
+    # Keep this path single-threaded unless a plain sim workflow explicitly opts in.
+    if not args.digi and ncpu > 1:
+        ROOT.ROOT.EnableImplicitMT(ncpu)
 
     try:
         df = CreateDataFrame(inputlist)
