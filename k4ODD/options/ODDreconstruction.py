@@ -264,6 +264,7 @@ params = {
     "MuonHitEnergy": 0.5,
     "ShouldFormTrackRelationships": 1,
     "TrackCreatorName": "DDTrackCreatorEmpty",
+    "UseDD4hepField": True,
     "TrackSystemName": "",
     "OutputEnergyCorrectionPoints": [],
     "UseEcalScLayers": 0,
