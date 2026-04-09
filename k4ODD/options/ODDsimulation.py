@@ -16,9 +16,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import os
-from pathlib import Path
-
 from DDSim.DD4hepSimulation import DD4hepSimulation
 from g4units import mm, GeV, MeV, m, deg
 SIM = DD4hepSimulation()
@@ -26,6 +23,9 @@ SIM = DD4hepSimulation()
 ## The compact XML file
 
 def resolve_odd_xml():
+    import os
+    from pathlib import Path
+
     install_dir = os.environ.get("ODD_INSTALL_DIR")
     if install_dir:
         candidate = Path(install_dir) / "share" / "OpenDataDetector" / "xml" / "OpenDataDetector.xml"

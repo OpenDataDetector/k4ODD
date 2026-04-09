@@ -28,7 +28,6 @@ from Configurables import UniqueIDGenSvc
 from Configurables import RootHistSvc
 from Configurables import Gaudi__Histograming__Sink__Root as RootHistoSink
 import os
-from pathlib import Path
 
 from k4FWCore.parseArgs import parser
 parser_group = parser.add_argument_group("ODDreconstruction.py custom options")
@@ -46,6 +45,8 @@ geoservice = GeoSvc("GeoSvc")
 
 
 def resolve_odd_xml():
+    from pathlib import Path
+
     install_dir = os.environ.get("ODD_INSTALL_DIR")
     if install_dir:
         candidate = Path(install_dir) / "share" / "OpenDataDetector" / "xml" / "OpenDataDetector.xml"
