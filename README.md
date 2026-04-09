@@ -81,3 +81,5 @@ python ci/analyse_pfo_performance.py -i gamma_10GeV_eta0_100ev_reco_edm4hep.root
 ```
 
 Please note that the collections are rewritten so both analyses can be performed on the same (second) file.
+
+In CI the corresponding validation jobs save the ROOT summaries and preview PDFs as artifacts, and also run a simple numerical regression check on the stored summary values.

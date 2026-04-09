@@ -193,7 +193,8 @@ jobs:
             export OpenDataDetector="/Package/OpenDataDetector"
             export SIM_FILE="${{ env.SIM_FILE }}"
             source "${KEY4HEP_SETUP}"
-            python "${OpenDataDetector}/ci/analyse_single_shower.py" -i "${SIM_FILE}"
+            python "${OpenDataDetector}/ci/analyse_single_shower.py" -i "${SIM_FILE}" -o simVal_results.root
+            python ci/check_validation_results.py -i simVal_results.root -p simulation
           '
 
       - uses: actions/upload-artifact@v4
@@ -365,7 +366,8 @@ jobs:
             export OpenDataDetector="/Package/OpenDataDetector"
             export DIGI_FILE="${{ env.DIGI_FILE }}"
             source "${KEY4HEP_SETUP}"
-            python "${OpenDataDetector}/ci/analyse_single_shower.py" -i "${DIGI_FILE}" --digi
+            python "${OpenDataDetector}/ci/analyse_single_shower.py" -i "${DIGI_FILE}" --digi -o digiVal_results.root
+            python ci/check_validation_results.py -i digiVal_results.root -p digitisation
           '
 
       - uses: actions/upload-artifact@v4
@@ -527,6 +529,7 @@ jobs:
             export RECO_FILE="${{ env.RECO_FILE }}"
             source "${KEY4HEP_SETUP}"
             python ci/analyse_pfo_performance.py -i "${RECO_FILE}" -o pandoraVal_results.root
+            python ci/check_validation_results.py -i pandoraVal_results.root -p pandora
           '
 
       - uses: actions/upload-artifact@v4

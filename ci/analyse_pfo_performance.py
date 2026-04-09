@@ -63,7 +63,7 @@ def run(inputlist, outname, ncpu, collection_name):
         .Define("nPfo", "static_cast<int>(pfoEnergy.size())")
         .Define(
             "nChargedPfo",
-            "static_cast<int>(std::count_if(pfoCharge.begin(), pfoCharge.end(), [](float q) { return std::abs(q) > 1.e-6; }))",
+            "return static_cast<int>(std::count_if(pfoCharge.begin(), pfoCharge.end(), [](float q) { return std::abs(q) > 1.e-6; }));",
         )
         .Define("nNeutralPfo", "nPfo - nChargedPfo")
         .Define(

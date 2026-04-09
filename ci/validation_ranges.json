@@ -1,0 +1,65 @@
+{
+  "simulation": {
+    "tree": "results",
+    "checks": {
+      "en_mean": {
+        "min": 0.2,
+        "max": 0.35
+      },
+      "en_resolution": {
+        "min": 0.02,
+        "max": 0.08
+      },
+      "enMC": {
+        "min": 9.5,
+        "max": 10.5
+      }
+    }
+  },
+  "digitisation": {
+    "tree": "results",
+    "checks": {
+      "en_mean": {
+        "min": 9.0,
+        "max": 10.8
+      },
+      "en_resolution": {
+        "min": 0.02,
+        "max": 0.08
+      },
+      "enMC": {
+        "min": 9.5,
+        "max": 10.5
+      }
+    }
+  },
+  "pandora": {
+    "tree": "results",
+    "checks": {
+      "mean_n_pfo": {
+        "min": 0.8,
+        "max": 1.5
+      },
+      "mean_sum_energy": {
+        "min": 9.0,
+        "max": 10.8
+      },
+      "mean_sum_ratio": {
+        "min": 0.9,
+        "max": 1.08
+      },
+      "mean_lead_ratio": {
+        "min": 0.8,
+        "max": 1.05
+      },
+      "mean_n_charged": {
+        "min": 0.0,
+        "max": 0.1
+      },
+      "mean_n_neutral": {
+        "min": 0.8,
+        "max": 1.5
+      }
+    }
+  }
+}
