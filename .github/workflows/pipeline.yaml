@@ -387,7 +387,6 @@ jobs:
   pandora:
     needs:
       - simulation
-      - digitisation
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -406,11 +405,6 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: sim-output-${{ matrix.os }}-${{ contains(matrix.stack, 'nightlies') && 'nightly' || 'release' }}
-          path: ${{ github.workspace }}
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: digi-output-${{ matrix.os }}-${{ contains(matrix.stack, 'nightlies') && 'nightly' || 'release' }}
           path: ${{ github.workspace }}
 
       - name: Clone OpenDataDetector
@@ -482,6 +476,66 @@ jobs:
           path: |
             ${{ github.workspace }}/${{ env.RECO_FILE }}
             ${{ github.workspace }}/ddcalodigi_hist.root
+          retention-days: 7
+          overwrite: true
+          if-no-files-found: ignore
+
+      - name: Stop container
+        if: always()
+        run: |
+          docker rm -f k4odd-ci
+
+  pandora-validation:
+    needs: pandora
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        stack:
+          - /cvmfs/sw.hsf.org/key4hep/setup.sh
+          - /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
+        os:
+          - alma9
+        include:
+          - stack: /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
+            os: ubuntu24
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: pandora-output-${{ matrix.os }}-${{ contains(matrix.stack, 'nightlies') && 'nightly' || 'release' }}
+          path: ${{ github.workspace }}
+
+      - name: Start container
+        run: |
+          docker run --name k4odd-ci \
+                     --privileged \
+                     -v "${GITHUB_WORKSPACE}:/Package" \
+                     -d "ghcr.io/key4hep/key4hep-images/${{ matrix.os }}-cvmfs" \
+                     tail -f /dev/null
+
+      - name: Mount CVMFS
+        run: |
+          docker exec k4odd-ci /bin/bash -c '/mount.sh'
+
+      - name: Validate Pandora PFOs
+        run: |
+          docker exec k4odd-ci /bin/bash -lc '
+            cd /Package
+            export KEY4HEP_SETUP="${{ matrix.stack }}"
+            export RECO_FILE="${{ env.RECO_FILE }}"
+            source "${KEY4HEP_SETUP}"
+            python ci/analyse_pfo_performance.py -i "${RECO_FILE}" -o pandoraVal_results.root
+          '
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pandora-validation-${{ matrix.os }}-${{ contains(matrix.stack, 'nightlies') && 'nightly' || 'release' }}
+          path: |
+            ${{ github.workspace }}/pandoraVal_results.root
+            ${{ github.workspace }}/preview_pfoEnergyFit_*.pdf
           retention-days: 7
           overwrite: true
           if-no-files-found: ignore

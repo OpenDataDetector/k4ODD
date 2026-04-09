@@ -74,11 +74,10 @@ REBUILD_STACK=1 PANDORA_SANITY_FORCE_SIM=1 bash ./ci/run_pandora_sanity.sh
 ```
 
 ## Validation
-Implemented only for simulation and digitisation at the moment.
-
 ```bash
 python $OpenDataDetector/ci/analyse_single_shower.py -i gamma_10GeV_eta0_100ev_sim_edm4hep.root
 python $OpenDataDetector/ci/analyse_single_shower.py -i gamma_10GeV_eta0_100ev_digi_edm4hep.root --digi
+python ci/analyse_pfo_performance.py -i gamma_10GeV_eta0_100ev_reco_edm4hep.root
 ```
 
 Please note that the collections are rewritten so both analyses can be performed on the same (second) file.
