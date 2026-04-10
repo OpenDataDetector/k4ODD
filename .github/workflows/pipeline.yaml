@@ -194,7 +194,7 @@ jobs:
             export OpenDataDetector="/Package/OpenDataDetector"
             export SIM_FILE="${{ env.SIM_FILE }}"
             source "${KEY4HEP_SETUP}"
-            python "${OpenDataDetector}/ci/analyse_single_shower.py" -i "${SIM_FILE}" -o simVal_results.root
+            python ci/analyse_single_shower_root.py -i "${SIM_FILE}" -o simVal_results.root
           '
 
       - uses: actions/upload-artifact@v4
@@ -767,7 +767,7 @@ jobs:
             export HIGHSTAT_SIM_FILE="${{ env.HIGHSTAT_SIM_FILE }}"
             export HIGHSTAT_DIGI_FILE="${{ env.HIGHSTAT_DIGI_FILE }}"
             source "${KEY4HEP_SETUP}"
-            python OpenDataDetector/ci/analyse_single_shower.py -i "${HIGHSTAT_SIM_FILE}" -o simVal_highstat_results.root
+            python ci/analyse_single_shower_root.py -i "${HIGHSTAT_SIM_FILE}" -o simVal_highstat_results.root
             python -u ci/analyse_single_shower_podio.py -i "${HIGHSTAT_DIGI_FILE}" --digi -o digiVal_highstat_results.root
             python ci/check_validation_results.py -i simVal_highstat_results.root -p simulation_highstat
             python ci/check_validation_results.py -i digiVal_highstat_results.root -p digitisation_highstat

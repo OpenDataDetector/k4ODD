@@ -94,6 +94,20 @@ def write_output(outname, inputlist, h_cal, h_mc, h_ratio, result_mean, result_m
     canv.SaveAs(f"preview_energyFit_{inputlist[0].split('/')[-1:][0][:-5]}.pdf")
 
 
+def hist_models(digi_mode, hcal_instead_of_ecal):
+    if digi_mode or hcal_instead_of_ecal:
+        return (
+            ROOT.RDF.TH1DModel("energy_cal", "Calorimeter energy;E [GeV];Events", 100, 0.0, 20.0),
+            ROOT.RDF.TH1DModel("energy_MC0", "MC gun energy;E [GeV];Events", 100, 0.0, 20.0),
+            ROOT.RDF.TH1DModel("energy_ratio", "Calorimeter response;E_{cal}/E_{MC};Events", 100, 0.0, 2.0),
+        )
+    return (
+        ROOT.RDF.TH1DModel("energy_cal", "Calorimeter energy;E [GeV];Events", 100, 0.0, 0.5),
+        ROOT.RDF.TH1DModel("energy_MC0", "MC gun energy;E [GeV];Events", 100, 0.0, 20.0),
+        ROOT.RDF.TH1DModel("energy_ratio", "Calorimeter response;E_{cal}/E_{MC};Events", 100, 0.0, 0.05),
+    )
+
+
 def fit_and_store(inputlist, outname, h_cal, h_mc, h_ratio):
     print(f"E distribution in Cal: <E>= {h_cal.GetMean()}\t RMS= {h_cal.GetRMS()}")
     print(f"E distribution MC particles: E_MC= {h_mc.GetMean()}\t RMS= {h_mc.GetRMS()}")
@@ -131,6 +145,7 @@ def fit_and_store(inputlist, outname, h_cal, h_mc, h_ratio):
 
 
 def run_rdf(df, inputlist, outname, hcal_instead_of_ecal, collname, collprefix):
+    h_cal_model, h_mc_model, h_ratio_model = hist_models(args.digi, hcal_instead_of_ecal)
 
     if hcal_instead_of_ecal:
         h_cal = (
@@ -145,7 +160,7 @@ def run_rdf(df, inputlist, outname, hcal_instead_of_ecal, collname, collprefix):
             )
             .Define("sumEdepHcal", "std::accumulate(edepHcal.begin(), edepHcal.end(), 0.)")
             .Define("sumEdep", "sumEdepEcal+sumEdepHcal")
-            .Histo1D("sumEdep")
+            .Histo1D(h_cal_model, "sumEdep")
         )
     else:
         h_cal = (
@@ -154,7 +169,7 @@ def run_rdf(df, inputlist, outname, hcal_instead_of_ecal, collname, collprefix):
                 f"ROOT::VecOps::RVec<float> result; for (auto p: {collprefix}ECal{collname}Collection) {{ result.push_back(p.getEnergy()); }} return result;",
             )
             .Define("sumEdep", "std::accumulate(edep.begin(),edep.end(),0.)")
-            .Histo1D("sumEdep")
+            .Histo1D(h_cal_model, "sumEdep")
         )
 
     h_mc = (
@@ -163,7 +178,7 @@ def run_rdf(df, inputlist, outname, hcal_instead_of_ecal, collname, collprefix):
             "ROOT::VecOps::RVec<float> result; for(auto m:MCParticles){const auto mom=m.getMomentum(); result.push_back(sqrt(mom.x*mom.x+mom.y*mom.y+mom.z*mom.z));} return result;",
         )
         .Define("gunMC", "eMC[0]")
-        .Histo1D("gunMC")
+        .Histo1D(h_mc_model, "gunMC")
     )
 
     if hcal_instead_of_ecal:
@@ -185,7 +200,7 @@ def run_rdf(df, inputlist, outname, hcal_instead_of_ecal, collname, collprefix):
             )
             .Define("gunMC", "eMC[0]")
             .Define("eratio", "sumEdep/gunMC")
-            .Histo1D("eratio")
+            .Histo1D(h_ratio_model, "eratio")
         )
     else:
         h_ratio = (
@@ -200,24 +215,13 @@ def run_rdf(df, inputlist, outname, hcal_instead_of_ecal, collname, collprefix):
             )
             .Define("gunMC", "eMC[0]")
             .Define("eratio", "sumEdep/gunMC")
-            .Histo1D("eratio")
+            .Histo1D(h_ratio_model, "eratio")
         )
 
     fit_and_store(inputlist, outname, h_cal, h_mc, h_ratio)
 
 
-def make_hist(name, title, values, nbins=100, xmin=None, xmax=None):
-    if xmin is None or xmax is None:
-        vmin = min(values)
-        vmax = max(values)
-        if vmin == vmax:
-            width = max(abs(vmin) * 0.1, 1.0)
-            xmin = vmin - width
-            xmax = vmax + width
-        else:
-            margin = 0.1 * (vmax - vmin)
-            xmin = vmin - margin
-            xmax = vmax + margin
+def make_hist(name, title, values, nbins, xmin, xmax):
     hist = ROOT.TH1D(name, title, nbins, xmin, xmax)
     for value in values:
         hist.Fill(value)
@@ -248,9 +252,14 @@ def run_podio(inputlist, outname, hcal_instead_of_ecal, collname, collprefix):
             mc_energies.append(gun_mc)
             ratios.append(cal_sum / gun_mc if gun_mc > 0 else 0.0)
 
-    h_cal = make_hist("energy_cal", "energy_cal", calo_sums)
-    h_mc = make_hist("energy_MC0", "energy_MC0", mc_energies)
-    h_ratio = make_hist("energy_ratio", "energy_ratio", ratios, xmin=0.0, xmax=2.0)
+    if args.digi or hcal_instead_of_ecal:
+        h_cal = make_hist("energy_cal", "energy_cal", calo_sums, 100, 0.0, 20.0)
+        h_mc = make_hist("energy_MC0", "energy_MC0", mc_energies, 100, 0.0, 20.0)
+        h_ratio = make_hist("energy_ratio", "energy_ratio", ratios, 100, 0.0, 2.0)
+    else:
+        h_cal = make_hist("energy_cal", "energy_cal", calo_sums, 100, 0.0, 0.5)
+        h_mc = make_hist("energy_MC0", "energy_MC0", mc_energies, 100, 0.0, 20.0)
+        h_ratio = make_hist("energy_ratio", "energy_ratio", ratios, 100, 0.0, 0.05)
     fit_and_store(inputlist, outname, h_cal, h_mc, h_ratio)
 
 

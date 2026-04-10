@@ -75,7 +75,7 @@ REBUILD_STACK=1 PANDORA_SANITY_FORCE_SIM=1 bash ./ci/run_pandora_sanity.sh
 
 ## Validation
 ```bash
-python $OpenDataDetector/ci/analyse_single_shower.py -i gamma_10GeV_eta0_100ev_sim_edm4hep.root
+python ci/analyse_single_shower_root.py -i gamma_10GeV_eta0_100ev_sim_edm4hep.root
 python ci/analyse_single_shower_podio.py -i gamma_10GeV_eta0_100ev_digi_edm4hep.root --digi
 python ci/analyse_pfo_performance.py -i gamma_10GeV_eta0_100ev_reco_edm4hep.root
 ```
