@@ -25,7 +25,7 @@ on:
       odd_ref:
         description: OpenDataDetector ref
         required: false
-        default: main
+        default: addLayeredCalo_MuonCoil
       pandora_ref:
         description: k4GaudiPandora ref
         required: false
@@ -45,9 +45,9 @@ env:
   INSTALL_DIR_NAME: install-ci
   ODD_DIR: ${{ github.workspace }}/OpenDataDetector
   K4GAUDIPANDORA_DIR: ${{ github.workspace }}/k4GaudiPandora
-  ODD_URL: ${{ vars.ODD_URL || 'https://gitlab.cern.ch/acts/OpenDataDetector.git' }}
+  ODD_URL: ${{ vars.ODD_URL || 'https://gitlab.cern.ch/azaborow/OpenDataDetector.git' }}
   K4GAUDIPANDORA_URL: ${{ vars.K4GAUDIPANDORA_URL || 'https://github.com/zaborowska/k4GaudiPandora.git' }}
-  ODD_REF: ${{ inputs.odd_ref || vars.ODD_REF || 'main' }}
+  ODD_REF: ${{ inputs.odd_ref || vars.ODD_REF || 'addLayeredCalo_MuonCoil' }}
   K4GAUDIPANDORA_REF: ${{ inputs.pandora_ref || vars.K4GAUDIPANDORA_REF || 'odd_edits' }}
   SIM_FILE: gamma_10GeV_eta0_100ev_sim_edm4hep.root
   DIGI_FILE: gamma_10GeV_eta0_100ev_digi_edm4hep.root
