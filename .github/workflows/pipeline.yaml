@@ -63,6 +63,8 @@ jobs:
       matrix:
         include:
           - stack: /cvmfs/sw.hsf.org/key4hep/setup.sh
+            os: alma9
+          - stack: /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
             os: ubuntu24
     steps:
       - uses: actions/checkout@v6
@@ -148,6 +150,8 @@ jobs:
       matrix:
         include:
           - stack: /cvmfs/sw.hsf.org/key4hep/setup.sh
+            os: alma9
+          - stack: /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
             os: ubuntu24
     steps:
       - uses: actions/checkout@v6
@@ -217,6 +221,8 @@ jobs:
       matrix:
         include:
           - stack: /cvmfs/sw.hsf.org/key4hep/setup.sh
+            os: alma9
+          - stack: /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
             os: ubuntu24
     steps:
       - uses: actions/checkout@v6
@@ -260,6 +266,8 @@ jobs:
       matrix:
         include:
           - stack: /cvmfs/sw.hsf.org/key4hep/setup.sh
+            os: alma9
+          - stack: /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
             os: ubuntu24
     steps:
       - uses: actions/checkout@v6
@@ -362,6 +370,8 @@ jobs:
       matrix:
         include:
           - stack: /cvmfs/sw.hsf.org/key4hep/setup.sh
+            os: alma9
+          - stack: /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
             os: ubuntu24
     steps:
       - uses: actions/checkout@v6
@@ -430,6 +440,8 @@ jobs:
       matrix:
         include:
           - stack: /cvmfs/sw.hsf.org/key4hep/setup.sh
+            os: alma9
+          - stack: /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
             os: ubuntu24
     steps:
       - uses: actions/checkout@v6
@@ -474,6 +486,8 @@ jobs:
       matrix:
         include:
           - stack: /cvmfs/sw.hsf.org/key4hep/setup.sh
+            os: alma9
+          - stack: /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
             os: ubuntu24
     steps:
       - uses: actions/checkout@v6
@@ -576,6 +590,8 @@ jobs:
       matrix:
         include:
           - stack: /cvmfs/sw.hsf.org/key4hep/setup.sh
+            os: alma9
+          - stack: /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
             os: ubuntu24
     steps:
       - uses: actions/checkout@v6
@@ -631,6 +647,8 @@ jobs:
       matrix:
         include:
           - stack: /cvmfs/sw.hsf.org/key4hep/setup.sh
+            os: alma9
+          - stack: /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
             os: ubuntu24
     steps:
       - uses: actions/checkout@v6
@@ -674,6 +692,8 @@ jobs:
       matrix:
         include:
           - stack: /cvmfs/sw.hsf.org/key4hep/setup.sh
+            os: alma9
+          - stack: /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
             os: ubuntu24
     steps:
       - uses: actions/checkout@v6
