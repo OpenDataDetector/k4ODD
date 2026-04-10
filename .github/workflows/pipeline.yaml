@@ -250,7 +250,12 @@ jobs:
             cd /Package
             export KEY4HEP_SETUP="${{ matrix.stack }}"
             source "${KEY4HEP_SETUP}"
-            python ci/check_validation_results.py -i simVal_results.root -p simulation
+            if [ "${{ matrix.os }}" = "alma9" ]; then
+              ref="ci/reference/release-alma9/simVal_results.root"
+            else
+              ref="ci/reference/nightly-ubuntu24/simVal_results.root"
+            fi
+            python ci/check_validation_results.py -i simVal_results.root -p simulation --reference "${ref}"
           '
 
       - name: Stop container
@@ -469,7 +474,12 @@ jobs:
             cd /Package
             export KEY4HEP_SETUP="${{ matrix.stack }}"
             source "${KEY4HEP_SETUP}"
-            python ci/check_validation_results.py -i digiVal_results.root -p digitisation
+            if [ "${{ matrix.os }}" = "alma9" ]; then
+              ref="ci/reference/release-alma9/digiVal_results.root"
+            else
+              ref="ci/reference/nightly-ubuntu24/digiVal_results.root"
+            fi
+            python ci/check_validation_results.py -i digiVal_results.root -p digitisation --reference "${ref}"
           '
 
       - name: Stop container
