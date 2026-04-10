@@ -108,7 +108,7 @@ cd "$repo_root"
 k4_local_repo "$(basename "$repo_install_dir")" >/dev/null
 cd "$setup_pwd"
 
-export K4ODD_PANDORA_SETTINGS="${K4ODD_PANDORA_SETTINGS:-$repo_root/k4ODD/options/PandoraSettingsSanity.xml}"
+export K4ODD_PANDORA_SETTINGS="${K4ODD_PANDORA_SETTINGS:-$repo_root/k4ODD/options/PandoraSettingsMinimal.xml}"
 
 if [[ "$had_nounset" -eq 1 ]]; then
   set -u

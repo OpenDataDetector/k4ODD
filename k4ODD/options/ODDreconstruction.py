@@ -196,7 +196,7 @@ tracks = CreateEmptyTracks("CreateEmptyTracks")
 options_dir = os.path.dirname(os.path.abspath(__file__))
 pandora_settings = os.environ.get(
     "K4ODD_PANDORA_SETTINGS",
-    os.path.join(options_dir, "PandoraSettingsSanity.xml"),
+    os.path.join(options_dir, "PandoraSettingsMinimal.xml"),
 )
 
 params = {
