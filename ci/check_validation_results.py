@@ -18,6 +18,7 @@
 import argparse
 import json
 import math
+import os
 import sys
 
 import ROOT
@@ -32,63 +33,151 @@ def load_profile(spec_path, profile_name):
         raise SystemExit(f"Unknown validation profile: {profile_name}") from exc
 
 
-def read_results(input_path, tree_name):
-    root_file = ROOT.TFile.Open(input_path)
+def open_root_file(path):
+    root_file = ROOT.TFile.Open(path)
     if not root_file or root_file.IsZombie():
-        raise SystemExit(f"Failed to open ROOT file: {input_path}")
+        raise SystemExit(f"Failed to open ROOT file: {path}")
+    return root_file
 
+
+def read_results(root_file, tree_name):
     tree = root_file.Get(tree_name)
     if not tree:
-        raise SystemExit(f"Tree '{tree_name}' not found in {input_path}")
+        raise SystemExit(f"Tree '{tree_name}' not found in {root_file.GetName()}")
     if tree.GetEntries() < 1:
-        raise SystemExit(f"Tree '{tree_name}' is empty in {input_path}")
+        raise SystemExit(f"Tree '{tree_name}' is empty in {root_file.GetName()}")
 
     tree.GetEntry(0)
     values = {}
     for branch in tree.GetListOfBranches():
         branch_name = branch.GetName()
         values[branch_name] = float(getattr(tree, branch_name))
-    root_file.Close()
     return values
 
 
-def check_values(values, checks):
+def read_histogram(root_file, hist_name):
+    hist = root_file.Get(hist_name)
+    if not hist:
+        raise SystemExit(f"Histogram '{hist_name}' not found in {root_file.GetName()}")
+    return hist
+
+
+def describe_limit(limits):
+    parts = []
+    if "abs" in limits:
+        parts.append(f"abs<={limits['abs']:.6g}")
+    if "rel" in limits:
+        parts.append(f"rel<={limits['rel']:.6g}")
+    return ", ".join(parts) if parts else "exact"
+
+
+def allowed_delta(expected, limits):
+    absolute = float(limits.get("abs", 0.0))
+    relative = float(limits.get("rel", 0.0)) * abs(expected)
+    return max(absolute, relative)
+
+
+def check_summary_values(values, reference_values, checks):
     failures = []
     for key, limits in checks.items():
         if key not in values:
-            failures.append(f"Missing result '{key}'")
+            failures.append(f"summary {key}: missing from candidate file")
             continue
+        if key not in reference_values:
+            failures.append(f"summary {key}: missing from reference file")
+            continue
+
         value = values[key]
+        expected = reference_values[key]
         if math.isnan(value):
-            failures.append(f"{key} is NaN")
+            failures.append(f"summary {key}: observed NaN")
             continue
-        minimum = limits.get("min")
-        maximum = limits.get("max")
-        if minimum is not None and value < minimum:
-            failures.append(f"{key}={value:.6g} is below {minimum:.6g}")
-        if maximum is not None and value > maximum:
-            failures.append(f"{key}={value:.6g} is above {maximum:.6g}")
+
+        delta = abs(value - expected)
+        limit = allowed_delta(expected, limits)
+        if delta > limit:
+            failures.append(
+                f"summary {key}: observed {value:.6g}, expected {expected:.6g}, |delta|={delta:.6g} > {describe_limit(limits)}"
+            )
+    return failures
+
+
+def check_histograms(candidate_file, reference_file, checks):
+    failures = []
+    max_failures = 20
+
+    for hist_name, limits in checks.items():
+        candidate_hist = read_histogram(candidate_file, hist_name)
+        reference_hist = read_histogram(reference_file, hist_name)
+
+        if candidate_hist.GetNbinsX() != reference_hist.GetNbinsX():
+            failures.append(
+                f"histogram {hist_name}: candidate has {candidate_hist.GetNbinsX()} bins, reference has {reference_hist.GetNbinsX()}"
+            )
+            continue
+
+        first_bin = 0 if limits.get("include_overflow", False) else 1
+        last_bin = candidate_hist.GetNbinsX() + 1 if limits.get("include_overflow", False) else candidate_hist.GetNbinsX()
+        bin_limit = float(limits.get("bin_abs", 0.0))
+
+        for bin_idx in range(first_bin, last_bin + 1):
+            observed = candidate_hist.GetBinContent(bin_idx)
+            expected = reference_hist.GetBinContent(bin_idx)
+            delta = abs(observed - expected)
+            if delta > bin_limit:
+                failures.append(
+                    f"histogram {hist_name} bin {bin_idx}: observed {observed:.6g}, expected {expected:.6g}, |delta|={delta:.6g} > abs<={bin_limit:.6g}"
+                )
+                if len(failures) >= max_failures:
+                    failures.append("additional histogram failures suppressed")
+                    return failures
+
     return failures
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Check validation summary values against expected ranges")
+    parser = argparse.ArgumentParser(description="Check validation outputs against reference ROOT files")
     parser.add_argument("--input", "-i", required=True, help="Validation ROOT file")
     parser.add_argument("--profile", "-p", required=True, help="Profile name in the JSON spec")
     parser.add_argument(
         "--spec",
         default="ci/validation_ranges.json",
-        help="JSON file containing expected ranges",
+        help="JSON file containing reference paths and tolerances",
+    )
+    parser.add_argument(
+        "--reference",
+        help="Override reference ROOT file path from the profile",
     )
     args = parser.parse_args()
 
     profile = load_profile(args.spec, args.profile)
-    values = read_results(args.input, profile.get("tree", "results"))
-    failures = check_values(values, profile["checks"])
+    reference_path = args.reference or profile.get("reference")
+    if not reference_path:
+        raise SystemExit(f"Profile '{args.profile}' does not define a reference ROOT file")
+    if not os.path.isabs(reference_path):
+        reference_path = os.path.join(os.getcwd(), reference_path)
+
+    candidate_file = open_root_file(args.input)
+    reference_file = open_root_file(reference_path)
+
+    tree_name = profile.get("tree", "results")
+    values = read_results(candidate_file, tree_name)
+    reference_values = read_results(reference_file, tree_name)
+
+    failures = []
+    failures.extend(check_summary_values(values, reference_values, profile.get("summary_checks", {})))
+    failures.extend(check_histograms(candidate_file, reference_file, profile.get("histogram_checks", {})))
 
     print(f"Validation profile: {args.profile}")
+    print(f"Reference file: {reference_path}")
     for key in sorted(values):
-        print(f"  {key}: {values[key]:.6g}")
+        if key in reference_values:
+            print(f"  {key}: observed={values[key]:.6g} expected={reference_values[key]:.6g}")
+        else:
+            print(f"  {key}: observed={values[key]:.6g}")
+
+    candidate_file.Close()
+    reference_file.Close()
 
     if failures:
         print("Validation failed:")

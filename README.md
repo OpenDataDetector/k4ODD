@@ -76,10 +76,17 @@ REBUILD_STACK=1 PANDORA_SANITY_FORCE_SIM=1 bash ./ci/run_pandora_sanity.sh
 ## Validation
 ```bash
 python $OpenDataDetector/ci/analyse_single_shower.py -i gamma_10GeV_eta0_100ev_sim_edm4hep.root
-python $OpenDataDetector/ci/analyse_single_shower.py -i gamma_10GeV_eta0_100ev_digi_edm4hep.root --digi
+python ci/analyse_single_shower_podio.py -i gamma_10GeV_eta0_100ev_digi_edm4hep.root --digi
 python ci/analyse_pfo_performance.py -i gamma_10GeV_eta0_100ev_reco_edm4hep.root
 ```
 
-Please note that the collections are rewritten so both analyses can be performed on the same (second) file.
+In CI the validation jobs save the ROOT summaries and preview PDFs as artifacts.
 
-In CI the validation jobs save the ROOT summaries and preview PDFs as artifacts. Separate regression jobs then check the stored summary values against the configured numerical ranges.
+Fast regression checks compare:
+
+* selected summary values from the `results` tree
+* selected histogram bin contents
+
+against committed reference ROOT files under `ci/reference/`.
+
+The low-stat push and PR jobs do not use `resolution` as a gate. `resolution` is checked only in the manual higher-stat workflow-dispatch path, which runs a 1000-event simulation and digitisation chain.

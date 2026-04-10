@@ -1,64 +1,121 @@
 {
   "simulation": {
     "tree": "results",
-    "checks": {
-      "en_mean": {
-        "min": 0.2,
-        "max": 0.35
-      },
-      "en_resolution": {
-        "min": 0.02,
-        "max": 0.15
-      },
+    "reference": "ci/reference/simVal_results.root",
+    "summary_checks": {
       "enMC": {
-        "min": 9.5,
-        "max": 10.5
+        "abs": 1e-09
+      },
+      "en_mean": {
+        "abs": 0.01
+      }
+    },
+    "histogram_checks": {
+      "energy_cal": {
+        "bin_abs": 0.0
+      },
+      "energy_MC0": {
+        "bin_abs": 0.0
+      },
+      "energy_ratio": {
+        "bin_abs": 0.0
       }
     }
   },
   "digitisation": {
     "tree": "results",
-    "checks": {
-      "en_mean": {
-        "min": 9.0,
-        "max": 10.8
-      },
-      "en_resolution": {
-        "min": 0.02,
-        "max": 0.15
-      },
+    "reference": "ci/reference/digiVal_results.root",
+    "summary_checks": {
       "enMC": {
-        "min": 9.5,
-        "max": 10.5
+        "abs": 1e-09
+      },
+      "en_mean": {
+        "abs": 0.25
+      }
+    },
+    "histogram_checks": {
+      "energy_cal": {
+        "bin_abs": 0.0
+      },
+      "energy_MC0": {
+        "bin_abs": 0.0
+      },
+      "energy_ratio": {
+        "bin_abs": 0.0
       }
     }
   },
   "pandora": {
     "tree": "results",
-    "checks": {
+    "reference": "ci/reference/pandoraVal_results.root",
+    "summary_checks": {
       "mean_n_pfo": {
-        "min": 0.8,
-        "max": 1.5
+        "abs": 0.2
       },
       "mean_sum_energy": {
-        "min": 9.0,
-        "max": 10.8
+        "abs": 0.3
       },
       "mean_sum_ratio": {
-        "min": 0.9,
-        "max": 1.08
+        "abs": 0.03
       },
       "mean_lead_ratio": {
-        "min": 0.8,
-        "max": 1.05
+        "abs": 0.05
       },
       "mean_n_charged": {
-        "min": 0.0,
-        "max": 0.1
+        "abs": 0.05
       },
       "mean_n_neutral": {
-        "min": 0.8,
-        "max": 1.5
+        "abs": 0.2
+      }
+    },
+    "histogram_checks": {
+      "nPfo": {
+        "bin_abs": 0.0
+      },
+      "sumPfoEnergy": {
+        "bin_abs": 0.0
+      },
+      "sumPfoRatio": {
+        "bin_abs": 0.0
+      },
+      "leadPfoRatio": {
+        "bin_abs": 0.0
+      },
+      "nChargedPfo": {
+        "bin_abs": 0.0
+      },
+      "nNeutralPfo": {
+        "bin_abs": 0.0
+      }
+    }
+  },
+  "simulation_highstat": {
+    "tree": "results",
+    "reference": "ci/reference/simVal_highstat_results.root",
+    "summary_checks": {
+      "enMC": {
+        "abs": 1e-09
+      },
+      "en_mean": {
+        "abs": 0.003
+      },
+      "en_resolution": {
+        "abs": 0.01
+      }
+    }
+  },
+  "digitisation_highstat": {
+    "tree": "results",
+    "reference": "ci/reference/digiVal_highstat_results.root",
+    "summary_checks": {
+      "enMC": {
+        "abs": 1e-09
+      },
+      "en_mean": {
+        "abs": 0.15
+      },
+      "en_resolution": {
+        "abs": 0.02
       }
     }
   }

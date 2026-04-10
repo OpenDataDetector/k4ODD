@@ -30,6 +30,11 @@ on:
         description: k4GaudiPandora ref
         required: false
         default: odd_edits
+      run_high_stat_resolution:
+        description: Run manual 1000-event simulation and digitisation resolution validation
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -47,6 +52,8 @@ env:
   SIM_FILE: gamma_10GeV_eta0_100ev_sim_edm4hep.root
   DIGI_FILE: gamma_10GeV_eta0_100ev_digi_edm4hep.root
   RECO_FILE: gamma_10GeV_eta0_100ev_reco_edm4hep.root
+  HIGHSTAT_SIM_FILE: gamma_10GeV_eta0_1000ev_sim_edm4hep.root
+  HIGHSTAT_DIGI_FILE: gamma_10GeV_eta0_1000ev_digi_edm4hep.root
 
 jobs:
   simulation:
@@ -653,6 +660,110 @@ jobs:
             source "${KEY4HEP_SETUP}"
             python ci/check_validation_results.py -i pandoraVal_results.root -p pandora
           '
+
+      - name: Stop container
+        if: always()
+        run: |
+          docker rm -f k4odd-ci
+
+  high-stat-resolution-validation:
+    if: github.event_name == 'workflow_dispatch' && inputs.run_high_stat_resolution
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - stack: /cvmfs/sw.hsf.org/key4hep/setup.sh
+            os: ubuntu24
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Clone OpenDataDetector
+        env:
+          CLONE_TOKEN: ${{ secrets.CI_CLONE_TOKEN }}
+        run: |
+          if [ -n "${CLONE_TOKEN:-}" ]; then
+            odd_url="${ODD_URL/https:\/\//https:\/\/oauth2:${CLONE_TOKEN}@}"
+          else
+            odd_url="$ODD_URL"
+          fi
+          git clone --depth 1 --branch "$ODD_REF" "$odd_url" "$ODD_DIR"
+
+      - name: Clone k4GaudiPandora
+        env:
+          CLONE_TOKEN: ${{ secrets.CI_CLONE_TOKEN }}
+        run: |
+          if [ -n "${CLONE_TOKEN:-}" ]; then
+            pandora_url="${K4GAUDIPANDORA_URL/https:\/\//https:\/\/oauth2:${CLONE_TOKEN}@}"
+          else
+            pandora_url="$K4GAUDIPANDORA_URL"
+          fi
+          git clone --depth 1 --branch "$K4GAUDIPANDORA_REF" "$pandora_url" "$K4GAUDIPANDORA_DIR"
+
+      - uses: key4hep/key4hep-actions/cache-external-data@main
+
+      - name: Start container
+        run: |
+          docker run --name k4odd-ci \
+                     --privileged \
+                     -v "${GITHUB_WORKSPACE}:/Package" \
+                     -d "ghcr.io/key4hep/key4hep-images/${{ matrix.os }}-cvmfs" \
+                     tail -f /dev/null
+
+      - name: Mount CVMFS
+        run: |
+          docker exec k4odd-ci /bin/bash -c '/mount.sh'
+
+      - name: Rebuild local stack
+        run: |
+          docker exec k4odd-ci /bin/bash -lc '
+            cd /Package
+            export KEY4HEP_SETUP="${{ matrix.stack }}"
+            export BUILD_DIR_NAME="${{ env.BUILD_DIR_NAME }}"
+            export INSTALL_DIR_NAME="${{ env.INSTALL_DIR_NAME }}"
+            export ODD_DIR="/Package/OpenDataDetector"
+            export K4GAUDIPANDORA_DIR="/Package/k4GaudiPandora"
+            bash ./ci/rebuild_local_stack.sh
+          '
+
+      - name: Run high-stat simulation and digitisation
+        run: |
+          docker exec k4odd-ci /bin/bash -lc '
+            cd /Package
+            export KEY4HEP_SETUP="${{ matrix.stack }}"
+            export ODD_DIR="/Package/OpenDataDetector"
+            export K4GAUDIPANDORA_DIR="/Package/k4GaudiPandora"
+            export HIGHSTAT_SIM_FILE="${{ env.HIGHSTAT_SIM_FILE }}"
+            export HIGHSTAT_DIGI_FILE="${{ env.HIGHSTAT_DIGI_FILE }}"
+            bash -lc "source ./setup.sh && ddsim --steeringFile k4ODD/options/ODDsimulation.py --enableGun --gun.distribution uniform --gun.etaMin 0 --gun.etaMax 0 --gun.energy \"10*GeV\" --gun.particle gamma --numberOfEvents 1000 --outputFile \"${HIGHSTAT_SIM_FILE}\" --random.seed 123"
+            bash -lc "source ./setup.sh && k4run k4ODD/options/ODDdigitisation.py --inputFile \"${HIGHSTAT_SIM_FILE}\" --outputFile \"${HIGHSTAT_DIGI_FILE}\""
+          '
+
+      - name: Validate high-stat simulation and digitisation
+        run: |
+          docker exec k4odd-ci /bin/bash -lc '
+            cd /Package
+            export KEY4HEP_SETUP="${{ matrix.stack }}"
+            export HIGHSTAT_SIM_FILE="${{ env.HIGHSTAT_SIM_FILE }}"
+            export HIGHSTAT_DIGI_FILE="${{ env.HIGHSTAT_DIGI_FILE }}"
+            source "${KEY4HEP_SETUP}"
+            python OpenDataDetector/ci/analyse_single_shower.py -i "${HIGHSTAT_SIM_FILE}" -o simVal_highstat_results.root
+            python -u ci/analyse_single_shower_podio.py -i "${HIGHSTAT_DIGI_FILE}" --digi -o digiVal_highstat_results.root
+            python ci/check_validation_results.py -i simVal_highstat_results.root -p simulation_highstat
+            python ci/check_validation_results.py -i digiVal_highstat_results.root -p digitisation_highstat
+          '
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: high-stat-validation-${{ matrix.os }}-release
+          path: |
+            ${{ github.workspace }}/simVal_highstat_results.root
+            ${{ github.workspace }}/digiVal_highstat_results.root
+            ${{ github.workspace }}/preview_energyFit_gamma_10GeV_eta0_1000ev_*.pdf
+          retention-days: 7
+          overwrite: true
+          if-no-files-found: ignore
 
       - name: Stop container
         if: always()
