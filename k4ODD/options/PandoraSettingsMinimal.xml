@@ -28,7 +28,7 @@
     <!-- PLUGIN REGISTRATION -->
     <!-- <HadronicEnergyCorrectionPlugins>SoftwareCompensation</HadronicEnergyCorrectionPlugins> -->
     <!-- <EmShowerPlugin>LCEmShowerId</EmShowerPlugin> -->
-    <!-- <PhotonPlugin>LCPhotonId</PhotonPlugin> -->
+    <PhotonPlugin>LCPhotonId</PhotonPlugin>
     <!-- <ElectronPlugin>LCElectronId</ElectronPlugin> -->
     <!-- <MuonPlugin>LCMuonId</MuonPlugin> -->
 
@@ -86,9 +86,7 @@
     <!--     <ReplaceCurrentPfoList>false</ReplaceCurrentPfoList> -->
     <!-- </algorithm> -->
 
-    <!-- Standalone photon clustering.
-         Disabled in the CI smoke-test configuration until the photon PDF histogram xml
-         used by PhotonReconstruction is restored. -->
+    <!-- Standalone photon clustering. Enabled by ODDreconstruction.py only when requested. -->
     <!-- <algorithm type = "PhotonReconstruction"> -->
     <!--     <algorithm type = "ConeClustering" description = "PhotonClusterFormation"> -->
     <!--         <ClusterSeedStrategy>0</ClusterSeedStrategy> -->
@@ -99,46 +97,52 @@
     <!--     <ClusterListName>PhotonClusters</ClusterListName> -->
     <!--     <ReplaceCurrentClusterList>false</ReplaceCurrentClusterList> -->
     <!--     <ShouldMakePdfHistograms>false</ShouldMakePdfHistograms> -->
+    <!--     <ShouldDrawPdfHistograms>false</ShouldDrawPdfHistograms> -->
+    <!--     <HistogramFile>PandoraLikelihoodData9EBin.xml</HistogramFile> -->
+    <!--     <EnergyBinLowerEdges>0 0.2 0.5 1 1.5 2.5 5 10 20</EnergyBinLowerEdges> -->
+    <!--     <NEnergyBins>9</NEnergyBins> -->
     <!-- </algorithm> -->
 
-    <!-- <!-\- Clustering parent algorithm runs a daughter clustering algorithm -\-> -->
-    <!-- <algorithm type = "ClusteringParent"> -->
-    <!--     <algorithm type = "ConeClustering" description = "ClusterFormation"/> -->
-    <!--     <algorithm type = "TopologicalAssociationParent" description = "ClusterAssociation"> -->
-    <!--         <associationAlgorithms> -->
-    <!--             <algorithm type = "LoopingTracks"/> -->
-    <!--             <algorithm type = "BrokenTracks"/> -->
-    <!--             <algorithm type = "ShowerMipMerging"/> -->
-    <!--             <algorithm type = "ShowerMipMerging2"/> -->
-    <!--             <algorithm type = "BackscatteredTracks"/> -->
-    <!--             <algorithm type = "BackscatteredTracks2"/> -->
-    <!--             <algorithm type = "ShowerMipMerging3"/> -->
-    <!--             <algorithm type = "ShowerMipMerging4"/> -->
-    <!--             <algorithm type = "ProximityBasedMerging"> -->
-    <!--                 <algorithm type = "TrackClusterAssociation"/> -->
-    <!--             </algorithm> -->
-    <!--             <algorithm type = "ConeBasedMerging"> -->
-    <!--                 <algorithm type = "TrackClusterAssociation"/> -->
-    <!--             </algorithm> -->
-    <!--             <algorithm type = "MipPhotonSeparation"> -->
-    <!--                 <algorithm type = "TrackClusterAssociation"/> -->
-    <!--             </algorithm> -->
-    <!--             <algorithm type = "HighEnergyPhotonRecovery"> -->
-    <!--                 <algorithm type = "TrackClusterAssociation"/> -->
-    <!--                 <AdditionalClusterListNames>PhotonClusters</AdditionalClusterListNames> -->
-    <!--             </algorithm> -->
-    <!--             <algorithm type = "SoftClusterMerging"> -->
-    <!--                 <algorithm type = "TrackClusterAssociation"/> -->
-    <!--                 <AdditionalClusterListNames>PhotonClusters</AdditionalClusterListNames> -->
-    <!--             </algorithm> -->
-    <!--             <algorithm type = "IsolatedHitMerging"> -->
-    <!--                 <AdditionalClusterListNames>PhotonClusters</AdditionalClusterListNames> -->
-    <!--             </algorithm> -->
-    <!--         </associationAlgorithms> -->
-    <!--     </algorithm> -->
-    <!--     <ClusterListName>PrimaryClusters</ClusterListName> -->
-    <!--     <ReplaceCurrentClusterList>true</ReplaceCurrentClusterList> -->
-    <!-- </algorithm> -->
+    <!-- Clustering parent algorithm runs a daughter clustering algorithm -->
+    <algorithm type = "ClusteringParent">
+        <algorithm type = "ConeClustering" description = "ClusterFormation">
+            <ShouldUseTrackSeed>false</ShouldUseTrackSeed>
+        </algorithm>
+        <!-- <algorithm type = "TopologicalAssociationParent" description = "ClusterAssociation"> -->
+        <!--     <associationAlgorithms> -->
+        <!--         <algorithm type = "LoopingTracks"/> -->
+        <!--         <algorithm type = "BrokenTracks"/> -->
+        <!--         <algorithm type = "ShowerMipMerging"/> -->
+        <!--         <algorithm type = "ShowerMipMerging2"/> -->
+        <!--         <algorithm type = "BackscatteredTracks"/> -->
+        <!--         <algorithm type = "BackscatteredTracks2"/> -->
+        <!--         <algorithm type = "ShowerMipMerging3"/> -->
+        <!--         <algorithm type = "ShowerMipMerging4"/> -->
+        <!--         <algorithm type = "ProximityBasedMerging"> -->
+        <!--             <algorithm type = "TrackClusterAssociation"/> -->
+        <!--         </algorithm> -->
+        <!--         <algorithm type = "ConeBasedMerging"> -->
+        <!--             <algorithm type = "TrackClusterAssociation"/> -->
+        <!--         </algorithm> -->
+        <!--         <algorithm type = "MipPhotonSeparation"> -->
+        <!--             <algorithm type = "TrackClusterAssociation"/> -->
+        <!--         </algorithm> -->
+        <!--         <algorithm type = "HighEnergyPhotonRecovery"> -->
+        <!--             <algorithm type = "TrackClusterAssociation"/> -->
+        <!--             <AdditionalClusterListNames>PhotonClusters</AdditionalClusterListNames> -->
+        <!--         </algorithm> -->
+        <!--         <algorithm type = "SoftClusterMerging"> -->
+        <!--             <algorithm type = "TrackClusterAssociation"/> -->
+        <!--             <AdditionalClusterListNames>PhotonClusters</AdditionalClusterListNames> -->
+        <!--         </algorithm> -->
+        <!--         <algorithm type = "IsolatedHitMerging"> -->
+        <!--             <AdditionalClusterListNames>PhotonClusters</AdditionalClusterListNames> -->
+        <!--         </algorithm> -->
+        <!--     </associationAlgorithms> -->
+        <!-- </algorithm> -->
+        <ClusterListName>PrimaryClusters</ClusterListName>
+        <ReplaceCurrentClusterList>true</ReplaceCurrentClusterList>
+    </algorithm>
 
     <!-- <!-\- Reclustering algorithms run multiple clustering algorithms -\-> -->
     <!-- <algorithm type = "SplitTrackAssociations" instance = "SplitTrackAssociations1"> -->
@@ -452,7 +456,7 @@
     <!-- <algorithm type = "PhotonFragmentRemoval"/> -->
 
     <algorithm type = "ClusterPreparation">
-        <CandidateListNames>PhotonClusters</CandidateListNames>
+        <CandidateListNames>PrimaryClusters PhotonClusters</CandidateListNames>
         <MergedCandidateListName>PfoCreation</MergedCandidateListName>
     </algorithm>
 
