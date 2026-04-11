@@ -28,11 +28,22 @@ from Configurables import UniqueIDGenSvc
 from Configurables import RootHistSvc
 from Configurables import Gaudi__Histograming__Sink__Root as RootHistoSink
 import os
+import re
+import tempfile
 
 from k4FWCore.parseArgs import parser
 parser_group = parser.add_argument_group("ODDreconstruction.py custom options")
 parser_group.add_argument("--inputFile", default="ODD_sim_edm4hep.root", help="Input file")
 parser_group.add_argument("--outputFile", help="Output file", default="ODD_calo_digi.root")
+parser_group.add_argument(
+    "--pandoraPhotonTraining",
+    action="store_true",
+    help="Enable PhotonReconstruction PDF training mode.",
+)
+parser_group.add_argument(
+    "--pandoraPhotonHistogramFile",
+    help="Override the PhotonReconstruction histogram xml file.",
+)
 digi_args = parser.parse_known_args()[0]
 
 iosvc = IOSvc()
@@ -197,6 +208,81 @@ options_dir = os.path.dirname(os.path.abspath(__file__))
 pandora_settings = os.environ.get(
     "K4ODD_PANDORA_SETTINGS",
     os.path.join(options_dir, "PandoraSettingsMinimal.xml"),
+)
+
+
+def resolve_pandora_settings_xml(pandora_settings_file, photon_training, photon_histogram_file):
+    if photon_training and os.path.basename(pandora_settings_file) == "PandoraSettingsMinimal.xml":
+        pandora_settings_file = os.path.join(options_dir, "PandoraSettingsPhotonTraining.xml")
+
+    with open(pandora_settings_file, encoding="utf-8") as handle:
+        xml_text = handle.read()
+
+    photon_block = """    <!-- <algorithm type = "PhotonReconstruction"> -->
+    <!--     <algorithm type = "ConeClustering" description = "PhotonClusterFormation"> -->
+    <!--         <ClusterSeedStrategy>0</ClusterSeedStrategy> -->
+    <!--         <ShouldUseTrackSeed>false</ShouldUseTrackSeed> -->
+    <!--         <ShouldUseOnlyECalHits>true</ShouldUseOnlyECalHits> -->
+    <!--         <ConeApproachMaxSeparation>250.</ConeApproachMaxSeparation> -->
+    <!--     </algorithm> -->
+    <!--     <ClusterListName>PhotonClusters</ClusterListName> -->
+    <!--     <ReplaceCurrentClusterList>false</ReplaceCurrentClusterList> -->
+    <!--     <ShouldMakePdfHistograms>false</ShouldMakePdfHistograms> -->
+    <!--     <ShouldDrawPdfHistograms>false</ShouldDrawPdfHistograms> -->
+    <!--     <HistogramFile>PandoraLikelihoodData9EBin.xml</HistogramFile> -->
+    <!--     <EnergyBinLowerEdges>0 0.2 0.5 1 1.5 2.5 5 10 20</EnergyBinLowerEdges> -->
+    <!--     <NEnergyBins>9</NEnergyBins> -->
+    <!-- </algorithm> -->"""
+    photon_block_enabled = """    <algorithm type = "PhotonReconstruction">
+        <algorithm type = "ConeClustering" description = "PhotonClusterFormation">
+            <ClusterSeedStrategy>0</ClusterSeedStrategy>
+            <ShouldUseTrackSeed>false</ShouldUseTrackSeed>
+            <ShouldUseOnlyECalHits>true</ShouldUseOnlyECalHits>
+            <ConeApproachMaxSeparation>250.</ConeApproachMaxSeparation>
+        </algorithm>
+        <ClusterListName>PhotonClusters</ClusterListName>
+        <ReplaceCurrentClusterList>false</ReplaceCurrentClusterList>
+        <ShouldMakePdfHistograms>false</ShouldMakePdfHistograms>
+        <ShouldDrawPdfHistograms>false</ShouldDrawPdfHistograms>
+        <HistogramFile>PandoraLikelihoodData9EBin.xml</HistogramFile>
+        <EnergyBinLowerEdges>0 0.2 0.5 1 1.5 2.5 5 10 20</EnergyBinLowerEdges>
+        <NEnergyBins>9</NEnergyBins>
+    </algorithm>"""
+
+    if photon_block in xml_text:
+        xml_text = xml_text.replace(photon_block, photon_block_enabled)
+
+    if "<algorithm type = \"PhotonReconstruction\">" not in xml_text:
+        raise RuntimeError(
+            f"Photon Pandora options requested, but {pandora_settings_file} has no PhotonReconstruction block."
+        )
+
+    xml_text = re.sub(
+        r"<ShouldMakePdfHistograms>.*?</ShouldMakePdfHistograms>",
+        f"<ShouldMakePdfHistograms>{'true' if photon_training else 'false'}</ShouldMakePdfHistograms>",
+        xml_text,
+        count=1,
+        flags=re.DOTALL,
+    )
+
+    if photon_histogram_file:
+        xml_text = re.sub(
+            r"<HistogramFile>.*?</HistogramFile>",
+            f"<HistogramFile>{photon_histogram_file}</HistogramFile>",
+            xml_text,
+            count=1,
+            flags=re.DOTALL,
+        )
+
+    with tempfile.NamedTemporaryFile(prefix="k4odd_pandora_", suffix=".xml", delete=False) as handle:
+        handle.write(xml_text.encode("utf-8"))
+        return handle.name
+
+
+pandora_settings = resolve_pandora_settings_xml(
+    pandora_settings,
+    digi_args.pandoraPhotonTraining,
+    digi_args.pandoraPhotonHistogramFile,
 )
 
 params = {
