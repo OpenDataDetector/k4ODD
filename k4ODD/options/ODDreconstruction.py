@@ -342,7 +342,7 @@ params = {
     "MaxHCalHitHadronicEnergy": "10000000.",
 }
 
-pandora = DDPandoraPFANewAlgorithm("PandoraPFANewProcessor", **params, OutputLevel=VERBOSE)
+pandora = DDPandoraPFANewAlgorithm("PandoraPFANewProcessor", **params, OutputLevel=INFO)
 
 hps = RootHistSvc("HistogramPersistencySvc")
 root_hist_svc = RootHistoSink("RootHistoSink")
