@@ -1,3 +1,4 @@
+#
 # Copyright (c) 2020-2024 Key4hep-Project.
 #
 # This file is part of Key4hep.
@@ -14,6 +15,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
 import argparse
 import numpy
