@@ -56,7 +56,35 @@ def run(inputlist, outname, ncpu, collection_name):
         return run_podio(inputlist, outname, collection_name)
 
 
-def write_output(outname, inputlist, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, h_charged, h_neutral):
+def collect_pid_spectrum(inputlist, collection_name):
+    pid_counts = {}
+
+    for filename in inputlist:
+        reader = root_io.Reader(filename)
+        for event in reader.get("events"):
+            for pfo in event.get(collection_name):
+                pdg = int(pfo.getPDG())
+                pid_counts[pdg] = pid_counts.get(pdg, 0) + 1
+
+    return dict(sorted(pid_counts.items(), key=lambda item: (-item[1], item[0])))
+
+
+def write_pid_tree(outfile, pid_counts):
+    pid_value = numpy.zeros(1, dtype=numpy.int32)
+    pid_count = numpy.zeros(1, dtype=numpy.int32)
+    tree = ROOT.TTree("pid_spectrum", "Reconstructed PFO PDG spectrum")
+    tree.Branch("pdg", pid_value, "pdg/I")
+    tree.Branch("count", pid_count, "count/I")
+
+    for pdg, count in pid_counts.items():
+        pid_value[0] = pdg
+        pid_count[0] = count
+        tree.Fill()
+
+    tree.Write()
+
+
+def write_output(outname, inputlist, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, h_charged, h_neutral, pid_counts):
     outfile = ROOT.TFile(outname, "RECREATE")
     outfile.cd()
     h_n_pfo.Write()
@@ -87,6 +115,7 @@ def write_output(outname, inputlist, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, 
     store_mean_neutral[0] = h_neutral.GetMean()
     tree.Fill()
     tree.Write()
+    write_pid_tree(outfile, pid_counts)
     outfile.Close()
 
     canv = ROOT.TCanvas()
@@ -95,14 +124,17 @@ def write_output(outname, inputlist, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, 
     canv.SaveAs(f"preview_pfoEnergyFit_{inputlist[0].split('/')[-1:][0][:-5]}.pdf")
 
 
-def finish_analysis(inputlist, outname, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, h_charged, h_neutral):
+def finish_analysis(inputlist, outname, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, h_charged, h_neutral, pid_counts):
     print(f"PFO multiplicity: <N>= {h_n_pfo.GetMean()}\t RMS= {h_n_pfo.GetRMS()}")
     print(f"Summed PFO energy: <E>= {h_sum.GetMean()}\t RMS= {h_sum.GetRMS()}")
     print(f"Summed PFO response: <E_PFO/E_MC>= {h_sum_ratio.GetMean()}\t RMS= {h_sum_ratio.GetRMS()}")
     print(f"Leading PFO response: <E_lead/E_MC>= {h_lead_ratio.GetMean()}\t RMS= {h_lead_ratio.GetRMS()}")
     print(f"Charged PFO multiplicity: <N>= {h_charged.GetMean()}")
     print(f"Neutral PFO multiplicity: <N>= {h_neutral.GetMean()}")
-    write_output(outname, inputlist, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, h_charged, h_neutral)
+    print("Reco PFO PID spectrum (PDG: count):")
+    for pdg, count in pid_counts.items():
+        print(f"  {pdg}: {count}")
+    write_output(outname, inputlist, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, h_charged, h_neutral, pid_counts)
 
 
 def run_rdf(df, inputlist, outname, collection_name):
@@ -137,7 +169,8 @@ def run_rdf(df, inputlist, outname, collection_name):
     h_lead_ratio = df_pfo.Histo1D(("leadPfoRatio", "Leading Pandora PFO energy / E_{MC};E^{lead}_{PFO}/E_{MC};Events", 100, 0, 2), "leadPfoRatio")
     h_charged = df_pfo.Histo1D(("nChargedPfo", "Number of charged Pandora PFOs;N charged PFOs;Events", 20, 0, 20), "nChargedPfo")
     h_neutral = df_pfo.Histo1D(("nNeutralPfo", "Number of neutral Pandora PFOs;N neutral PFOs;Events", 20, 0, 20), "nNeutralPfo")
-    finish_analysis(inputlist, outname, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, h_charged, h_neutral)
+    pid_counts = collect_pid_spectrum(inputlist, collection_name)
+    finish_analysis(inputlist, outname, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, h_charged, h_neutral, pid_counts)
 
 
 def run_podio(inputlist, outname, collection_name):
@@ -190,7 +223,8 @@ def run_podio(inputlist, outname, collection_name):
     for value in pfo_neutral_counts:
         h_neutral.Fill(value)
 
-    finish_analysis(inputlist, outname, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, h_charged, h_neutral)
+    pid_counts = collect_pid_spectrum(inputlist, collection_name)
+    finish_analysis(inputlist, outname, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, h_charged, h_neutral, pid_counts)
 
 
 if __name__ == "__main__":
