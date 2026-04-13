@@ -32,7 +32,7 @@ import os
 from k4FWCore.parseArgs import parser
 
 
-def resolve_output_path(filename):
+def resolve_path(filename):
     from pathlib import Path
 
     path = Path(filename)
@@ -55,7 +55,8 @@ parser_group.add_argument(
     help="Enable PhotonReconstruction PDF training mode.",
 )
 digi_args = parser.parse_known_args()[0]
-digi_args.outputFile = resolve_output_path(digi_args.outputFile)
+digi_args.inputFile = resolve_path(digi_args.inputFile)
+digi_args.outputFile = resolve_path(digi_args.outputFile)
 
 iosvc = IOSvc()
 iosvc.Input = digi_args.inputFile
@@ -226,20 +227,6 @@ def resolve_pandora_settings_xml(pandora_settings_file, photon_training):
     if photon_training and os.path.basename(pandora_settings_file) == "PandoraSettingsMinimal.xml":
         pandora_settings_file = os.path.join(options_dir, "PandoraSettingsPhotonTraining.xml")
 
-    if photon_training:
-        output_dir = os.environ.get("K4ODD_OUTPUT_DIR")
-        if output_dir:
-            with open(pandora_settings_file, encoding="utf-8") as handle:
-                xml_text = handle.read()
-            xml_text = xml_text.replace(
-                "<HistogramFile>PandoraLikelihoodData9EBin.xml</HistogramFile>",
-                f"<HistogramFile>{os.path.join(output_dir, 'PandoraLikelihoodData9EBin.xml')}</HistogramFile>",
-            )
-            resolved_path = os.path.join(output_dir, "PandoraSettingsPhotonTraining.runtime.xml")
-            with open(resolved_path, "w", encoding="utf-8") as handle:
-                handle.write(xml_text)
-            pandora_settings_file = resolved_path
-
     return os.path.abspath(pandora_settings_file)
 
 
@@ -359,7 +346,7 @@ pandora = DDPandoraPFANewAlgorithm("PandoraPFANewProcessor", **params, OutputLev
 
 hps = RootHistSvc("HistogramPersistencySvc")
 root_hist_svc = RootHistoSink("RootHistoSink")
-root_hist_svc.FileName = resolve_output_path("ddcalodigi_hist.root")
+root_hist_svc.FileName = resolve_path("ddcalodigi_hist.root")
 
 evt_max = -1 if digi_args.pandoraPhotonTraining else 100
 

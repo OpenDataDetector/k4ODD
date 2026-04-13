@@ -46,7 +46,7 @@
         <ReplaceCurrentClusterList>false</ReplaceCurrentClusterList>
         <ShouldMakePdfHistograms>true</ShouldMakePdfHistograms>
         <ShouldDrawPdfHistograms>false</ShouldDrawPdfHistograms>
-        <HistogramFile>PandoraLikelihoodData9EBin.xml</HistogramFile>
+        <HistogramFile>k4ODD/options/PandoraLikelihoodData9EBin.xml</HistogramFile>
         <EnergyBinLowerEdges>0 0.2 0.5 1 1.5 2.5 5 10 20</EnergyBinLowerEdges>
         <NEnergyBins>9</NEnergyBins>
     </algorithm>

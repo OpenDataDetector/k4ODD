@@ -37,7 +37,7 @@ export K4ODD_OUTPUT_DIR=/path/to/output
 source setup.sh
 ```
 
-When `K4ODD_OUTPUT_DIR` is set, bare output filenames from the local helper scripts and steering files are written there.
+When `K4ODD_OUTPUT_DIR` is set, relative input and output filenames from the local helper scripts and steering files are resolved there. Absolute paths are left unchanged.
 
 ## Rebuild
 
