@@ -86,22 +86,22 @@
     <!--     <ReplaceCurrentPfoList>false</ReplaceCurrentPfoList> -->
     <!-- </algorithm> -->
 
-    <!-- Standalone photon clustering. Enabled by ODDreconstruction.py only when requested. -->
-    <!-- <algorithm type = "PhotonReconstruction"> -->
-    <!--     <algorithm type = "ConeClustering" description = "PhotonClusterFormation"> -->
-    <!--         <ClusterSeedStrategy>0</ClusterSeedStrategy> -->
-    <!--         <ShouldUseTrackSeed>false</ShouldUseTrackSeed> -->
-    <!--         <ShouldUseOnlyECalHits>true</ShouldUseOnlyECalHits> -->
-    <!--         <ConeApproachMaxSeparation>250.</ConeApproachMaxSeparation> -->
-    <!--     </algorithm> -->
-    <!--     <ClusterListName>PhotonClusters</ClusterListName> -->
-    <!--     <ReplaceCurrentClusterList>false</ReplaceCurrentClusterList> -->
-    <!--     <ShouldMakePdfHistograms>false</ShouldMakePdfHistograms> -->
-    <!--     <ShouldDrawPdfHistograms>false</ShouldDrawPdfHistograms> -->
-    <!--     <HistogramFile>PandoraLikelihoodData9EBin.xml</HistogramFile> -->
-    <!--     <EnergyBinLowerEdges>0 0.2 0.5 1 1.5 2.5 5 10 20</EnergyBinLowerEdges> -->
-    <!--     <NEnergyBins>9</NEnergyBins> -->
-    <!-- </algorithm> -->
+    <!-- Standalone photon clustering with committed photon-ID histograms. -->
+    <algorithm type = "PhotonReconstruction">
+        <algorithm type = "ConeClustering" description = "PhotonClusterFormation">
+            <ClusterSeedStrategy>0</ClusterSeedStrategy>
+            <ShouldUseTrackSeed>false</ShouldUseTrackSeed>
+            <ShouldUseOnlyECalHits>true</ShouldUseOnlyECalHits>
+            <ConeApproachMaxSeparation>250.</ConeApproachMaxSeparation>
+        </algorithm>
+        <ClusterListName>PhotonClusters</ClusterListName>
+        <ReplaceCurrentClusterList>false</ReplaceCurrentClusterList>
+        <ShouldMakePdfHistograms>false</ShouldMakePdfHistograms>
+        <ShouldDrawPdfHistograms>false</ShouldDrawPdfHistograms>
+        <HistogramFile>k4ODD/options/PandoraLikelihoodData9EBin.xml</HistogramFile>
+        <EnergyBinLowerEdges>0 0.2 0.5 1 1.5 2.5 5 10 20</EnergyBinLowerEdges>
+        <NEnergyBins>9</NEnergyBins>
+    </algorithm>
 
     <!-- Clustering parent algorithm runs a daughter clustering algorithm -->
     <algorithm type = "ClusteringParent">
