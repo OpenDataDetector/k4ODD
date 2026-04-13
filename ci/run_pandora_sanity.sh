@@ -24,8 +24,9 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 build_name="${BUILD_DIR_NAME:-build-ci}"
 install_name="${INSTALL_DIR_NAME:-install-ci}"
-sim_file="${PANDORA_SANITY_SIM_FILE:-$repo_root/$build_name/pandora_sanity_sim.root}"
-reco_file="${PANDORA_SANITY_RECO_FILE:-$repo_root/$build_name/pandora_sanity_reco.root}"
+output_dir="${K4ODD_OUTPUT_DIR:-$repo_root/$build_name}"
+sim_file="${PANDORA_SANITY_SIM_FILE:-$output_dir/pandora_sanity_sim.root}"
+reco_file="${PANDORA_SANITY_RECO_FILE:-$output_dir/pandora_sanity_reco.root}"
 force_sim="${PANDORA_SANITY_FORCE_SIM:-0}"
 
 mkdir -p "$(dirname "$sim_file")"

@@ -33,6 +33,19 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
+
+def resolve_output_path(filename):
+    import os
+
+    if os.path.isabs(filename) or os.path.dirname(filename):
+        return filename
+
+    output_dir = os.environ.get("K4ODD_OUTPUT_DIR")
+    if output_dir:
+        return os.path.join(output_dir, filename)
+
+    return filename
+
 ROOT.gSystem.Load("libedm4hep")
 ROOT.gInterpreter.Declare(
     """
@@ -85,6 +98,7 @@ def write_pid_tree(outfile, pid_counts):
 
 
 def write_output(outname, inputlist, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, h_charged, h_neutral, pid_counts):
+    outname = resolve_output_path(outname)
     outfile = ROOT.TFile(outname, "RECREATE")
     outfile.cd()
     h_n_pfo.Write()
@@ -121,7 +135,8 @@ def write_output(outname, inputlist, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, 
     canv = ROOT.TCanvas()
     canv.cd()
     h_sum.Draw()
-    canv.SaveAs(f"preview_pfoEnergyFit_{inputlist[0].split('/')[-1:][0][:-5]}.pdf")
+    preview_name = f"preview_pfoEnergyFit_{inputlist[0].split('/')[-1:][0][:-5]}.pdf"
+    canv.SaveAs(resolve_output_path(preview_name))
 
 
 def finish_analysis(inputlist, outname, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, h_charged, h_neutral, pid_counts):

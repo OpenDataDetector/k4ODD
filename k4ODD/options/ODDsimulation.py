@@ -20,6 +20,21 @@ from DDSim.DD4hepSimulation import DD4hepSimulation
 from g4units import mm, GeV, MeV, m, deg
 SIM = DD4hepSimulation()
 
+
+def resolve_output_path(filename):
+    import os
+    from pathlib import Path
+
+    path = Path(filename)
+    if path.is_absolute() or path.parent != Path("."):
+        return str(path)
+
+    output_dir = os.environ.get("K4ODD_OUTPUT_DIR")
+    if output_dir:
+        return str(Path(output_dir) / path.name)
+
+    return filename
+
 ## The compact XML file
 
 def resolve_odd_xml():
@@ -59,7 +74,7 @@ SIM.macroFile = ""
 ## number of events to simulate, used in batch mode
 SIM.numberOfEvents = 0
 ## Outputfile from the simulation
-SIM.outputFile = "ODD_sim.edm4hep.root"
+SIM.outputFile = resolve_output_path("ODD_sim.edm4hep.root")
 ## Verbosity use integers from 1(most) to 7(least) verbose
 ## or strings: VERBOSE, DEBUG, INFO, WARNING, ERROR, FATAL, ALWAYS
 SIM.printLevel = 3

@@ -86,7 +86,12 @@ if [[ $- == *u* ]]; then
   set +u
 fi
 
-source "$stack_setup"
+saved_args=("$@")
+set --
+if ! command -v k4_local_repo >/dev/null 2>&1; then
+  source "$stack_setup"
+fi
+set -- "${saved_args[@]}"
 
 odd_repo="$(resolve_repo_dir "${ODD_DIR:-}" "$repo_root/OpenDataDetector" "$repo_root/../OpenDataDetector")"
 pandora_repo="$(resolve_repo_dir "${K4GAUDIPANDORA_DIR:-}" "$repo_root/../k4GaudiPandora" "$repo_root/k4GaudiPandora")"
@@ -110,6 +115,10 @@ cd "$setup_pwd"
 
 export K4ODD_PANDORA_SETTINGS="${K4ODD_PANDORA_SETTINGS:-$repo_root/k4ODD/options/PandoraSettingsMinimal.xml}"
 
+if [[ -n "${K4ODD_OUTPUT_DIR:-}" ]]; then
+  export K4ODD_OUTPUT_DIR="$(mkdir -p "$K4ODD_OUTPUT_DIR" && cd "$K4ODD_OUTPUT_DIR" && pwd)"
+fi
+
 if [[ "$had_nounset" -eq 1 ]]; then
   set -u
 fi
@@ -125,3 +134,6 @@ echo "OpenDataDetector install: $odd_install_dir"
 echo "k4GaudiPandora install: $pandora_install_dir"
 echo "k4ODD install: $repo_install_dir"
 echo "Pandora settings: $K4ODD_PANDORA_SETTINGS"
+if [[ -n "${K4ODD_OUTPUT_DIR:-}" ]]; then
+  echo "k4ODD output dir: $K4ODD_OUTPUT_DIR"
+fi

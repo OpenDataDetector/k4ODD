@@ -30,6 +30,22 @@ from Configurables import Gaudi__Histograming__Sink__Root as RootHistoSink
 import os
 
 from k4FWCore.parseArgs import parser
+
+
+def resolve_output_path(filename):
+    from pathlib import Path
+
+    path = Path(filename)
+    if path.is_absolute() or path.parent != Path("."):
+        return str(path)
+
+    output_dir = os.environ.get("K4ODD_OUTPUT_DIR")
+    if output_dir:
+        return str(Path(output_dir) / path.name)
+
+    return filename
+
+
 parser_group = parser.add_argument_group("ODDreconstruction.py custom options")
 parser_group.add_argument("--inputFile", default="ODD_sim_edm4hep.root", help="Input file")
 parser_group.add_argument("--outputFile", help="Output file", default="ODD_calo_digi.root")
@@ -39,6 +55,7 @@ parser_group.add_argument(
     help="Enable PhotonReconstruction PDF training mode.",
 )
 digi_args = parser.parse_known_args()[0]
+digi_args.outputFile = resolve_output_path(digi_args.outputFile)
 
 iosvc = IOSvc()
 iosvc.Input = digi_args.inputFile
@@ -209,6 +226,20 @@ def resolve_pandora_settings_xml(pandora_settings_file, photon_training):
     if photon_training and os.path.basename(pandora_settings_file) == "PandoraSettingsMinimal.xml":
         pandora_settings_file = os.path.join(options_dir, "PandoraSettingsPhotonTraining.xml")
 
+    if photon_training:
+        output_dir = os.environ.get("K4ODD_OUTPUT_DIR")
+        if output_dir:
+            with open(pandora_settings_file, encoding="utf-8") as handle:
+                xml_text = handle.read()
+            xml_text = xml_text.replace(
+                "<HistogramFile>PandoraLikelihoodData9EBin.xml</HistogramFile>",
+                f"<HistogramFile>{os.path.join(output_dir, 'PandoraLikelihoodData9EBin.xml')}</HistogramFile>",
+            )
+            resolved_path = os.path.join(output_dir, "PandoraSettingsPhotonTraining.runtime.xml")
+            with open(resolved_path, "w", encoding="utf-8") as handle:
+                handle.write(xml_text)
+            pandora_settings_file = resolved_path
+
     return os.path.abspath(pandora_settings_file)
 
 
@@ -328,7 +359,7 @@ pandora = DDPandoraPFANewAlgorithm("PandoraPFANewProcessor", **params, OutputLev
 
 hps = RootHistSvc("HistogramPersistencySvc")
 root_hist_svc = RootHistoSink("RootHistoSink")
-root_hist_svc.FileName = "ddcalodigi_hist.root"
+root_hist_svc.FileName = resolve_output_path("ddcalodigi_hist.root")
 
 evt_max = -1 if digi_args.pandoraPhotonTraining else 100
 

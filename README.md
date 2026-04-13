@@ -30,6 +30,15 @@ This will:
 
 You can override repo locations with `ODD_DIR` and `K4GAUDIPANDORA_DIR`.
 
+If you want generated files to go somewhere other than the repo directory, set:
+
+```bash
+export K4ODD_OUTPUT_DIR=/path/to/output
+source setup.sh
+```
+
+When `K4ODD_OUTPUT_DIR` is set, bare output filenames from the local helper scripts and steering files are written there.
+
 ## Rebuild
 
 To rebuild the local `OpenDataDetector`, `k4GaudiPandora`, and `k4ODD` repos against the currently sourced Key4hep stack:

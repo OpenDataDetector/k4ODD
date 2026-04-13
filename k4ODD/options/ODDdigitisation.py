@@ -28,10 +28,27 @@ from Configurables import Gaudi__Histograming__Sink__Root as RootHistoSink
 import os
 
 from k4FWCore.parseArgs import parser
+
+
+def resolve_output_path(filename):
+    from pathlib import Path
+
+    path = Path(filename)
+    if path.is_absolute() or path.parent != Path("."):
+        return str(path)
+
+    output_dir = os.environ.get("K4ODD_OUTPUT_DIR")
+    if output_dir:
+        return str(Path(output_dir) / path.name)
+
+    return filename
+
+
 parser_group = parser.add_argument_group("CLDReconstruction.py custom options")
 parser_group.add_argument("--inputFile", default="ODD_sim_edm4hep.root", help="Input file")
 parser_group.add_argument("--outputFile", help="Output file", default="ODD_calo_digi.root")
 digi_args = parser.parse_known_args()[0]
+digi_args.outputFile = resolve_output_path(digi_args.outputFile)
 
 iosvc = IOSvc()
 iosvc.Input = digi_args.inputFile
@@ -191,7 +208,7 @@ merger = CollectionMerger(
 
 hps = RootHistSvc("HistogramPersistencySvc")
 root_hist_svc = RootHistoSink("RootHistoSink")
-root_hist_svc.FileName = "ddcalodigi_hist.root"
+root_hist_svc.FileName = resolve_output_path("ddcalodigi_hist.root")
 
 ApplicationMgr(
     TopAlg=calodigi + [merger],

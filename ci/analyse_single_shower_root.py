@@ -29,6 +29,19 @@ parser.add_argument("--endcap", action="store_true", help="Perform analysis for 
 parser.add_argument("--hcal", action="store_true", help="Perform analysis for HCal instead of ECal")
 args = parser.parse_args()
 
+
+def resolve_output_path(filename):
+    import os
+
+    if os.path.isabs(filename) or os.path.dirname(filename):
+        return filename
+
+    output_dir = os.environ.get("K4ODD_OUTPUT_DIR")
+    if output_dir:
+        return os.path.join(output_dir, filename)
+
+    return filename
+
 ROOT.gSystem.Load("libedm4hep")
 ROOT.gInterpreter.Declare(
     """
@@ -55,6 +68,7 @@ def hist_models(hcal_instead_of_ecal):
 
 
 def write_output(outname, inputlist, h_cal, h_mc, h_ratio, result_mean, result_mean_error, result_resolution, result_resolution_error, gun_mean):
+    outname = resolve_output_path(outname)
     outfile = ROOT.TFile(outname, "RECREATE")
     outfile.cd()
     h_cal.Write("energy_cal")
@@ -83,7 +97,8 @@ def write_output(outname, inputlist, h_cal, h_mc, h_ratio, result_mean, result_m
     canv = ROOT.TCanvas()
     canv.cd()
     h_cal.Draw()
-    canv.SaveAs(f"preview_energyFit_{inputlist[0].split('/')[-1:][0][:-5]}.pdf")
+    preview_name = f"preview_energyFit_{inputlist[0].split('/')[-1:][0][:-5]}.pdf"
+    canv.SaveAs(resolve_output_path(preview_name))
 
 
 def fit_and_store(inputlist, outname, h_cal, h_mc, h_ratio):
