@@ -1,0 +1,654 @@
+<!-- Photon likelihood histogram file trained from 30k events:
+     10k gamma + 10k neutron + 10k kaon0L. -->
+<NEnergyBins>9</NEnergyBins>
+<EnergyBinLowerEdges>0 0.2 0.5 1 1.5 2.5 5 10 20 </EnergyBinLowerEdges>
+<NSignalEvents>15 1 0 0 2 7 12 13 35 </NSignalEvents>
+<NBackgroundEvents>2 3 1 0 2 2 1 2 2 </NBackgroundEvents>
+<PhotonSigPeakRms_0>
+    <NBinsX>50</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>5</XHigh>
+    <BinContents>0 0 0 0 0 0 0.0666667 0.466667 0.0666667 0.133333 0.0666667 0 0.0666667 0 0 0 0 0 0 0 0 0 0 0 0.0666667 0 0.0666667 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigPeakRms_0>
+<PhotonBkgPeakRms_0>
+    <NBinsX>50</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>5</XHigh>
+    <BinContents>0 0 0 0 0 0 0.5 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgPeakRms_0>
+<PhotonSigPeakRms_1>
+    <NBinsX>50</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigPeakRms_1>
+<PhotonBkgPeakRms_1>
+    <NBinsX>50</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0.333333 0.333333 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.333333 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgPeakRms_1>
+<PhotonSigPeakRms_2>
+    <NBinsX>50</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigPeakRms_2>
+<PhotonBkgPeakRms_2>
+    <NBinsX>50</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgPeakRms_2>
+<PhotonSigPeakRms_3>
+    <NBinsX>50</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigPeakRms_3>
+<PhotonBkgPeakRms_3>
+    <NBinsX>50</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgPeakRms_3>
+<PhotonSigPeakRms_4>
+    <NBinsX>50</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigPeakRms_4>
+<PhotonBkgPeakRms_4>
+    <NBinsX>50</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgPeakRms_4>
+<PhotonSigPeakRms_5>
+    <NBinsX>50</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.285714 0.142857 0.142857 0.142857 0.142857 0.142857 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigPeakRms_5>
+<PhotonBkgPeakRms_5>
+    <NBinsX>50</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0 0 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgPeakRms_5>
+<PhotonSigPeakRms_6>
+    <NBinsX>50</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0.0833333 0 0 0 0.0833333 0.0833333 0.166667 0.333333 0.166667 0.0833333 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigPeakRms_6>
+<PhotonBkgPeakRms_6>
+    <NBinsX>50</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgPeakRms_6>
+<PhotonSigPeakRms_7>
+    <NBinsX>50</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.153846 0 0.307692 0.153846 0.230769 0 0.0769231 0.0769231 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigPeakRms_7>
+<PhotonBkgPeakRms_7>
+    <NBinsX>50</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0 0 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgPeakRms_7>
+<PhotonSigPeakRms_8>
+    <NBinsX>50</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.0285714 0.142857 0.371429 0.257143 0.0285714 0.171429 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigPeakRms_8>
+<PhotonBkgPeakRms_8>
+    <NBinsX>50</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgPeakRms_8>
+<PhotonSigRmsRatio_0>
+    <NBinsX>30</NBinsX>
+    <XLow>1</XLow>
+    <XHigh>3</XHigh>
+    <BinContents>0 0.133333 0.0666667 0.266667 0.133333 0.0666667 0.0666667 0 0 0 0.0666667 0.0666667 0 0.0666667 0 0 0 0 0 0.0666667 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigRmsRatio_0>
+<PhotonBkgRmsRatio_0>
+    <NBinsX>30</NBinsX>
+    <XLow>1</XLow>
+    <XHigh>3</XHigh>
+    <BinContents>0 0.5 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgRmsRatio_0>
+<PhotonSigRmsRatio_1>
+    <NBinsX>30</NBinsX>
+    <XLow>1</XLow>
+    <XHigh>3</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigRmsRatio_1>
+<PhotonBkgRmsRatio_1>
+    <NBinsX>30</NBinsX>
+    <XLow>1</XLow>
+    <XHigh>3</XHigh>
+    <BinContents>0 0.333333 0 0.333333 0 0.333333 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgRmsRatio_1>
+<PhotonSigRmsRatio_2>
+    <NBinsX>30</NBinsX>
+    <XLow>1</XLow>
+    <XHigh>3</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigRmsRatio_2>
+<PhotonBkgRmsRatio_2>
+    <NBinsX>30</NBinsX>
+    <XLow>1</XLow>
+    <XHigh>3</XHigh>
+    <BinContents>0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgRmsRatio_2>
+<PhotonSigRmsRatio_3>
+    <NBinsX>30</NBinsX>
+    <XLow>1</XLow>
+    <XHigh>3</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigRmsRatio_3>
+<PhotonBkgRmsRatio_3>
+    <NBinsX>30</NBinsX>
+    <XLow>1</XLow>
+    <XHigh>3</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgRmsRatio_3>
+<PhotonSigRmsRatio_4>
+    <NBinsX>30</NBinsX>
+    <XLow>1</XLow>
+    <XHigh>3</XHigh>
+    <BinContents>0 0.5 0 0 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigRmsRatio_4>
+<PhotonBkgRmsRatio_4>
+    <NBinsX>30</NBinsX>
+    <XLow>1</XLow>
+    <XHigh>3</XHigh>
+    <BinContents>0 0.5 0 0 0 0 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgRmsRatio_4>
+<PhotonSigRmsRatio_5>
+    <NBinsX>30</NBinsX>
+    <XLow>1</XLow>
+    <XHigh>3</XHigh>
+    <BinContents>0 0 0.285714 0.142857 0 0.285714 0.285714 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigRmsRatio_5>
+<PhotonBkgRmsRatio_5>
+    <NBinsX>30</NBinsX>
+    <XLow>1</XLow>
+    <XHigh>3</XHigh>
+    <BinContents>0 0.5 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgRmsRatio_5>
+<PhotonSigRmsRatio_6>
+    <NBinsX>30</NBinsX>
+    <XLow>1</XLow>
+    <XHigh>3</XHigh>
+    <BinContents>0 0.166667 0.333333 0.166667 0.0833333 0.25 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigRmsRatio_6>
+<PhotonBkgRmsRatio_6>
+    <NBinsX>30</NBinsX>
+    <XLow>1</XLow>
+    <XHigh>3</XHigh>
+    <BinContents>0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgRmsRatio_6>
+<PhotonSigRmsRatio_7>
+    <NBinsX>30</NBinsX>
+    <XLow>1</XLow>
+    <XHigh>3</XHigh>
+    <BinContents>0 0.0769231 0.384615 0.461538 0 0 0 0.0769231 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigRmsRatio_7>
+<PhotonBkgRmsRatio_7>
+    <NBinsX>30</NBinsX>
+    <XLow>1</XLow>
+    <XHigh>3</XHigh>
+    <BinContents>0 0.5 0 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgRmsRatio_7>
+<PhotonSigRmsRatio_8>
+    <NBinsX>30</NBinsX>
+    <XLow>1</XLow>
+    <XHigh>3</XHigh>
+    <BinContents>0 0.542857 0.371429 0.0285714 0 0.0571429 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigRmsRatio_8>
+<PhotonBkgRmsRatio_8>
+    <NBinsX>30</NBinsX>
+    <XLow>1</XLow>
+    <XHigh>3</XHigh>
+    <BinContents>0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgRmsRatio_8>
+<PhotonSigLongProfileStart_0>
+    <NBinsX>11</NBinsX>
+    <XLow>-0.5</XLow>
+    <XHigh>10.5</XHigh>
+    <BinContents>0 0.0666667 0.133333 0 0 0.133333 0 0.133333 0.0666667 0.133333 0.2 0.133333 0 </BinContents>
+</PhotonSigLongProfileStart_0>
+<PhotonBkgLongProfileStart_0>
+    <NBinsX>11</NBinsX>
+    <XLow>-0.5</XLow>
+    <XHigh>10.5</XHigh>
+    <BinContents>0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 </BinContents>
+</PhotonBkgLongProfileStart_0>
+<PhotonSigLongProfileStart_1>
+    <NBinsX>11</NBinsX>
+    <XLow>-0.5</XLow>
+    <XHigh>10.5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 1 0 0 0 </BinContents>
+</PhotonSigLongProfileStart_1>
+<PhotonBkgLongProfileStart_1>
+    <NBinsX>11</NBinsX>
+    <XLow>-0.5</XLow>
+    <XHigh>10.5</XHigh>
+    <BinContents>0 0 0.333333 0 0 0 0 0 0.333333 0 0 0.333333 0 </BinContents>
+</PhotonBkgLongProfileStart_1>
+<PhotonSigLongProfileStart_2>
+    <NBinsX>11</NBinsX>
+    <XLow>-0.5</XLow>
+    <XHigh>10.5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigLongProfileStart_2>
+<PhotonBkgLongProfileStart_2>
+    <NBinsX>11</NBinsX>
+    <XLow>-0.5</XLow>
+    <XHigh>10.5</XHigh>
+    <BinContents>0 0 0 1 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgLongProfileStart_2>
+<PhotonSigLongProfileStart_3>
+    <NBinsX>11</NBinsX>
+    <XLow>-0.5</XLow>
+    <XHigh>10.5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigLongProfileStart_3>
+<PhotonBkgLongProfileStart_3>
+    <NBinsX>11</NBinsX>
+    <XLow>-0.5</XLow>
+    <XHigh>10.5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgLongProfileStart_3>
+<PhotonSigLongProfileStart_4>
+    <NBinsX>11</NBinsX>
+    <XLow>-0.5</XLow>
+    <XHigh>10.5</XHigh>
+    <BinContents>0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 </BinContents>
+</PhotonSigLongProfileStart_4>
+<PhotonBkgLongProfileStart_4>
+    <NBinsX>11</NBinsX>
+    <XLow>-0.5</XLow>
+    <XHigh>10.5</XHigh>
+    <BinContents>0 0 0 0 1 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgLongProfileStart_4>
+<PhotonSigLongProfileStart_5>
+    <NBinsX>11</NBinsX>
+    <XLow>-0.5</XLow>
+    <XHigh>10.5</XHigh>
+    <BinContents>0 0 0.142857 0 0 0.142857 0.142857 0.142857 0.142857 0.142857 0.142857 0 0 </BinContents>
+</PhotonSigLongProfileStart_5>
+<PhotonBkgLongProfileStart_5>
+    <NBinsX>11</NBinsX>
+    <XLow>-0.5</XLow>
+    <XHigh>10.5</XHigh>
+    <BinContents>0 0 0 0 0 0.5 0 0.5 0 0 0 0 0 </BinContents>
+</PhotonBkgLongProfileStart_5>
+<PhotonSigLongProfileStart_6>
+    <NBinsX>11</NBinsX>
+    <XLow>-0.5</XLow>
+    <XHigh>10.5</XHigh>
+    <BinContents>0 0 0 0 0 0.166667 0.416667 0.166667 0 0.166667 0.0833333 0 0 </BinContents>
+</PhotonSigLongProfileStart_6>
+<PhotonBkgLongProfileStart_6>
+    <NBinsX>11</NBinsX>
+    <XLow>-0.5</XLow>
+    <XHigh>10.5</XHigh>
+    <BinContents>0 0 0 0 0 1 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgLongProfileStart_6>
+<PhotonSigLongProfileStart_7>
+    <NBinsX>11</NBinsX>
+    <XLow>-0.5</XLow>
+    <XHigh>10.5</XHigh>
+    <BinContents>0 0 0 0 0 0.153846 0.0769231 0.230769 0.153846 0.384615 0 0 0 </BinContents>
+</PhotonSigLongProfileStart_7>
+<PhotonBkgLongProfileStart_7>
+    <NBinsX>11</NBinsX>
+    <XLow>-0.5</XLow>
+    <XHigh>10.5</XHigh>
+    <BinContents>0 0 0 0 0.5 0 0 0 0.5 0 0 0 0 </BinContents>
+</PhotonBkgLongProfileStart_7>
+<PhotonSigLongProfileStart_8>
+    <NBinsX>11</NBinsX>
+    <XLow>-0.5</XLow>
+    <XHigh>10.5</XHigh>
+    <BinContents>0 0 0 0 0 0.0857143 0.142857 0.257143 0.0857143 0.114286 0.171429 0.142857 0 </BinContents>
+</PhotonSigLongProfileStart_8>
+<PhotonBkgLongProfileStart_8>
+    <NBinsX>11</NBinsX>
+    <XLow>-0.5</XLow>
+    <XHigh>10.5</XHigh>
+    <BinContents>0 0 0 0 0 0 0 1 0 0 0 0 0 </BinContents>
+</PhotonBkgLongProfileStart_8>
+<PhotonSigLongProfileDiscrepancy_0>
+    <NBinsX>42</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>0.82</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.133333 0.133333 0 0.0666667 0.0666667 0 0.0666667 0.0666667 0.133333 0.0666667 0.0666667 0.2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigLongProfileDiscrepancy_0>
+<PhotonBkgLongProfileDiscrepancy_0>
+    <NBinsX>42</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>0.82</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgLongProfileDiscrepancy_0>
+<PhotonSigLongProfileDiscrepancy_1>
+    <NBinsX>42</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>0.82</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigLongProfileDiscrepancy_1>
+<PhotonBkgLongProfileDiscrepancy_1>
+    <NBinsX>42</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>0.82</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.333333 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.333333 0 0 0 0 0 0.333333 0 0 0 0 </BinContents>
+</PhotonBkgLongProfileDiscrepancy_1>
+<PhotonSigLongProfileDiscrepancy_2>
+    <NBinsX>42</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>0.82</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigLongProfileDiscrepancy_2>
+<PhotonBkgLongProfileDiscrepancy_2>
+    <NBinsX>42</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>0.82</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgLongProfileDiscrepancy_2>
+<PhotonSigLongProfileDiscrepancy_3>
+    <NBinsX>42</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>0.82</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigLongProfileDiscrepancy_3>
+<PhotonBkgLongProfileDiscrepancy_3>
+    <NBinsX>42</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>0.82</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgLongProfileDiscrepancy_3>
+<PhotonSigLongProfileDiscrepancy_4>
+    <NBinsX>42</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>0.82</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0 0 0 0 0 0 0 0 0.5 0 0 0 0 0 </BinContents>
+</PhotonSigLongProfileDiscrepancy_4>
+<PhotonBkgLongProfileDiscrepancy_4>
+    <NBinsX>42</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>0.82</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgLongProfileDiscrepancy_4>
+<PhotonSigLongProfileDiscrepancy_5>
+    <NBinsX>42</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>0.82</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.142857 0 0.142857 0 0 0.142857 0 0 0.142857 0.142857 0 0 0 0.142857 0.142857 0 0 0 </BinContents>
+</PhotonSigLongProfileDiscrepancy_5>
+<PhotonBkgLongProfileDiscrepancy_5>
+    <NBinsX>42</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>0.82</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgLongProfileDiscrepancy_5>
+<PhotonSigLongProfileDiscrepancy_6>
+    <NBinsX>42</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>0.82</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.0833333 0 0 0 0 0 0 0.0833333 0.0833333 0 0.166667 0.0833333 0.333333 0 0.0833333 0 0.0833333 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigLongProfileDiscrepancy_6>
+<PhotonBkgLongProfileDiscrepancy_6>
+    <NBinsX>42</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>0.82</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgLongProfileDiscrepancy_6>
+<PhotonSigLongProfileDiscrepancy_7>
+    <NBinsX>42</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>0.82</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.230769 0.0769231 0.0769231 0 0.0769231 0.0769231 0.153846 0 0.0769231 0.0769231 0.0769231 0 0 0 0 0.0769231 0 0 0 0 0 </BinContents>
+</PhotonSigLongProfileDiscrepancy_7>
+<PhotonBkgLongProfileDiscrepancy_7>
+    <NBinsX>42</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>0.82</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0 0 0 0.5 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgLongProfileDiscrepancy_7>
+<PhotonSigLongProfileDiscrepancy_8>
+    <NBinsX>42</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>0.82</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.114286 0.0857143 0.114286 0.114286 0.0285714 0.142857 0.114286 0 0.0857143 0.0571429 0.0285714 0.0857143 0.0285714 0 0 0 0 0 0 </BinContents>
+</PhotonSigLongProfileDiscrepancy_8>
+<PhotonBkgLongProfileDiscrepancy_8>
+    <NBinsX>42</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>0.82</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgLongProfileDiscrepancy_8>
+<PhotonSigPeakEnergyFraction_0>
+    <NBinsX>52</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>1.02</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0.0666667 0 0.0666667 0 0 0.0666667 0.0666667 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.733333 0 </BinContents>
+</PhotonSigPeakEnergyFraction_0>
+<PhotonBkgPeakEnergyFraction_0>
+    <NBinsX>52</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>1.02</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 </BinContents>
+</PhotonBkgPeakEnergyFraction_0>
+<PhotonSigPeakEnergyFraction_1>
+    <NBinsX>52</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>1.02</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 </BinContents>
+</PhotonSigPeakEnergyFraction_1>
+<PhotonBkgPeakEnergyFraction_1>
+    <NBinsX>52</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>1.02</XHigh>
+    <BinContents>0 0 0 0 0 0.333333 0 0 0 0 0 0 0 0.333333 0 0 0 0 0 0 0 0 0 0 0 0.333333 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgPeakEnergyFraction_1>
+<PhotonSigPeakEnergyFraction_2>
+    <NBinsX>52</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>1.02</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigPeakEnergyFraction_2>
+<PhotonBkgPeakEnergyFraction_2>
+    <NBinsX>52</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>1.02</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 </BinContents>
+</PhotonBkgPeakEnergyFraction_2>
+<PhotonSigPeakEnergyFraction_3>
+    <NBinsX>52</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>1.02</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigPeakEnergyFraction_3>
+<PhotonBkgPeakEnergyFraction_3>
+    <NBinsX>52</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>1.02</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgPeakEnergyFraction_3>
+<PhotonSigPeakEnergyFraction_4>
+    <NBinsX>52</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>1.02</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 </BinContents>
+</PhotonSigPeakEnergyFraction_4>
+<PhotonBkgPeakEnergyFraction_4>
+    <NBinsX>52</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>1.02</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0 </BinContents>
+</PhotonBkgPeakEnergyFraction_4>
+<PhotonSigPeakEnergyFraction_5>
+    <NBinsX>52</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>1.02</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 </BinContents>
+</PhotonSigPeakEnergyFraction_5>
+<PhotonBkgPeakEnergyFraction_5>
+    <NBinsX>52</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>1.02</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0 0.5 0 </BinContents>
+</PhotonBkgPeakEnergyFraction_5>
+<PhotonSigPeakEnergyFraction_6>
+    <NBinsX>52</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>1.02</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0.0833333 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.916667 0 </BinContents>
+</PhotonSigPeakEnergyFraction_6>
+<PhotonBkgPeakEnergyFraction_6>
+    <NBinsX>52</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>1.02</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 </BinContents>
+</PhotonBkgPeakEnergyFraction_6>
+<PhotonSigPeakEnergyFraction_7>
+    <NBinsX>52</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>1.02</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 </BinContents>
+</PhotonSigPeakEnergyFraction_7>
+<PhotonBkgPeakEnergyFraction_7>
+    <NBinsX>52</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>1.02</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 </BinContents>
+</PhotonBkgPeakEnergyFraction_7>
+<PhotonSigPeakEnergyFraction_8>
+    <NBinsX>52</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>1.02</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.0285714 0 0 0 0 0 0 0 0 0 0 0 0.971429 0 </BinContents>
+</PhotonSigPeakEnergyFraction_8>
+<PhotonBkgPeakEnergyFraction_8>
+    <NBinsX>52</NBinsX>
+    <XLow>-0.02</XLow>
+    <XHigh>1.02</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 </BinContents>
+</PhotonBkgPeakEnergyFraction_8>
+<PhotonSigMinDistanceToTrack_0>
+    <NBinsX>40</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>20</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 </BinContents>
+</PhotonSigMinDistanceToTrack_0>
+<PhotonBkgMinDistanceToTrack_0>
+    <NBinsX>40</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>20</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 </BinContents>
+</PhotonBkgMinDistanceToTrack_0>
+<PhotonSigMinDistanceToTrack_1>
+    <NBinsX>40</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>20</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 </BinContents>
+</PhotonSigMinDistanceToTrack_1>
+<PhotonBkgMinDistanceToTrack_1>
+    <NBinsX>40</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>20</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 </BinContents>
+</PhotonBkgMinDistanceToTrack_1>
+<PhotonSigMinDistanceToTrack_2>
+    <NBinsX>40</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>20</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigMinDistanceToTrack_2>
+<PhotonBkgMinDistanceToTrack_2>
+    <NBinsX>40</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>20</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 </BinContents>
+</PhotonBkgMinDistanceToTrack_2>
+<PhotonSigMinDistanceToTrack_3>
+    <NBinsX>40</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>20</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonSigMinDistanceToTrack_3>
+<PhotonBkgMinDistanceToTrack_3>
+    <NBinsX>40</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>20</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 </BinContents>
+</PhotonBkgMinDistanceToTrack_3>
+<PhotonSigMinDistanceToTrack_4>
+    <NBinsX>40</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>20</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 </BinContents>
+</PhotonSigMinDistanceToTrack_4>
+<PhotonBkgMinDistanceToTrack_4>
+    <NBinsX>40</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>20</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 </BinContents>
+</PhotonBkgMinDistanceToTrack_4>
+<PhotonSigMinDistanceToTrack_5>
+    <NBinsX>40</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>20</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 </BinContents>
+</PhotonSigMinDistanceToTrack_5>
+<PhotonBkgMinDistanceToTrack_5>
+    <NBinsX>40</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>20</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 </BinContents>
+</PhotonBkgMinDistanceToTrack_5>
+<PhotonSigMinDistanceToTrack_6>
+    <NBinsX>40</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>20</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 </BinContents>
+</PhotonSigMinDistanceToTrack_6>
+<PhotonBkgMinDistanceToTrack_6>
+    <NBinsX>40</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>20</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 </BinContents>
+</PhotonBkgMinDistanceToTrack_6>
+<PhotonSigMinDistanceToTrack_7>
+    <NBinsX>40</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>20</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 </BinContents>
+</PhotonSigMinDistanceToTrack_7>
+<PhotonBkgMinDistanceToTrack_7>
+    <NBinsX>40</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>20</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 </BinContents>
+</PhotonBkgMinDistanceToTrack_7>
+<PhotonSigMinDistanceToTrack_8>
+    <NBinsX>40</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>20</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 </BinContents>
+</PhotonSigMinDistanceToTrack_8>
+<PhotonBkgMinDistanceToTrack_8>
+    <NBinsX>40</NBinsX>
+    <XLow>0</XLow>
+    <XHigh>20</XHigh>
+    <BinContents>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 </BinContents>
+</PhotonBkgMinDistanceToTrack_8>
