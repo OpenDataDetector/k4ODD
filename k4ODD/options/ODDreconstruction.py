@@ -38,10 +38,6 @@ parser_group.add_argument(
     action="store_true",
     help="Enable PhotonReconstruction PDF training mode.",
 )
-parser_group.add_argument(
-    "--pandoraPhotonHistogramFile",
-    help="Override the PhotonReconstruction histogram xml file.",
-)
 digi_args = parser.parse_known_args()[0]
 
 iosvc = IOSvc()
@@ -209,15 +205,9 @@ pandora_settings = os.environ.get(
 )
 
 
-def resolve_pandora_settings_xml(pandora_settings_file, photon_training, photon_histogram_file):
+def resolve_pandora_settings_xml(pandora_settings_file, photon_training):
     if photon_training and os.path.basename(pandora_settings_file) == "PandoraSettingsMinimal.xml":
         pandora_settings_file = os.path.join(options_dir, "PandoraSettingsPhotonTraining.xml")
-
-    if photon_histogram_file:
-        raise RuntimeError(
-            "--pandoraPhotonHistogramFile is no longer supported. "
-            "Use the committed Pandora XML files in k4ODD/options directly."
-        )
 
     return os.path.abspath(pandora_settings_file)
 
@@ -225,7 +215,6 @@ def resolve_pandora_settings_xml(pandora_settings_file, photon_training, photon_
 pandora_settings = resolve_pandora_settings_xml(
     pandora_settings,
     digi_args.pandoraPhotonTraining,
-    digi_args.pandoraPhotonHistogramFile,
 )
 
 params = {

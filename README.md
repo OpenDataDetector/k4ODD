@@ -80,7 +80,7 @@ Photon training uses a dedicated minimal steering file:
 k4ODD/options/PandoraSettingsPhotonTraining.xml
 ```
 
-`ODDreconstruction.py` switches to the photon-training XML only when `--pandoraPhotonTraining` is passed. It writes a temporary copy when photon-specific overrides are requested, so the source XML files are not edited in place.
+`ODDreconstruction.py` switches to the photon-training XML only when `--pandoraPhotonTraining` is passed. The reconstruction and training XML files live directly in `k4ODD/options`.
 
 Train the photon likelihood XML with:
 
@@ -88,20 +88,18 @@ Train the photon likelihood XML with:
 k4run k4ODD/options/ODDreconstruction.py \
   --inputFile gamma_10GeV_eta0_100ev_sim_edm4hep.root \
   --outputFile gamma_10GeV_eta0_100ev_photon_train_edm4hep.root \
-  --pandoraPhotonTraining \
-  --pandoraPhotonHistogramFile $PWD/PandoraLikelihoodData9EBin.xml
+  --pandoraPhotonTraining
 ```
 
-Then run reco with the standard minimal XML and the produced histogram file:
+Then run reco with the standard minimal XML:
 
 ```bash
 k4run k4ODD/options/ODDreconstruction.py \
   --inputFile gamma_10GeV_eta0_100ev_sim_edm4hep.root \
-  --outputFile gamma_10GeV_eta0_100ev_photon_reco_edm4hep.root \
-  --pandoraPhotonHistogramFile $PWD/PandoraLikelihoodData9EBin.xml
+  --outputFile gamma_10GeV_eta0_100ev_photon_reco_edm4hep.root
 ```
 
-For useful photon ID training, the histogram XML should be built from both photon signal and non-photon background samples. A gamma-only sample is enough for a steering smoke test, but not for a realistic photon-ID calibration.
+For useful photon ID training, the histogram XML should be built from both photon signal and non-photon background samples. A gamma-only sample is enough for a steering smoke test, but not for a realistic photon-ID calibration. The committed `k4ODD/options/PandoraLikelihoodData9EBin.xml` was generated from 30k events: 10k gamma, 10k neutron, and 10k kaon0L.
 
 
 For development = if you want the script to start by rebuilding all three repos first, and regenerate the simulation:
