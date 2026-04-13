@@ -341,10 +341,12 @@ hps = RootHistSvc("HistogramPersistencySvc")
 root_hist_svc = RootHistoSink("RootHistoSink")
 root_hist_svc.FileName = "ddcalodigi_hist.root"
 
+evt_max = -1 if digi_args.pandoraPhotonTraining else 100
+
 ApplicationMgr(
     TopAlg=calodigi + [merger, tracks, pandora],
     EvtSel="NONE",
-    EvtMax=100,
+    EvtMax=evt_max,
     ExtSvc=[EventDataSvc("EventDataSvc"), root_hist_svc],
     OutputLevel=VERBOSE,
 )
