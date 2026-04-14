@@ -108,8 +108,8 @@
         <algorithm type = "ConeClustering" description = "ClusterFormation">
             <ShouldUseTrackSeed>false</ShouldUseTrackSeed>
         </algorithm>
-        <!-- <algorithm type = "TopologicalAssociationParent" description = "ClusterAssociation"> -->
-        <!--     <associationAlgorithms> -->
+        <algorithm type = "TopologicalAssociationParent" description = "ClusterAssociation">
+          <associationAlgorithms>
         <!--         <algorithm type = "LoopingTracks"/> -->
         <!--         <algorithm type = "BrokenTracks"/> -->
         <!--         <algorithm type = "ShowerMipMerging"/> -->
@@ -127,10 +127,10 @@
         <!--         <algorithm type = "MipPhotonSeparation"> -->
         <!--             <algorithm type = "TrackClusterAssociation"/> -->
         <!--         </algorithm> -->
-        <!--         <algorithm type = "HighEnergyPhotonRecovery"> -->
-        <!--             <algorithm type = "TrackClusterAssociation"/> -->
-        <!--             <AdditionalClusterListNames>PhotonClusters</AdditionalClusterListNames> -->
-        <!--         </algorithm> -->
+          <algorithm type = "HighEnergyPhotonRecovery"> <!-- This did not yield any improvement... -->
+              <algorithm type = "TrackClusterAssociation"/>
+              <AdditionalClusterListNames>PhotonClusters</AdditionalClusterListNames>
+          </algorithm>
         <!--         <algorithm type = "SoftClusterMerging"> -->
         <!--             <algorithm type = "TrackClusterAssociation"/> -->
         <!--             <AdditionalClusterListNames>PhotonClusters</AdditionalClusterListNames> -->
@@ -138,8 +138,8 @@
         <!--         <algorithm type = "IsolatedHitMerging"> -->
         <!--             <AdditionalClusterListNames>PhotonClusters</AdditionalClusterListNames> -->
         <!--         </algorithm> -->
-        <!--     </associationAlgorithms> -->
-        <!-- </algorithm> -->
+           </associationAlgorithms>
+        </algorithm>
         <ClusterListName>PrimaryClusters</ClusterListName>
         <ReplaceCurrentClusterList>true</ReplaceCurrentClusterList>
     </algorithm>
