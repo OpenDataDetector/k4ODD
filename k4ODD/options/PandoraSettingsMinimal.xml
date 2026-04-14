@@ -27,7 +27,7 @@
 
     <!-- PLUGIN REGISTRATION -->
     <!-- <HadronicEnergyCorrectionPlugins>SoftwareCompensation</HadronicEnergyCorrectionPlugins> -->
-    <!-- <EmShowerPlugin>LCEmShowerId</EmShowerPlugin> -->
+    <EmShowerPlugin>LCEmShowerId</EmShowerPlugin> <!-- The biggest improvement of gamma PID -->
     <PhotonPlugin>LCPhotonId</PhotonPlugin>
     <!-- <ElectronPlugin>LCElectronId</ElectronPlugin> -->
     <!-- <MuonPlugin>LCMuonId</MuonPlugin> -->
@@ -451,9 +451,9 @@
     <!--     </trackClusterAssociationAlgorithms> -->
     <!-- </algorithm> -->
 
-    <!-- <algorithm type = "MainFragmentRemoval"/> -->
-    <!-- <algorithm type = "NeutralFragmentRemoval"/> -->
-    <!-- <algorithm type = "PhotonFragmentRemoval"/>  --><!-- absolutely no effect on gamma sample -->
+    <algorithm type = "MainFragmentRemoval"/>
+    <algorithm type = "NeutralFragmentRemoval"/> <!-- small but consistent improvement on gamma sample -->
+    <algorithm type = "PhotonFragmentRemoval"/> <!-- absolutely no effect on gamma sample -->
 
     <algorithm type = "ClusterPreparation">
         <CandidateListNames>PrimaryClusters PhotonClusters</CandidateListNames>
