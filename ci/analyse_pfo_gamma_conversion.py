@@ -76,6 +76,32 @@ class Stats:
     other_pfos: int = 0
     sum_response: float = 0.0
     sum_multiplicity: float = 0.0
+    binned_total_pfos: dict | None = None
+    binned_photon_pfos: dict | None = None
+    binned_neutron_pfos: dict | None = None
+
+
+ENERGY_BINS_GEV = [
+    ("<1", 0.0, 1.0),
+    ("1-5", 1.0, 5.0),
+    ("5-10", 5.0, 10.0),
+    ("10-20", 10.0, 20.0),
+    ("20-50", 20.0, 50.0),
+    (">50", 50.0, None),
+]
+
+
+def make_energy_bin_counter():
+    return {label: 0 for label, _, _ in ENERGY_BINS_GEV}
+
+
+def get_energy_bin_label(energy_gev):
+    for label, low, high in ENERGY_BINS_GEV:
+        if energy_gev < low:
+            continue
+        if high is None or energy_gev < high:
+            return label
+    return ENERGY_BINS_GEV[-1][0]
 
 
 def find_primary_gamma(mc_particles):
@@ -164,6 +190,11 @@ def has_pre_ecal_conversion(mc_particle, ecal_barrel_rmin_mm, ecal_endcap_min_z_
 
 
 def update_stats(stats, pfos, gun_energy):
+    if stats.binned_total_pfos is None:
+        stats.binned_total_pfos = make_energy_bin_counter()
+        stats.binned_photon_pfos = make_energy_bin_counter()
+        stats.binned_neutron_pfos = make_energy_bin_counter()
+
     stats.events += 1
     stats.total_pfos += len(pfos)
     stats.sum_multiplicity += len(pfos)
@@ -171,10 +202,14 @@ def update_stats(stats, pfos, gun_energy):
 
     for pfo in pfos:
         pdg = pfo.getPDG()
+        bin_label = get_energy_bin_label(pfo.getEnergy())
+        stats.binned_total_pfos[bin_label] += 1
         if pdg == 22:
             stats.photon_pfos += 1
+            stats.binned_photon_pfos[bin_label] += 1
         elif pdg == 2112:
             stats.neutron_pfos += 1
+            stats.binned_neutron_pfos[bin_label] += 1
         else:
             stats.other_pfos += 1
 
@@ -198,6 +233,13 @@ def print_stats(label, stats):
     print(f"  neutron PFO fraction (PDG 2112): {neutron_fraction}")
     print(f"  other PFO fraction: {other_fraction}")
     print(f"  total PFO counts: 22={stats.photon_pfos}, 2112={stats.neutron_pfos}, other={stats.other_pfos}")
+    print("  reco PFO energy bins [GeV]: total, photons(22), neutrons(2112), photon_fraction")
+    for label, _, _ in ENERGY_BINS_GEV:
+        total = stats.binned_total_pfos[label]
+        photons = stats.binned_photon_pfos[label]
+        neutrons = stats.binned_neutron_pfos[label]
+        fraction = photons / total if total else 0.0
+        print(f"    {label}: total={total}, photons={photons}, neutrons={neutrons}, photon_fraction={fraction}")
 
 
 def run(input_files, collection_name, ecal_barrel_rmin_override_mm, ecal_endcap_min_z_override_mm):
