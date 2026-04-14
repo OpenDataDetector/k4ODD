@@ -355,5 +355,5 @@ ApplicationMgr(
     EvtSel="NONE",
     EvtMax=evt_max,
     ExtSvc=[EventDataSvc("EventDataSvc"), root_hist_svc],
-    OutputLevel=VERBOSE,
+    OutputLevel=INFO,
 )
