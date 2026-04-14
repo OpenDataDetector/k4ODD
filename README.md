@@ -122,7 +122,10 @@ REBUILD_STACK=1 PANDORA_SANITY_FORCE_SIM=1 bash ./ci/run_pandora_sanity.sh
 python ci/analyse_single_shower_root.py -i gamma_10GeV_eta0_100ev_sim_edm4hep.root
 python ci/analyse_single_shower_podio.py -i gamma_10GeV_eta0_100ev_digi_edm4hep.root --digi
 python ci/analyse_pfo_performance.py -i gamma_10GeV_eta0_100ev_reco_edm4hep.root
+python ci/analyse_pfo_gamma_conversion.py -i training_gamma_reco_minimal_photonid_highstat.root
 ```
+
+`analyse_pfo_gamma_conversion.py` splits gamma events into conversions before the ECAL entrance and unconverted events using the ODD envelope constants `ecal_b_rmin` and `ecal_e_min_z` from `OpenDataDetectorEnvelopes.xml`.
 
 In CI the validation jobs save the ROOT summaries and preview PDFs as artifacts.
 

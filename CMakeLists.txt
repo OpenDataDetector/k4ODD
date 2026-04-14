@@ -109,3 +109,26 @@ add_test(
 )
 set_test_env("digi_gamma_validation_join")
 set_property(TEST "digi_gamma_validation_join" APPEND PROPERTY FIXTURES_REQUIRED digi_gamma)
+
+add_test(
+  NAME pandora_gamma_10_1000
+  COMMAND bash -c "source ${PROJECT_BINARY_DIR}/OpenDataDetector/install/bin/this_odd.sh && export PYTHONPATH=/cvmfs/sw-nightlies.hsf.org/key4hep/releases/2025-06-07/x86_64-almalinux9-gcc14.2.0-opt/k4gaudipandora/9b484e6a736829c3ef6558a4a77e689c864699cd_develop-la2gxj/python/:$PYTHONPATH && python `which k4run` k4ODD/options/ODDreconstruction.py --inputFile gamma_10GeV_eta0_1000ev_sim_edm4hep.root --outputFile gamma_10GeV_eta0_1000ev_reco_edm4hep.root"
+)
+set_test_env("pandora_gamma_10_1000")
+set_property(TEST "pandora_gamma_10_1000" APPEND PROPERTY FIXTURES_REQUIRED "ddsim_gamma_10_1000")
+set_property(TEST "pandora_gamma_10_1000" APPEND PROPERTY FIXTURES_SETUP pandora_gamma)
+
+add_test(
+  NAME pandora_gamma_validation_10_1000
+  COMMAND python ${PROJECT_SOURCE_DIR}/ci/analyse_pfo_performance.py -i gamma_10GeV_eta0_1000ev_reco_edm4hep.root -o gamma_10GeV_eta0_1000ev_pandoraVal_results.root
+)
+set_test_env("pandora_gamma_validation_10_1000")
+set_property(TEST "pandora_gamma_validation_10_1000" APPEND PROPERTY FIXTURES_REQUIRED pandora_gamma)
+
+add_test(
+  NAME pandora_gamma_conversion_validation_10_1000
+  COMMAND python ${PROJECT_SOURCE_DIR}/ci/analyse_pfo_gamma_conversion.py -i gamma_10GeV_eta0_1000ev_reco_edm4hep.root
+)
+set_test_env("pandora_gamma_conversion_validation_10_1000")
+set_property(TEST "pandora_gamma_conversion_validation_10_1000" APPEND PROPERTY FIXTURES_REQUIRED pandora_gamma)
+set_property(TEST "pandora_gamma_conversion_validation_10_1000" APPEND PROPERTY ENVIRONMENT "OpenDataDetector=${PROJECT_BINARY_DIR}/OpenDataDetector")
