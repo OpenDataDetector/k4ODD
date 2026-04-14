@@ -131,10 +131,10 @@
               <algorithm type = "TrackClusterAssociation"/>
               <AdditionalClusterListNames>PhotonClusters</AdditionalClusterListNames>
           </algorithm>
-        <!--         <algorithm type = "SoftClusterMerging"> -->
-        <!--             <algorithm type = "TrackClusterAssociation"/> -->
-        <!--             <AdditionalClusterListNames>PhotonClusters</AdditionalClusterListNames> -->
-        <!--         </algorithm> -->
+          <algorithm type = "SoftClusterMerging"> <!-- Large, 40%, improvement of <1GeV unconverted photons -->
+            <algorithm type = "TrackClusterAssociation"/>
+            <AdditionalClusterListNames>PhotonClusters</AdditionalClusterListNames>
+          </algorithm>
         <!--         <algorithm type = "IsolatedHitMerging"> -->
         <!--             <AdditionalClusterListNames>PhotonClusters</AdditionalClusterListNames> -->
         <!--         </algorithm> -->
