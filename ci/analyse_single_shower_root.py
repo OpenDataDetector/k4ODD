@@ -32,7 +32,7 @@ parser.add_argument("--hcal", action="store_true", help="Perform analysis for HC
 args = parser.parse_args()
 
 
-def resolve_output_path(filename):
+def resolve_path(filename):
     import os
 
     if os.path.isabs(filename) or os.path.dirname(filename):
@@ -70,7 +70,7 @@ def hist_models(hcal_instead_of_ecal):
 
 
 def write_output(outname, inputlist, h_cal, h_mc, h_ratio, result_mean, result_mean_error, result_resolution, result_resolution_error, gun_mean):
-    outname = resolve_output_path(outname)
+    outname = resolve_path(outname)
     outfile = ROOT.TFile(outname, "RECREATE")
     outfile.cd()
     h_cal.Write("energy_cal")
@@ -100,7 +100,7 @@ def write_output(outname, inputlist, h_cal, h_mc, h_ratio, result_mean, result_m
     canv.cd()
     h_cal.Draw()
     preview_name = f"preview_energyFit_{inputlist[0].split('/')[-1:][0][:-5]}.pdf"
-    canv.SaveAs(resolve_output_path(preview_name))
+    canv.SaveAs(resolve_path(preview_name))
 
 
 def fit_and_store(inputlist, outname, h_cal, h_mc, h_ratio):
@@ -225,4 +225,4 @@ def run(inputlist, outname, ncpu, endcap_instead_of_barrel, hcal_instead_of_ecal
 
 
 if __name__ == "__main__":
-    run(args.infile, args.outfile, args.ncpus, args.endcap, args.hcal)
+    run([resolve_path(filename) for filename in args.infile], args.outfile, args.ncpus, args.endcap, args.hcal)

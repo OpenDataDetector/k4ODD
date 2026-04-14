@@ -36,7 +36,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-def resolve_output_path(filename):
+def resolve_path(filename):
     import os
 
     if os.path.isabs(filename) or os.path.dirname(filename):
@@ -100,7 +100,7 @@ def write_pid_tree(outfile, pid_counts):
 
 
 def write_output(outname, inputlist, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, h_charged, h_neutral, pid_counts):
-    outname = resolve_output_path(outname)
+    outname = resolve_path(outname)
     outfile = ROOT.TFile(outname, "RECREATE")
     outfile.cd()
     h_n_pfo.Write()
@@ -138,7 +138,7 @@ def write_output(outname, inputlist, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, 
     canv.cd()
     h_sum.Draw()
     preview_name = f"preview_pfoEnergyFit_{inputlist[0].split('/')[-1:][0][:-5]}.pdf"
-    canv.SaveAs(resolve_output_path(preview_name))
+    canv.SaveAs(resolve_path(preview_name))
 
 
 def finish_analysis(inputlist, outname, h_n_pfo, h_sum, h_sum_ratio, h_lead_ratio, h_charged, h_neutral, pid_counts):
@@ -245,4 +245,4 @@ def run_podio(inputlist, outname, collection_name):
 
 
 if __name__ == "__main__":
-    run(args.infile, args.outfile, args.ncpus, args.collection)
+    run([resolve_path(filename) for filename in args.infile], args.outfile, args.ncpus, args.collection)
