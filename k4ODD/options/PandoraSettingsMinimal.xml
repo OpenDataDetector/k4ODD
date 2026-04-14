@@ -135,9 +135,9 @@
             <algorithm type = "TrackClusterAssociation"/>
             <AdditionalClusterListNames>PhotonClusters</AdditionalClusterListNames>
           </algorithm>
-        <!--         <algorithm type = "IsolatedHitMerging"> -->
-        <!--             <AdditionalClusterListNames>PhotonClusters</AdditionalClusterListNames> -->
-        <!--         </algorithm> -->
+            <algorithm type = "IsolatedHitMerging"> <!-- Increases energy but creates more fake neutral hadrons so a question of response vs purity trade-off -->
+              <AdditionalClusterListNames>PhotonClusters</AdditionalClusterListNames>
+            </algorithm>
            </associationAlgorithms>
         </algorithm>
         <ClusterListName>PrimaryClusters</ClusterListName>
@@ -453,15 +453,15 @@
 
     <!-- <algorithm type = "MainFragmentRemoval"/> -->
     <!-- <algorithm type = "NeutralFragmentRemoval"/> -->
-    <!-- <algorithm type = "PhotonFragmentRemoval"/> -->
+    <!-- <algorithm type = "PhotonFragmentRemoval"/>  --><!-- absolutely no effect on gamma sample -->
 
     <algorithm type = "ClusterPreparation">
         <CandidateListNames>PrimaryClusters PhotonClusters</CandidateListNames>
         <MergedCandidateListName>PfoCreation</MergedCandidateListName>
     </algorithm>
 
-    <!-- <algorithm type = "PhotonSplitting"/> -->
-    <!-- <algorithm type = "PhotonFragmentMerging"/> -->
+    <algorithm type = "PhotonSplitting"/> <!-- a few fake photons appear (per 10k)... -->
+    <algorithm type = "PhotonFragmentMerging"/> <!-- it recovers from above and improves slightly gamma PID -->
 
     <!-- Create particle flow objects -->
     <!-- <algorithm type = "ForceSplitTrackAssociations"/> -->
