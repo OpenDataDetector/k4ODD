@@ -428,10 +428,10 @@
     <!--     <CoilCorrectionMinInnerRadius>3719</CoilCorrectionMinInnerRadius> -->
     <!-- </algorithm> -->
 
-    <!-- <!-\- Photon recovery -\-> -->
-    <!-- <algorithm type = "PhotonRecovery"> -->
-    <!--     <algorithm type = "TrackClusterAssociation"/> -->
-    <!-- </algorithm> -->
+    <!-- Photon recovery -->
+    <algorithm type = "PhotonRecovery">
+        <algorithm type = "TrackClusterAssociation"/>
+    </algorithm>
 
     <!-- <algorithm type = "MuonPhotonSeparation"> -->
     <!--     <algorithm type = "TrackClusterAssociation"/> -->
@@ -475,7 +475,7 @@
     </algorithm>
 
     <!-- Particle flow object modification algorithms -->
-    <!-- <algorithm type = "FinalParticleId"/> -->
+    <algorithm type = "FinalParticleId"/>
     <!-- <algorithm type = "V0PfoCreation"/> -->
     <algorithm type = "DumpPfosMonitoring"/>
     <!--algorithm type = "VisualMonitoring"/-->
