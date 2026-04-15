@@ -23,6 +23,7 @@ import os
 import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
+from statistics import pstdev
 
 
 parser = argparse.ArgumentParser(description="Analyse gamma conversion truth vs reconstructed PFO IDs")
@@ -53,6 +54,15 @@ parser.add_argument(
         "(constant ecal_e_min_z)."
     ),
 )
+parser.add_argument(
+    "--plots-dir",
+    type=str,
+    default="plots",
+    help=(
+        "Directory for the unconverted gamma shower-shape canvases. "
+        "Relative paths are resolved via K4ODD_OUTPUT_DIR. Existing files are overwritten."
+    ),
+)
 args = parser.parse_args()
 
 
@@ -81,6 +91,20 @@ class Stats:
     binned_neutron_pfos: dict | None = None
 
 
+@dataclass
+class ShowerObservables:
+    ecal_barrel_fraction: float
+    ecal_endcap_fraction: float
+    hcal_barrel_fraction: float
+    hcal_endcap_fraction: float
+    shower_start_layer: float
+    longitudinal_maximum: float
+    occupied_layers: float
+    transverse_width: float
+    transverse_second_moment: float
+    total_hit_count: float
+
+
 ENERGY_BINS_GEV = [
     ("<1", 0.0, 1.0),
     ("1-5", 1.0, 5.0),
@@ -102,6 +126,27 @@ def get_energy_bin_label(energy_gev):
         if high is None or energy_gev < high:
             return label
     return ENERGY_BINS_GEV[-1][0]
+
+
+VARIABLE_SPECS = [
+    ("ecal_barrel_fraction", "ECAL barrel energy fraction", 50),
+    ("ecal_endcap_fraction", "ECAL endcap energy fraction", 50),
+    ("hcal_barrel_fraction", "HCAL barrel energy fraction", 50),
+    ("hcal_endcap_fraction", "HCAL endcap energy fraction", 50),
+    ("shower_start_layer", "Shower start pseudo-layer", 60),
+    ("longitudinal_maximum", "Longitudinal maximum pseudo-layer", 60),
+    ("occupied_layers", "Number of occupied pseudo-layers", 60),
+    ("transverse_width", "Transverse width [mm]", 80),
+    ("transverse_second_moment", "Transverse second moment [mm^{2}]", 80),
+    ("total_hit_count", "Total hit count", 160),
+]
+
+
+def make_shape_store():
+    return {
+        energy_label: {"gamma": {var: [] for var, *_ in VARIABLE_SPECS}, "neutron": {var: [] for var, *_ in VARIABLE_SPECS}}
+        for energy_label, _, _ in ENERGY_BINS_GEV
+    }
 
 
 def find_primary_gamma(mc_particles):
@@ -242,7 +287,212 @@ def print_stats(label, stats):
         print(f"    {label}: total={total}, photons={photons}, neutrons={neutrons}, photon_fraction={fraction}")
 
 
-def run(input_files, collection_name, ecal_barrel_rmin_override_mm, ecal_endcap_min_z_override_mm):
+def add_observables(target, energy_label, reco_label, observables):
+    bucket = target[energy_label][reco_label]
+    bucket["ecal_barrel_fraction"].append(observables.ecal_barrel_fraction)
+    bucket["ecal_endcap_fraction"].append(observables.ecal_endcap_fraction)
+    bucket["hcal_barrel_fraction"].append(observables.hcal_barrel_fraction)
+    bucket["hcal_endcap_fraction"].append(observables.hcal_endcap_fraction)
+    bucket["shower_start_layer"].append(observables.shower_start_layer)
+    bucket["longitudinal_maximum"].append(observables.longitudinal_maximum)
+    bucket["occupied_layers"].append(observables.occupied_layers)
+    bucket["transverse_width"].append(observables.transverse_width)
+    bucket["transverse_second_moment"].append(observables.transverse_second_moment)
+    bucket["total_hit_count"].append(observables.total_hit_count)
+
+
+def cluster_axis(cluster):
+    theta = cluster.getITheta()
+    phi = cluster.getIPhi()
+    sin_theta = math.sin(theta)
+    axis = (
+        sin_theta * math.cos(phi),
+        sin_theta * math.sin(phi),
+        math.cos(theta),
+    )
+    norm = math.sqrt(sum(component * component for component in axis))
+    if norm <= 0.0:
+        pos = cluster.getPosition()
+        norm = math.sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z)
+        if norm <= 0.0:
+            return (0.0, 0.0, 1.0)
+        return (pos.x / norm, pos.y / norm, pos.z / norm)
+    return tuple(component / norm for component in axis)
+
+
+def compute_cluster_observables(cluster):
+    hits = list(cluster.getHits())
+    if not hits:
+        return None
+
+    axis = cluster_axis(cluster)
+    longitudinals = []
+    transverse_r2 = []
+    hit_energies = []
+
+    for hit in hits:
+        position = hit.getPosition()
+        hit_vector = (position.x, position.y, position.z)
+        longitudinal = sum(component * direction for component, direction in zip(hit_vector, axis))
+        radius2 = sum(component * component for component in hit_vector) - longitudinal * longitudinal
+        longitudinals.append(longitudinal)
+        transverse_r2.append(max(radius2, 0.0))
+        hit_energies.append(hit.getEnergy())
+
+    longitudinal_min = min(longitudinals)
+    layer_pitch_mm = 10.0
+    pseudo_layers = [int((value - longitudinal_min) / layer_pitch_mm) for value in longitudinals]
+
+    energy_per_layer = {}
+    for layer, energy in zip(pseudo_layers, hit_energies):
+        energy_per_layer[layer] = energy_per_layer.get(layer, 0.0) + energy
+
+    total_energy = sum(hit_energies)
+    if total_energy <= 0.0:
+        total_energy = cluster.getEnergy()
+    if total_energy <= 0.0:
+        return None
+
+    occupied_layers = len(energy_per_layer)
+    shower_start_layer = min(energy_per_layer)
+    longitudinal_maximum = max(energy_per_layer, key=energy_per_layer.get)
+    second_moment = sum(energy * radius2 for energy, radius2 in zip(hit_energies, transverse_r2)) / total_energy
+    transverse_width = math.sqrt(max(second_moment, 0.0))
+
+    subdetector_energies = list(cluster.getSubdetectorEnergies())
+    ecal_barrel_energy = subdetector_energies[0] if len(subdetector_energies) > 0 else 0.0
+    ecal_endcap_energy = subdetector_energies[1] if len(subdetector_energies) > 1 else 0.0
+    hcal_barrel_energy = subdetector_energies[2] if len(subdetector_energies) > 2 else 0.0
+    hcal_endcap_energy = subdetector_energies[3] if len(subdetector_energies) > 3 else 0.0
+
+    return ShowerObservables(
+        ecal_barrel_fraction=ecal_barrel_energy / total_energy if total_energy > 0 else 0.0,
+        ecal_endcap_fraction=ecal_endcap_energy / total_energy if total_energy > 0 else 0.0,
+        hcal_barrel_fraction=hcal_barrel_energy / total_energy if total_energy > 0 else 0.0,
+        hcal_endcap_fraction=hcal_endcap_energy / total_energy if total_energy > 0 else 0.0,
+        shower_start_layer=float(shower_start_layer),
+        longitudinal_maximum=float(longitudinal_maximum),
+        occupied_layers=float(occupied_layers),
+        transverse_width=transverse_width,
+        transverse_second_moment=second_moment,
+        total_hit_count=float(len(hits)),
+    )
+
+
+def compute_pfo_observables(pfo):
+    clusters = list(pfo.getClusters())
+    if not clusters:
+        return None
+
+    cluster_observables = [compute_cluster_observables(cluster) for cluster in clusters]
+    cluster_observables = [item for item in cluster_observables if item is not None]
+    if not cluster_observables:
+        return None
+
+    if len(cluster_observables) == 1:
+        return cluster_observables[0]
+
+    cluster_energies = [cluster.getEnergy() for cluster in clusters]
+    total_cluster_energy = sum(cluster_energies)
+    if total_cluster_energy <= 0.0:
+        total_cluster_energy = float(len(cluster_observables))
+
+    weighted = lambda attr: sum(getattr(obs, attr) * energy for obs, energy in zip(cluster_observables, cluster_energies)) / total_cluster_energy
+    return ShowerObservables(
+        ecal_barrel_fraction=weighted("ecal_barrel_fraction"),
+        ecal_endcap_fraction=weighted("ecal_endcap_fraction"),
+        hcal_barrel_fraction=weighted("hcal_barrel_fraction"),
+        hcal_endcap_fraction=weighted("hcal_endcap_fraction"),
+        shower_start_layer=min(obs.shower_start_layer for obs in cluster_observables),
+        longitudinal_maximum=max(obs.longitudinal_maximum for obs in cluster_observables),
+        occupied_layers=sum(obs.occupied_layers for obs in cluster_observables),
+        transverse_width=weighted("transverse_width"),
+        transverse_second_moment=weighted("transverse_second_moment"),
+        total_hit_count=sum(obs.total_hit_count for obs in cluster_observables),
+    )
+
+
+def mean_and_stdev(values):
+    if not values:
+        return (0.0, 0.0)
+    mean = sum(values) / len(values)
+    return (mean, pstdev(values))
+
+
+def print_unconverted_shape_stats(shape_store):
+    print("Unconverted gamma shower-shape study by reconstructed PFO ID")
+    for energy_label, _, _ in ENERGY_BINS_GEV:
+        print(f"  Energy bin {energy_label} GeV")
+        for reco_label, reco_title in [("gamma", "Reco gamma (PDG 22)"), ("neutron", "Reco neutron-like (PDG 2112)")]:
+            print(f"    {reco_title}")
+            for variable, title, *_ in VARIABLE_SPECS:
+                values = shape_store[energy_label][reco_label][variable]
+                mean, stdev = mean_and_stdev(values)
+                print(f"      {title}: N={len(values)}, mean={mean}, stdev={stdev}")
+
+
+def write_shape_plots(shape_store, plots_dir):
+    import ROOT
+
+    ROOT.gROOT.SetBatch(True)
+    plots_dir = resolve_path(plots_dir)
+    os.makedirs(plots_dir, exist_ok=True)
+
+    for energy_label, _, _ in ENERGY_BINS_GEV:
+        canvas = ROOT.TCanvas(f"c_{energy_label}", f"Unconverted gamma shower shapes {energy_label}", 3600, 2400)
+        canvas.Divide(4, 2)
+        keep_alive = []
+
+        for pad_index, (variable, title, nbins) in enumerate(VARIABLE_SPECS, start=1):
+            gamma_values = shape_store[energy_label]["gamma"][variable]
+            neutron_values = shape_store[energy_label]["neutron"][variable]
+            all_values = gamma_values + neutron_values
+
+            if all_values:
+                xlow = min(all_values)
+                xhigh = max(all_values)
+                if math.isclose(xlow, xhigh):
+                    pad = 1.0 if math.isclose(xlow, 0.0) else 0.1 * abs(xlow)
+                    xlow -= pad
+                    xhigh += pad
+                else:
+                    pad = 0.05 * (xhigh - xlow)
+                    xlow -= pad
+                    xhigh += pad
+            else:
+                xlow, xhigh = 0.0, 1.0
+
+            gamma_hist = ROOT.TH1D(f"{variable}_gamma_{energy_label}", f"{title};{title};Entries", nbins, xlow, xhigh)
+            neutron_hist = ROOT.TH1D(f"{variable}_neutron_{energy_label}", f"{title};{title};Entries", nbins, xlow, xhigh)
+
+            for value in gamma_values:
+                gamma_hist.Fill(value)
+            for value in neutron_values:
+                neutron_hist.Fill(value)
+
+            gamma_hist.SetLineColor(ROOT.kBlue + 1)
+            gamma_hist.SetLineWidth(2)
+            neutron_hist.SetLineColor(ROOT.kRed + 1)
+            neutron_hist.SetLineWidth(2)
+
+            canvas.cd(pad_index)
+            ROOT.gPad.SetGrid()
+            maximum = max(gamma_hist.GetMaximum(), neutron_hist.GetMaximum(), 1.0)
+            gamma_hist.SetMaximum(1.2 * maximum)
+            gamma_hist.Draw("hist")
+            neutron_hist.Draw("hist same")
+
+            legend = ROOT.TLegend(0.55, 0.72, 0.88, 0.88)
+            legend.SetBorderSize(0)
+            legend.AddEntry(gamma_hist, "Reco gamma (22)", "l")
+            legend.AddEntry(neutron_hist, "Reco neutron-like (2112)", "l")
+            legend.Draw()
+            keep_alive.extend([gamma_hist, neutron_hist, legend])
+
+        canvas.SaveAs(os.path.join(plots_dir, f"unconverted_gamma_shower_shapes_{energy_label.replace('>', 'gt').replace('<', 'lt')}.pdf"))
+
+
+def run(input_files, collection_name, ecal_barrel_rmin_override_mm, ecal_endcap_min_z_override_mm, plots_dir):
     from podio import root_io
 
     envelope_xml, default_ecal_barrel_rmin_mm, default_ecal_endcap_min_z_mm = load_ecal_boundaries()
@@ -269,6 +519,7 @@ def run(input_files, collection_name, ecal_barrel_rmin_override_mm, ecal_endcap_
 
     converted = Stats()
     unconverted = Stats()
+    shape_store = make_shape_store()
 
     for filename in input_files:
         reader = root_io.Reader(filename)
@@ -286,9 +537,21 @@ def run(input_files, collection_name, ecal_barrel_rmin_override_mm, ecal_endcap_
                 update_stats(converted, pfos, gun_energy)
             else:
                 update_stats(unconverted, pfos, gun_energy)
+                for pfo in pfos:
+                    pdg = pfo.getPDG()
+                    if pdg not in (22, 2112):
+                        continue
+                    observables = compute_pfo_observables(pfo)
+                    if observables is None:
+                        continue
+                    energy_label = get_energy_bin_label(pfo.getEnergy())
+                    reco_label = "gamma" if pdg == 22 else "neutron"
+                    add_observables(shape_store, energy_label, reco_label, observables)
 
     print_stats("Converted before ECAL", converted)
     print_stats("Unconverted before ECAL", unconverted)
+    print_unconverted_shape_stats(shape_store)
+    write_shape_plots(shape_store, plots_dir)
 
 
 if __name__ == "__main__":
@@ -297,4 +560,5 @@ if __name__ == "__main__":
         args.collection,
         args.rmin_mm,
         args.zmin_mm,
+        args.plots_dir,
     )
