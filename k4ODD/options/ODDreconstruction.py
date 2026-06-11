@@ -32,6 +32,9 @@ import os
 from k4FWCore.parseArgs import parser
 
 
+# --- DEFAULTS = the calibrated REALISTIC-digi constants (options/calib_constants_real.env,
+# --- derivation in doc/CALIBRATION_JOURNAL.md): realistic ECAL(Si)/HCAL(SiPM) digitisation ON,
+# --- EM scale 1.0307, ECAL->Had 1.10 / HCAL->Had 1.90 (R1 rebalance). Override via env for sweeps.
 # --- Calibration knobs: env-overridable so the calibration loop can sweep digi +
 # --- Pandora constants without editing this file. Defaults reproduce the prior values.
 def _env_float(name, default):
@@ -183,7 +186,7 @@ for calodigicol, ecalorhcal, inputcol, outputcol, relcol in zip(
     calodigicol.ECAL_PPD_N_Pixels = 10000
     calodigicol.ECAL_PPD_N_Pixels_uncertainty = 0.05
     calodigicol.ECAL_PPD_PE_per_MIP = 7.0
-    calodigicol.ECAL_apply_realistic_digi = _env_int("K4ODD_ECAL_REALISTIC_DIGI", 0)
+    calodigicol.ECAL_apply_realistic_digi = _env_int("K4ODD_ECAL_REALISTIC_DIGI", 1)
     calodigicol.ECAL_deadCellRate = _env_float("K4ODD_ECAL_DEADCELL_RATE", 0.0)
     calodigicol.ECAL_deadCell_memorise = False
     calodigicol.ECAL_elec_noise_mips = _env_float("K4ODD_ECAL_NOISE_MIPS", 0.0)
@@ -211,7 +214,7 @@ for calodigicol, ecalorhcal, inputcol, outputcol, relcol in zip(
     calodigicol.HCAL_PPD_N_Pixels = 400
     calodigicol.HCAL_PPD_N_Pixels_uncertainty = 0.05
     calodigicol.HCAL_PPD_PE_per_MIP = 10.0
-    calodigicol.HCAL_apply_realistic_digi = _env_int("K4ODD_HCAL_REALISTIC_DIGI", 0)
+    calodigicol.HCAL_apply_realistic_digi = _env_int("K4ODD_HCAL_REALISTIC_DIGI", 1)
     calodigicol.HCAL_deadCellRate = _env_float("K4ODD_HCAL_DEADCELL_RATE", 0.0)
     calodigicol.HCAL_deadCell_memorise = False
     calodigicol.HCAL_elec_noise_mips = _env_float("K4ODD_HCAL_NOISE_MIPS", 0.0)
@@ -371,11 +374,11 @@ params = {
     "HCalToMipCalibration": "45.6621",
     "ECalMipThreshold": "0.5",
     "HCalMipThreshold": "0.3",
-    "ECalToEMGeVCalibration": _env_float("K4ODD_ECAL_EM_SCALE", 1.01776966108),
-    "HCalToEMGeVCalibration": _env_float("K4ODD_HCAL_EM_SCALE", 1.01776966108),
-    "ECalToHadGeVCalibrationBarrel": _env_float("K4ODD_ECAL_HAD_SCALE_BARREL", 1.11490774181),
-    "ECalToHadGeVCalibrationEndCap": _env_float("K4ODD_ECAL_HAD_SCALE_ENDCAP", 1.11490774181),
-    "HCalToHadGeVCalibration": _env_float("K4ODD_HCAL_HAD_SCALE", 1.00565042407),
+    "ECalToEMGeVCalibration": _env_float("K4ODD_ECAL_EM_SCALE", 1.0307411173318997),
+    "HCalToEMGeVCalibration": _env_float("K4ODD_HCAL_EM_SCALE", 1.0307411173318997),
+    "ECalToHadGeVCalibrationBarrel": _env_float("K4ODD_ECAL_HAD_SCALE_BARREL", 1.10),
+    "ECalToHadGeVCalibrationEndCap": _env_float("K4ODD_ECAL_HAD_SCALE_ENDCAP", 1.10),
+    "HCalToHadGeVCalibration": _env_float("K4ODD_HCAL_HAD_SCALE", 1.90),
     "MuonToMipCalibration": "20703.9",
     "DigitalMuonHits": "0",
     "MaxHCalHitHadronicEnergy": "10000000.",
