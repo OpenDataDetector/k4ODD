@@ -35,6 +35,11 @@ on:
         required: false
         default: false
         type: boolean
+      regenerate_references:
+        description: Upload freshly computed pf-regression metrics as an artifact (instead of comparing)
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -46,9 +51,9 @@ env:
   ODD_DIR: ${{ github.workspace }}/OpenDataDetector
   K4GAUDIPANDORA_DIR: ${{ github.workspace }}/k4GaudiPandora
   ODD_URL: ${{ vars.ODD_URL || 'https://gitlab.cern.ch/azaborow/OpenDataDetector.git' }}
-  K4GAUDIPANDORA_URL: ${{ vars.K4GAUDIPANDORA_URL || 'https://github.com/zaborowska/k4GaudiPandora.git' }}
+  K4GAUDIPANDORA_URL: ${{ vars.K4GAUDIPANDORA_URL || 'https://github.com/OpenDataDetector/k4GaudiPandora.git' }}
   ODD_REF: ${{ inputs.odd_ref || vars.ODD_REF || 'addLayeredCalo_MuonCoil' }}
-  K4GAUDIPANDORA_REF: ${{ inputs.pandora_ref || vars.K4GAUDIPANDORA_REF || 'odd_edits' }}
+  K4GAUDIPANDORA_REF: ${{ inputs.pandora_ref || vars.K4GAUDIPANDORA_REF || 'colliderml-odd-edits.1' }}
   SIM_FILE: gamma_10GeV_eta0_100ev_sim_edm4hep.root
   DIGI_FILE: gamma_10GeV_eta0_100ev_digi_edm4hep.root
   RECO_FILE: gamma_10GeV_eta0_100ev_reco_edm4hep.root
@@ -816,6 +821,145 @@ jobs:
             ${{ github.workspace }}/digiVal_highstat_results.root
             ${{ github.workspace }}/preview_energyFit_gamma_10GeV_eta0_1000ev_*.pdf
           retention-days: 7
+          overwrite: true
+          if-no-files-found: ignore
+
+      - name: Stop container
+        if: always()
+        run: |
+          docker rm -f k4odd-ci
+
+  # Particle-flow physics regression: single-particle buckets -> calibrated digi+Pandora reco
+  # (pinned stack from ci/pandora_stack.env) -> truth links -> k4DetectorPerformance PFONtuple
+  # -> metrics vs committed reference. All PF physics evaluation goes through the PFONtuple.
+  pf-regression:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - stack: /cvmfs/sw.hsf.org/key4hep/setup.sh
+            os: alma9
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Clone OpenDataDetector
+        env:
+          CLONE_TOKEN: ${{ secrets.CI_CLONE_TOKEN }}
+        run: |
+          if [ -n "${CLONE_TOKEN:-}" ]; then
+            odd_url="${ODD_URL/https:\/\//https:\/\/oauth2:${CLONE_TOKEN}@}"
+          else
+            odd_url="$ODD_URL"
+          fi
+          git clone --depth 1 --branch "$ODD_REF" "$odd_url" "$ODD_DIR"
+
+      - uses: key4hep/key4hep-actions/cache-external-data@main
+
+      - name: Cache pinned Pandora stack
+        id: stack-cache
+        uses: actions/cache@v4
+        with:
+          path: pandora-stack
+          key: pandora-stack-${{ matrix.os }}-${{ hashFiles('ci/pandora_stack.env') }}
+
+      - name: Start container
+        run: |
+          docker run --name k4odd-ci \
+                     --privileged \
+                     -v "${GITHUB_WORKSPACE}:/Package" \
+                     -d "ghcr.io/key4hep/key4hep-images/${{ matrix.os }}-cvmfs" \
+                     tail -f /dev/null
+
+      - name: Mount CVMFS
+        run: |
+          docker exec k4odd-ci /bin/bash -c '/mount.sh'
+
+      - name: Build pinned Pandora stack
+        if: steps.stack-cache.outputs.cache-hit != 'true'
+        run: |
+          docker exec k4odd-ci /bin/bash -lc '
+            cd /Package
+            export KEY4HEP_SETUP="${{ matrix.stack }}"
+            export PANDORA_STACK_DIR=/Package/pandora-stack
+            export PANDORA_STACK_BUILD=/tmp/pandora-stack-build
+            bash ci/build_pandora_stack.sh
+          '
+
+      - name: Build OpenDataDetector and k4ODD against the pinned stack
+        run: |
+          docker exec k4odd-ci /bin/bash -lc '
+            cd /Package
+            export KEY4HEP_SETUP="${{ matrix.stack }}"
+            source "${KEY4HEP_SETUP}"
+            ODD=/Package/OpenDataDetector
+            cmake -S "$ODD" -B "$ODD/${BUILD_DIR_NAME}" -GNinja -DCMAKE_INSTALL_PREFIX="$ODD/install"
+            cmake --build "$ODD/${BUILD_DIR_NAME}" -j4 && cmake --install "$ODD/${BUILD_DIR_NAME}"
+            source /Package/pandora-stack/install/setup_stack.sh
+            cmake -S /Package -B "/Package/${BUILD_DIR_NAME}" -GNinja -DCMAKE_INSTALL_PREFIX="/Package/${INSTALL_DIR_NAME}"
+            cmake --build "/Package/${BUILD_DIR_NAME}" -j4 && cmake --install "/Package/${BUILD_DIR_NAME}"
+          '
+
+      - name: Simulate, reconstruct and evaluate buckets
+        run: |
+          docker exec k4odd-ci /bin/bash -lc '
+            cd /Package
+            export KEY4HEP_SETUP="${{ matrix.stack }}"
+            source "${KEY4HEP_SETUP}"
+            export OpenDataDetector=/Package/OpenDataDetector
+            source "${OpenDataDetector}/install/bin/this_odd.sh"
+            source /Package/pandora-stack/install/setup_stack.sh
+            export LD_LIBRARY_PATH="/Package/${INSTALL_DIR_NAME}/lib:/Package/${INSTALL_DIR_NAME}/lib64:${LD_LIBRARY_PATH}"
+            export PYTHONPATH="/Package/${INSTALL_DIR_NAME}/python:${PYTHONPATH}"
+            set -e
+            NEV=20
+            inputs=""
+            run_bucket() {
+              name="$1"; particle="$2"; energy="$3"; eta="$4"; seed="$5"
+              echo "=== bucket $name"
+              ddsim --steeringFile k4ODD/options/ODDsimulation.py --enableGun \
+                --gun.distribution uniform --gun.etaMin "$eta" --gun.etaMax "$eta" \
+                --gun.energy "${energy}*GeV" --gun.particle "$particle" \
+                --numberOfEvents "$NEV" --random.seed "$seed" \
+                --outputFile "sim_${name}.root" > "sim_${name}.log" 2>&1 || { tail -20 "sim_${name}.log"; exit 1; }
+              k4run k4ODD/options/ODDreconstruction.py \
+                --inputFile "sim_${name}.root" --outputFile "reco_${name}.root" > "reco_${name}.log" 2>&1 \
+                || { tail -20 "reco_${name}.log"; exit 1; }
+              python3 ci/make_truth_links.py -i "reco_${name}.root" -o "links_${name}.root"
+              k4run pandora-stack/src/k4DetectorPerformance/PFlowValidation/options/runPFONTuple_ODD.py \
+                --inputFiles "links_${name}.root" -o "pfontuple_${name}" > "ntuple_${name}.log" 2>&1 \
+                || { tail -20 "ntuple_${name}.log"; exit 1; }
+              inputs="$inputs -i ${name}=pfontuple_${name}.root"
+            }
+            run_bucket gamma_E10_eta0   gamma   10 0.0 101
+            run_bucket gamma_E50_eta0   gamma   50 0.0 102
+            run_bucket gamma_E50_eta2   gamma   50 2.0 103
+            run_bucket neutron_E10_eta0 neutron 10 0.0 104
+            run_bucket neutron_E50_eta0 neutron 50 0.0 105
+            run_bucket mu_E10_eta0      mu-     10 0.0 106
+            python3 ci/check_pfontuple.py compute $inputs -o pfo_metrics.json
+          '
+
+      - name: Compare against reference
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.regenerate_references) }}
+        run: |
+          docker exec k4odd-ci /bin/bash -lc '
+            cd /Package
+            export KEY4HEP_SETUP="${{ matrix.stack }}"
+            source "${KEY4HEP_SETUP}"
+            python3 ci/check_pfontuple.py compare -m pfo_metrics.json \
+              -r ci/reference/release-${{ matrix.os }}/pfo_metrics_ref.json \
+              --ranges ci/validation_ranges.json --profile pfontuple
+          '
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pf-regression-${{ matrix.os }}
+          path: |
+            ${{ github.workspace }}/pfo_metrics.json
+            ${{ github.workspace }}/pfontuple_*.root
+          retention-days: 14
           overwrite: true
           if-no-files-found: ignore
 
