@@ -118,5 +118,24 @@
         "abs": 0.02
       }
     }
+  },
+  "pfontuple": {
+    "resp_mean": {
+      "abs": 0.03
+    },
+    "resp_median": {
+      "abs": 0.03
+    },
+    "eff": {
+      "abs": 0.02
+    },
+    "resp_iqr": {
+      "rel": 0.1,
+      "abs_floor": 0.02
+    },
+    "n_pfo_mean": {
+      "rel": 0.05,
+      "abs_floor": 0.1
+    }
   }
 }
