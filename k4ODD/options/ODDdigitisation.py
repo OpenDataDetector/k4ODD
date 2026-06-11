@@ -47,6 +47,13 @@ def resolve_path(filename):
 parser_group = parser.add_argument_group("CLDReconstruction.py custom options")
 parser_group.add_argument("--inputFile", default="ODD_sim_edm4hep.root", help="Input file")
 parser_group.add_argument("--outputFile", help="Output file", default="ODD_calo_digi.root")
+parser_group.add_argument("--events", type=int, default=int(os.environ.get("K4ODD_EVENTS", 100)), help="Event maximum")
+parser_group.add_argument(
+    "--applyRealisticEcalDigi", type=int, default=int(os.environ.get("K4ODD_ECAL_REALISTIC_DIGI", 0)),
+    help="Realistic ECAL digitisation: 0=none, 1=silicon, 2=scintillator (ODD Si-W uses 1)")
+parser_group.add_argument(
+    "--applyRealisticHcalDigi", type=int, default=int(os.environ.get("K4ODD_HCAL_REALISTIC_DIGI", 0)),
+    help="Realistic HCAL digitisation: 0=none, 1=scintillator/SiPM (no mode 2 exists)")
 digi_args = parser.parse_known_args()[0]
 digi_args.inputFile = resolve_path(digi_args.inputFile)
 digi_args.outputFile = resolve_path(digi_args.outputFile)
@@ -151,7 +158,7 @@ for calodigicol, ecalorhcal, inputcol, outputcol, relcol in zip(
     calodigicol.ECAL_PPD_N_Pixels = 10000
     calodigicol.ECAL_PPD_N_Pixels_uncertainty = 0.05
     calodigicol.ECAL_PPD_PE_per_MIP = 7.0
-    calodigicol.ECAL_apply_realistic_digi = 0
+    calodigicol.ECAL_apply_realistic_digi = digi_args.applyRealisticEcalDigi
     calodigicol.ECAL_deadCellRate = 0.0
     calodigicol.ECAL_deadCell_memorise = False
     calodigicol.ECAL_elec_noise_mips = 0.0
@@ -179,7 +186,7 @@ for calodigicol, ecalorhcal, inputcol, outputcol, relcol in zip(
     calodigicol.HCAL_PPD_N_Pixels = 400
     calodigicol.HCAL_PPD_N_Pixels_uncertainty = 0.05
     calodigicol.HCAL_PPD_PE_per_MIP = 10.0
-    calodigicol.HCAL_apply_realistic_digi = 0
+    calodigicol.HCAL_apply_realistic_digi = digi_args.applyRealisticHcalDigi
     calodigicol.HCAL_deadCellRate = 0.0
     calodigicol.HCAL_deadCell_memorise = False
     calodigicol.HCAL_elec_noise_mips = 0.0
@@ -214,7 +221,7 @@ root_hist_svc.FileName = resolve_path("ddcalodigi_hist.root")
 ApplicationMgr(
     TopAlg=calodigi + [merger],
     EvtSel="NONE",
-    EvtMax=100,
+    EvtMax=digi_args.events,
     ExtSvc=[EventDataSvc("EventDataSvc"), root_hist_svc],
     OutputLevel=INFO,
 )
