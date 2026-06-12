@@ -247,3 +247,5 @@ test/k4FWCoreTest/**/*.root
 test/inputFiles/*.slcio
 test/gaudi_opts/testConverterConstants.py
 
+pandora-stack/
+pfo_metrics_ref_CANDIDATE.json
