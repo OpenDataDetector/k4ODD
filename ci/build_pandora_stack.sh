@@ -40,7 +40,7 @@ checkout() { # name repo ref
   if [[ ! -d "$dir/.git" ]]; then
     git clone --quiet "$repo" "$dir"
   fi
-  git -C "$dir" fetch --quiet --tags origin
+  git -C "$dir" fetch --quiet --tags --force origin
   git -C "$dir" checkout --quiet "$ref"
   echo "[stack] $name @ $(git -C "$dir" rev-parse --short HEAD) ($ref)"
 }
@@ -50,10 +50,14 @@ build() { # name [extra cmake args...]
   local bd="$builddir/$name"
   mkdir -p "$bd"
   echo "[stack] configure $name"
+  # Install-RPATH must put OUR prefix first: Gaudi/key4hep bake DT_RPATH into plugins, and
+  # RPATH beats LD_LIBRARY_PATH — without this, libPandoraSDK resolves back to the cvmfs one.
   if ! cmake -S "$srcdir/$name" -B "$bd" -GNinja \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DCMAKE_INSTALL_PREFIX="$prefix" \
         -DCMAKE_PREFIX_PATH="$prefix;${CMAKE_PREFIX_PATH//:/;}" \
+        -DCMAKE_INSTALL_RPATH="$prefix/lib;$prefix/lib64" \
+        -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON \
         "$@" > "$bd/configure.log" 2>&1; then
     echo "[stack] $name CONFIGURE FAILED:"; tail -30 "$bd/configure.log"; exit 1
   fi
@@ -77,13 +81,15 @@ echo "[stack] install tree:"
 find "$prefix/lib" "$prefix/lib64" -maxdepth 1 \( -name 'libPandoraSDK*' -o -name 'libLCContent*' -o -name '*k4GaudiPandora*' -o -name '*PFlowValidation*' -o -name '*RecoMCTruthLinkers*' \) 2>/dev/null
 
 cat > "$prefix/setup_stack.sh" << EOF
-# source AFTER the key4hep setup to put the pinned Pandora stack first
+# source AFTER the key4hep setup to put the pinned Pandora stack first.
+# No LD_PRELOAD here: the whole stack (k4GaudiPandora plugins included) is built against
+# the pinned SDK/LCContent, so LD_LIBRARY_PATH ordering resolves them. (Preloading
+# libLCContent globally breaks unrelated binaries — it needs PandoraSDK symbols. The
+# preload trick is only for injecting the optimized lib into a STOCK cvmfs k4GaudiPandora;
+# see scripts/build_lccontent.sh for that flow.)
 export PANDORA_STACK_PREFIX="$prefix"
 export CMAKE_PREFIX_PATH="$prefix:\$CMAKE_PREFIX_PATH"
 export LD_LIBRARY_PATH="$prefix/lib:$prefix/lib64:\$LD_LIBRARY_PATH"
 export PYTHONPATH="$prefix/python:\$PYTHONPATH"
-# RPATH on key4hep binaries beats LD_LIBRARY_PATH: the optimized LCContent must be PRELOADED.
-lcc="\$(ls "$prefix"/lib*/libLCContent.so 2>/dev/null | head -1)"
-[ -n "\$lcc" ] && export LD_PRELOAD="\$lcc\${LD_PRELOAD:+:\$LD_PRELOAD}"
 EOF
 echo "[stack] DONE. source $prefix/setup_stack.sh after the key4hep setup."
