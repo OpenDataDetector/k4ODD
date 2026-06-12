@@ -2,9 +2,9 @@
 #
 # Per-PR CI (pipeline.yaml pf-regression) covers single-particle physics; this workflow runs the
 # full charged-PF chain (ACTS tracks + PandoraSettingsCLD) on 30 ttbar events and gates on
-# jet-level metrics + PFONtuple per-particle metrics. Input data is a GitHub release asset
-# (tag ci-data-v1: sim_with_tracks file produced at NERSC from hard_scatter/ttbar/v1 run 0,
-# re-tracked with ACTS; replace via a new ci-data-vN release when the tracking recipe changes).
+# jet-level metrics + PFONtuple per-particle metrics. Input data is served from the ColliderML
+# NERSC science portal (data/ColliderML/public/fixtures/ on CFS; see its README.txt). Replace the
+# file + TTBAR_SHA256 here when the tracking recipe changes.
 #
 # On failure a GitHub issue is filed automatically.
 
@@ -27,8 +27,9 @@ env:
   ODD_REF: ${{ vars.ODD_REF || 'addLayeredCalo_MuonCoil' }}
   BUILD_DIR_NAME: build-ci
   INSTALL_DIR_NAME: install-ci
-  CI_DATA_TAG: ci-data-v1
+  TTBAR_URL: https://portal.nersc.gov/cfs/m4958/ColliderML/fixtures/ttbar_hs_30ev_sim_with_tracks.root
   TTBAR_FILE: ttbar_hs_30ev_sim_with_tracks.root
+  TTBAR_SHA256: 758abfb4f576e6e508621f57b68836aa80a2e685fd7810e09a2ef83abf165bab
 
 jobs:
   nightly-pf:
@@ -53,12 +54,10 @@ jobs:
           fi
           git clone --depth 1 --branch "$ODD_REF" "$odd_url" "$ODD_DIR"
 
-      - name: Download ttbar input asset
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Download ttbar input fixture
         run: |
-          gh release download "$CI_DATA_TAG" -p "$TTBAR_FILE" -R "${{ github.repository }}"
-          ls -la "$TTBAR_FILE"
+          curl -fL --retry 3 -o "$TTBAR_FILE" "$TTBAR_URL"
+          echo "${TTBAR_SHA256}  ${TTBAR_FILE}" | sha256sum -c -
 
       - uses: key4hep/key4hep-actions/cache-external-data@main
 
