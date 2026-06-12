@@ -1,0 +1,186 @@
+# Nightly heavy particle-flow physics validation on a stored ttbar hard-scatter sample.
+#
+# Per-PR CI (pipeline.yaml pf-regression) covers single-particle physics; this workflow runs the
+# full charged-PF chain (ACTS tracks + PandoraSettingsCLD) on 30 ttbar events and gates on
+# jet-level metrics + PFONtuple per-particle metrics. Input data is a GitHub release asset
+# (tag ci-data-v1: sim_with_tracks file produced at NERSC from hard_scatter/ttbar/v1 run 0,
+# re-tracked with ACTS; replace via a new ci-data-vN release when the tracking recipe changes).
+#
+# On failure a GitHub issue is filed automatically.
+
+name: Nightly physics
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      regenerate_references:
+        description: Upload freshly computed metrics as artifacts (instead of comparing)
+        required: false
+        default: false
+        type: boolean
+
+env:
+  ODD_DIR: ${{ github.workspace }}/OpenDataDetector
+  ODD_URL: ${{ vars.ODD_URL || 'https://gitlab.cern.ch/azaborow/OpenDataDetector.git' }}
+  ODD_REF: ${{ vars.ODD_REF || 'addLayeredCalo_MuonCoil' }}
+  BUILD_DIR_NAME: build-ci
+  INSTALL_DIR_NAME: install-ci
+  CI_DATA_TAG: ci-data-v1
+  TTBAR_FILE: ttbar_hs_30ev_sim_with_tracks.root
+
+jobs:
+  nightly-pf:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - stack: /cvmfs/sw.hsf.org/key4hep/setup.sh
+            os: alma9
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Clone OpenDataDetector
+        env:
+          CLONE_TOKEN: ${{ secrets.CI_CLONE_TOKEN }}
+        run: |
+          if [ -n "${CLONE_TOKEN:-}" ]; then
+            odd_url="${ODD_URL/https:\/\//https:\/\/oauth2:${CLONE_TOKEN}@}"
+          else
+            odd_url="$ODD_URL"
+          fi
+          git clone --depth 1 --branch "$ODD_REF" "$odd_url" "$ODD_DIR"
+
+      - name: Download ttbar input asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "$CI_DATA_TAG" -p "$TTBAR_FILE" -R "${{ github.repository }}"
+          ls -la "$TTBAR_FILE"
+
+      - uses: key4hep/key4hep-actions/cache-external-data@main
+
+      - name: Cache pinned Pandora stack
+        id: stack-cache
+        uses: actions/cache@v4
+        with:
+          path: pandora-stack
+          key: pandora-stack-${{ matrix.os }}-${{ hashFiles('ci/pandora_stack.env') }}
+
+      - name: Start container
+        run: |
+          docker run --name k4odd-ci \
+                     --privileged \
+                     -v "${GITHUB_WORKSPACE}:/Package" \
+                     -d "ghcr.io/key4hep/key4hep-images/${{ matrix.os }}-cvmfs" \
+                     tail -f /dev/null
+
+      - name: Mount CVMFS
+        run: |
+          docker exec k4odd-ci /bin/bash -c '/mount.sh'
+
+      - name: Build pinned Pandora stack
+        if: steps.stack-cache.outputs.cache-hit != 'true'
+        run: |
+          docker exec k4odd-ci /bin/bash -lc '
+            cd /Package
+            export KEY4HEP_SETUP="${{ matrix.stack }}"
+            export PANDORA_STACK_DIR=/Package/pandora-stack
+            export PANDORA_STACK_BUILD=/tmp/pandora-stack-build
+            bash ci/build_pandora_stack.sh
+          '
+
+      - name: Build OpenDataDetector and k4ODD against the pinned stack
+        run: |
+          docker exec k4odd-ci /bin/bash -lc '
+            cd /Package
+            export KEY4HEP_SETUP="${{ matrix.stack }}"
+            source "${KEY4HEP_SETUP}"
+            ODD=/Package/OpenDataDetector
+            cmake -S "$ODD" -B "$ODD/${BUILD_DIR_NAME}" -GNinja -DCMAKE_INSTALL_PREFIX="$ODD/install"
+            cmake --build "$ODD/${BUILD_DIR_NAME}" -j4 && cmake --install "$ODD/${BUILD_DIR_NAME}"
+            source /Package/pandora-stack/install/setup_stack.sh
+            cmake -S /Package -B "/Package/${BUILD_DIR_NAME}" -GNinja -DCMAKE_INSTALL_PREFIX="/Package/${INSTALL_DIR_NAME}"
+            cmake --build "/Package/${BUILD_DIR_NAME}" -j4 && cmake --install "/Package/${BUILD_DIR_NAME}"
+          '
+
+      - name: Reconstruct ttbar with charged particle flow
+        run: |
+          docker exec k4odd-ci /bin/bash -lc '
+            cd /Package
+            export KEY4HEP_SETUP="${{ matrix.stack }}"
+            source "${KEY4HEP_SETUP}"
+            export OpenDataDetector=/Package/OpenDataDetector
+            source "${OpenDataDetector}/install/bin/this_odd.sh"
+            source /Package/pandora-stack/install/setup_stack.sh
+            export LD_LIBRARY_PATH="/Package/${INSTALL_DIR_NAME}/lib:/Package/${INSTALL_DIR_NAME}/lib64:${LD_LIBRARY_PATH}"
+            export PYTHONPATH="/Package/${INSTALL_DIR_NAME}/python:${PYTHONPATH}"
+            set -e
+            export K4ODD_TRACK_CREATOR=DDTrackCreatorCLIC
+            export K4ODD_TRACK_COLLECTION=ActsTracks
+            export K4ODD_PANDORA_SETTINGS=k4ODD/options/PandoraSettingsCLD.xml
+            export K4ODD_MAX_TRACK_SIGMA_POVERP=999   # mask inflated ACTS omega covariance (#25)
+            k4run k4ODD/options/ODDreconstruction.py \
+              --inputFile "${{ env.TTBAR_FILE }}" --outputFile reco_ttbar.root > reco_ttbar.log 2>&1 \
+              || { tail -30 reco_ttbar.log; exit 1; }
+            python3 ci/make_truth_links.py -i reco_ttbar.root -o links_ttbar.root
+            k4run pandora-stack/src/k4DetectorPerformance/PFlowValidation/options/runPFONTuple_ODD.py \
+              --inputFiles links_ttbar.root --tracks ActsTracks -o pfontuple_ttbar > ntuple_ttbar.log 2>&1 \
+              || { tail -30 ntuple_ttbar.log; exit 1; }
+            python3 ci/check_pfontuple.py compute -i ttbar_hs=pfontuple_ttbar.root -o pfo_metrics_ttbar.json
+          '
+
+      - name: Jet-level validation
+        run: |
+          docker exec k4odd-ci /bin/bash -lc '
+            cd /Package
+            export KEY4HEP_SETUP="${{ matrix.stack }}"
+            source "${KEY4HEP_SETUP}"
+            python3 -m pip install --user --quiet fastjet awkward
+            python3 ci/jet_analysis.py --reco links_ttbar.root --out-prefix jets_ttbar --label "nightly ttbar HS"
+          '
+
+      - name: Compare against references
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.regenerate_references) }}
+        run: |
+          docker exec k4odd-ci /bin/bash -lc '
+            cd /Package
+            export KEY4HEP_SETUP="${{ matrix.stack }}"
+            source "${KEY4HEP_SETUP}"
+            set -e
+            python3 ci/check_pfontuple.py compare -m pfo_metrics_ttbar.json \
+              -r ci/reference/release-${{ matrix.os }}/pfo_metrics_ttbar_ref.json \
+              --ranges ci/validation_ranges.json --profile pfontuple
+            python3 ci/check_jets.py -m jets_ttbar_summary.json \
+              -r ci/reference/release-${{ matrix.os }}/jet_metrics_ref.json
+          '
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nightly-pf-${{ matrix.os }}
+          path: |
+            ${{ github.workspace }}/pfo_metrics_ttbar.json
+            ${{ github.workspace }}/jets_ttbar_summary.json
+            ${{ github.workspace }}/jets_ttbar_response.png
+            ${{ github.workspace }}/pfontuple_ttbar.root
+          retention-days: 30
+          overwrite: true
+          if-no-files-found: ignore
+
+      - name: File issue on failure
+        if: failure() && github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create -R "${{ github.repository }}" \
+            --title "Nightly physics validation failed ($(date -u +%F))" \
+            --body "The nightly particle-flow physics workflow failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            || true
+
+      - name: Stop container
+        if: always()
+        run: |
+          docker rm -f k4odd-ci
