@@ -72,6 +72,8 @@ def resolve_path(filename):
 parser_group = parser.add_argument_group("ODDreconstruction.py custom options")
 parser_group.add_argument("--inputFile", default="ODD_sim_edm4hep.root", help="Input file")
 parser_group.add_argument("--outputFile", help="Output file", default="ODD_calo_digi.root")
+parser_group.add_argument("--events", type=int, default=int(os.environ.get("K4ODD_EVENTS", 100)),
+                          help="Event maximum (-1 = all)")
 parser_group.add_argument(
     "--pandoraPhotonTraining",
     action="store_true",
@@ -391,7 +393,7 @@ hps = RootHistSvc("HistogramPersistencySvc")
 root_hist_svc = RootHistoSink("RootHistoSink")
 root_hist_svc.FileName = resolve_path("ddcalodigi_hist.root")
 
-evt_max = -1 if digi_args.pandoraPhotonTraining else 100
+evt_max = -1 if digi_args.pandoraPhotonTraining else digi_args.events
 
 ApplicationMgr(
     TopAlg=calodigi + [merger, tracks, pandora],
