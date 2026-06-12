@@ -32,6 +32,29 @@ import os
 from k4FWCore.parseArgs import parser
 
 
+# --- DEFAULTS = the calibrated REALISTIC-digi constants (options/calib_constants_real.env,
+# --- derivation in doc/CALIBRATION_JOURNAL.md): realistic ECAL(Si)/HCAL(SiPM) digitisation ON,
+# --- EM scale 1.0307, ECAL->Had 1.10 / HCAL->Had 1.90 (R1 rebalance). Override via env for sweeps.
+# --- Calibration knobs: env-overridable so the calibration loop can sweep digi +
+# --- Pandora constants without editing this file. Defaults reproduce the prior values.
+def _env_float(name, default):
+    v = os.environ.get(name)
+    return float(v) if v not in (None, "") else float(default)
+
+
+def _env_int(name, default):
+    v = os.environ.get(name)
+    return int(v) if v not in (None, "") else int(default)
+
+
+def _env_floats(name, default):
+    """Parse a comma/space-separated list of floats from env; else return default list."""
+    v = os.environ.get(name)
+    if v in (None, ""):
+        return list(default)
+    return [float(x) for x in v.replace(",", " ").split()]
+
+
 def resolve_path(filename):
     from pathlib import Path
 
@@ -49,6 +72,8 @@ def resolve_path(filename):
 parser_group = parser.add_argument_group("ODDreconstruction.py custom options")
 parser_group.add_argument("--inputFile", default="ODD_sim_edm4hep.root", help="Input file")
 parser_group.add_argument("--outputFile", help="Output file", default="ODD_calo_digi.root")
+parser_group.add_argument("--events", type=int, default=int(os.environ.get("K4ODD_EVENTS", 100)),
+                          help="Event maximum (-1 = all)")
 parser_group.add_argument(
     "--pandoraPhotonTraining",
     action="store_true",
@@ -132,13 +157,13 @@ for calodigicol, ecalorhcal, inputcol, outputcol, relcol in zip(
     calodigicol.OutputCaloHitCollection = outputcol
     calodigicol.RelationOutputCollection = relcol
 
-    calodigicol.CalibrECAL = [37.5227197175, 37.5227197175]
-    calodigicol.ECALEndcapCorrectionFactor = 1.03245503522
+    calodigicol.CalibrECAL = _env_floats("K4ODD_CALIBR_ECAL", [37.5227197175, 37.5227197175])
+    calodigicol.ECALEndcapCorrectionFactor = _env_float("K4ODD_ECAL_ENDCAP_CORR", 1.03245503522)
     calodigicol.ECALBarrelTimeWindowMax = 10.0
     calodigicol.ECALEndcapTimeWindowMax = 10.0
-    calodigicol.CalibrHCALBarrel = [45.9956826061]
-    calodigicol.CalibrHCALEndcap = [46.9252540291]
-    calodigicol.CalibrHCALOther = [57.4588011802]
+    calodigicol.CalibrHCALBarrel = _env_floats("K4ODD_CALIBR_HCAL_BARREL", [45.9956826061])
+    calodigicol.CalibrHCALEndcap = _env_floats("K4ODD_CALIBR_HCAL_ENDCAP", [46.9252540291])
+    calodigicol.CalibrHCALOther = _env_floats("K4ODD_CALIBR_HCAL_OTHER", [57.4588011802])
     calodigicol.HCALBarrelTimeWindowMax = 10.0
     calodigicol.HCALEndcapTimeWindowMax = 10.0
 
@@ -146,7 +171,12 @@ for calodigicol, ecalorhcal, inputcol, outputcol, relcol in zip(
     # ECAL
     calodigicol.IfDigitalEcal = 0
     calodigicol.ECALLayers = [48, 48]
-    calodigicol.ECAL_default_layerConfig = "000000000000000"
+    # One '0' (=silicon, SIECAL) per ECAL layer. The ODD ECAL is 48 Si-W layers; DDCaloDigi
+    # pushes 2 layerTypes per char and the barrel/endcap branch indexes m_layerTypes[layer+1],
+    # so the string must yield >= 49 entries or layers >=29 fall back to (-99,-99) and the
+    # silicon realistic-digi guard (apply_realistic_digi=1) errors out (no-op). 48 zeros -> 96
+    # entries covers all layers. (CLD's 15-char string only works because they run ECAL digi off.)
+    calodigicol.ECAL_default_layerConfig = "0" * 48
     calodigicol.StripEcal_default_nVirtualCells = 9
     calodigicol.CalibECALMIP = 0.0001
     calodigicol.ECALThreshold = 5.0e-5
@@ -158,13 +188,13 @@ for calodigicol, ecalorhcal, inputcol, outputcol, relcol in zip(
     calodigicol.ECAL_PPD_N_Pixels = 10000
     calodigicol.ECAL_PPD_N_Pixels_uncertainty = 0.05
     calodigicol.ECAL_PPD_PE_per_MIP = 7.0
-    calodigicol.ECAL_apply_realistic_digi = 0
-    calodigicol.ECAL_deadCellRate = 0.0
+    calodigicol.ECAL_apply_realistic_digi = _env_int("K4ODD_ECAL_REALISTIC_DIGI", 1)
+    calodigicol.ECAL_deadCellRate = _env_float("K4ODD_ECAL_DEADCELL_RATE", 0.0)
     calodigicol.ECAL_deadCell_memorise = False
-    calodigicol.ECAL_elec_noise_mips = 0.0
+    calodigicol.ECAL_elec_noise_mips = _env_float("K4ODD_ECAL_NOISE_MIPS", 0.0)
     calodigicol.ECAL_maxDynamicRange_MIP = 2500.0
     calodigicol.ECAL_miscalibration_correl = 0.0
-    calodigicol.ECAL_miscalibration_uncorrel = 0.0
+    calodigicol.ECAL_miscalibration_uncorrel = _env_float("K4ODD_ECAL_MISCAL", 0.0)
     calodigicol.ECAL_miscalibration_uncorrel_memorise = False
     calodigicol.ECAL_pixel_spread = 0.05
     calodigicol.ECAL_strip_absorbtionLength = 1.0e6
@@ -180,19 +210,19 @@ for calodigicol, ecalorhcal, inputcol, outputcol, relcol in zip(
     calodigicol.CalibHCALMIP = 1.0e-4
     calodigicol.HCALThreshold = [0.00025]
     calodigicol.HCALThresholdUnit = "GeV"
-    calodigicol.HCALEndcapCorrectionFactor = 1.000
+    calodigicol.HCALEndcapCorrectionFactor = _env_float("K4ODD_HCAL_ENDCAP_CORR", 1.000)
     calodigicol.HCALGapCorrection = 1
     calodigicol.HCALModuleGapCorrectionFactor = 0.5
     calodigicol.HCAL_PPD_N_Pixels = 400
     calodigicol.HCAL_PPD_N_Pixels_uncertainty = 0.05
     calodigicol.HCAL_PPD_PE_per_MIP = 10.0
-    calodigicol.HCAL_apply_realistic_digi = 0
-    calodigicol.HCAL_deadCellRate = 0.0
+    calodigicol.HCAL_apply_realistic_digi = _env_int("K4ODD_HCAL_REALISTIC_DIGI", 1)
+    calodigicol.HCAL_deadCellRate = _env_float("K4ODD_HCAL_DEADCELL_RATE", 0.0)
     calodigicol.HCAL_deadCell_memorise = False
-    calodigicol.HCAL_elec_noise_mips = 0.0
+    calodigicol.HCAL_elec_noise_mips = _env_float("K4ODD_HCAL_NOISE_MIPS", 0.0)
     calodigicol.HCAL_maxDynamicRange_MIP = 200.0
     calodigicol.HCAL_miscalibration_correl = 0.0
-    calodigicol.HCAL_miscalibration_uncorrel = 0.0
+    calodigicol.HCAL_miscalibration_uncorrel = _env_float("K4ODD_HCAL_MISCAL", 0.0)
     calodigicol.HCAL_miscalibration_uncorrel_memorise = False
     calodigicol.HCAL_pixel_spread = 0.0
     calodigicol.UseHcalTiming = 1
@@ -216,6 +246,12 @@ merger = CollectionMerger(
 
 tracks = CreateEmptyTracks("CreateEmptyTracks")
 
+# Track-creator selection. Set K4ODD_TRACK_CREATOR=DDTrackCreatorCLIC and
+# K4ODD_TRACK_COLLECTION=<name> (e.g. ActsTracks) to feed reconstructed tracks
+# from ACTS into Pandora; defaults preserve the calo-only path.
+_track_creator_name = os.environ.get("K4ODD_TRACK_CREATOR", "DDTrackCreatorEmpty")
+_track_collection_name = os.environ.get("K4ODD_TRACK_COLLECTION", "EmptyTracks")
+
 options_dir = os.path.dirname(os.path.abspath(__file__))
 pandora_settings = os.environ.get(
     "K4ODD_PANDORA_SETTINGS",
@@ -238,7 +274,7 @@ pandora_settings = resolve_pandora_settings_xml(
 params = {
     "FinalEnergyDensityBin": 110.0,
     "MaxClusterEnergyToApplySoftComp": 200.0,
-    "TrackCollections": ["EmptyTracks"],
+    "TrackCollections": [_track_collection_name],
     "ECalCaloHitCollections": ["digiECalBarrelCollection", "digiECalEndcapCollection"],
     "HCalCaloHitCollections": ["digiHCalBarrelCollection", "digiHCalEndcapCollection"],
     "LCalCaloHitCollections": [],
@@ -274,7 +310,12 @@ params = {
     "Z0UnmatchedVertexTrackCut": 5,
     "ZCutForNonVertexTracks": 250,
     "MaxTrackHits": 5000,
-    "MaxTrackSigmaPOverP": 0.15,
+    # NOTE: ACTS's EDM4hepTrackOutputConverter writes an inflated omega covariance
+    # (sigma(p)/p ~ 2-3 for clean 10 GeV / 27-hit / chi2/ndf<1 tracks; the omega VALUE
+    # is correct, only its error estimate is ~5e4x too large). The physical default
+    # 0.15 therefore drops every good ACTS track. Override via K4ODD_MAX_TRACK_SIGMA_POVERP
+    # (set high, e.g. 999, for ACTS-track runs) until the covariance conversion is fixed.
+    "MaxTrackSigmaPOverP": float(os.environ.get("K4ODD_MAX_TRACK_SIGMA_POVERP", "0.15")),
     "CurvatureToMomentumFactor": 0.00015,
     "D0TrackCut": 200,
     "D0UnmatchedVertexTrackCut": 5,
@@ -285,10 +326,10 @@ params = {
     "ECalBarrelNormalVector": [0, 0, 1],
 
 
-    "EMConstantTerm": 0.01,
-    "EMStochasticTerm": 0.17,
-    "HadConstantTerm": 0.03,
-    "HadStochasticTerm": 0.6,
+    "EMConstantTerm": _env_float("K4ODD_EM_CONST", 0.01),
+    "EMStochasticTerm": _env_float("K4ODD_EM_STOCH", 0.17),
+    "HadConstantTerm": _env_float("K4ODD_HAD_CONST", 0.03),
+    "HadStochasticTerm": _env_float("K4ODD_HAD_STOCH", 0.6),
     "InputEnergyCorrectionPoints": [],
     "LayersFromEdgeMaxRearDistance": 250,
     "NOuterSamplingLayers": 3,
@@ -299,7 +340,7 @@ params = {
     "MinCleanHitEnergyFraction": 0.01,
     "MuonHitEnergy": 0.5,
     "ShouldFormTrackRelationships": 1,
-    "TrackCreatorName": "DDTrackCreatorEmpty",
+    "TrackCreatorName": _track_creator_name,
     "UseDD4hepField": True,
     "TrackSystemName": "",
     "OutputEnergyCorrectionPoints": [],
@@ -317,38 +358,42 @@ params = {
     "StripSplittingOn": 0,
     # Settings for CalorimeterIntegrationTimeWindow = 10 ns
     "PandoraSettingsXmlFile": pandora_settings,
-    "SoftwareCompensationWeights": [
-        2.40821,
-        -0.0515852,
-        0.000711414,
-        -0.0254891,
-        -0.0121505,
-        -1.63084e-05,
-        0.062149,
-        0.0690735,
-        -0.223064,
-    ],
+    "SoftwareCompensationWeights": _env_floats(
+        "K4ODD_SOFTCOMP_WEIGHTS",
+        [
+            2.40821,
+            -0.0515852,
+            0.000711414,
+            -0.0254891,
+            -0.0121505,
+            -1.63084e-05,
+            0.062149,
+            0.0690735,
+            -0.223064,
+        ],
+    ),
     "ECalToMipCalibration": "175.439",
     "HCalToMipCalibration": "45.6621",
     "ECalMipThreshold": "0.5",
     "HCalMipThreshold": "0.3",
-    "ECalToEMGeVCalibration": "1.01776966108",
-    "HCalToEMGeVCalibration": "1.01776966108",
-    "ECalToHadGeVCalibrationBarrel": "1.11490774181",
-    "ECalToHadGeVCalibrationEndCap": "1.11490774181",
-    "HCalToHadGeVCalibration": "1.00565042407",
+    "ECalToEMGeVCalibration": _env_float("K4ODD_ECAL_EM_SCALE", 1.0307411173318997),
+    "HCalToEMGeVCalibration": _env_float("K4ODD_HCAL_EM_SCALE", 1.0307411173318997),
+    "ECalToHadGeVCalibrationBarrel": _env_float("K4ODD_ECAL_HAD_SCALE_BARREL", 1.10),
+    "ECalToHadGeVCalibrationEndCap": _env_float("K4ODD_ECAL_HAD_SCALE_ENDCAP", 1.10),
+    "HCalToHadGeVCalibration": _env_float("K4ODD_HCAL_HAD_SCALE", 1.90),
     "MuonToMipCalibration": "20703.9",
     "DigitalMuonHits": "0",
     "MaxHCalHitHadronicEnergy": "10000000.",
 }
 
-pandora = DDPandoraPFANewAlgorithm("PandoraPFANewProcessor", **params, OutputLevel=INFO)
+_pandora_level = DEBUG if os.environ.get("K4ODD_PANDORA_DEBUG") else INFO
+pandora = DDPandoraPFANewAlgorithm("PandoraPFANewProcessor", **params, OutputLevel=_pandora_level)
 
 hps = RootHistSvc("HistogramPersistencySvc")
 root_hist_svc = RootHistoSink("RootHistoSink")
 root_hist_svc.FileName = resolve_path("ddcalodigi_hist.root")
 
-evt_max = -1 if digi_args.pandoraPhotonTraining else 100
+evt_max = -1 if digi_args.pandoraPhotonTraining else digi_args.events
 
 ApplicationMgr(
     TopAlg=calodigi + [merger, tracks, pandora],
