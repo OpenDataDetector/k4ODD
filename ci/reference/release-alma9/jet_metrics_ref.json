@@ -1,0 +1,8 @@
+{
+  "jet_E_response.median": [0.9772, 0.03, "abs"],
+  "jet_E_response.iqr_over_med": [0.1585, 0.10, "rel"],
+  "jet_pt_response.median": [0.9843, 0.03, "abs"],
+  "event_sumE_pfo_over_vis.median": [0.9601, 0.03, "abs"],
+  "n_matched_jets": [231, 0.15, "rel"],
+  "mean_nreco_jets": [8.3, 0.05, "rel"]
+}
