@@ -84,6 +84,7 @@ jobs:
             odd_url="$ODD_URL"
           fi
           git clone --depth 1 --branch "$ODD_REF" "$odd_url" "$ODD_DIR"
+          patch -d "$ODD_DIR" -p1 --forward < "$GITHUB_WORKSPACE/ci/patches/odd_calo_layerdata.patch"
 
       - uses: key4hep/key4hep-actions/cache-external-data@main
 
@@ -176,6 +177,7 @@ jobs:
             odd_url="$ODD_URL"
           fi
           git clone --depth 1 --branch "$ODD_REF" "$odd_url" "$ODD_DIR"
+          patch -d "$ODD_DIR" -p1 --forward < "$GITHUB_WORKSPACE/ci/patches/odd_calo_layerdata.patch"
 
       - uses: key4hep/key4hep-actions/cache-external-data@main
 
@@ -297,6 +299,7 @@ jobs:
             odd_url="$ODD_URL"
           fi
           git clone --depth 1 --branch "$ODD_REF" "$odd_url" "$ODD_DIR"
+          patch -d "$ODD_DIR" -p1 --forward < "$GITHUB_WORKSPACE/ci/patches/odd_calo_layerdata.patch"
 
       - name: Clone k4GaudiPandora
         env:
@@ -401,6 +404,7 @@ jobs:
             odd_url="$ODD_URL"
           fi
           git clone --depth 1 --branch "$ODD_REF" "$odd_url" "$ODD_DIR"
+          patch -d "$ODD_DIR" -p1 --forward < "$GITHUB_WORKSPACE/ci/patches/odd_calo_layerdata.patch"
 
       - uses: key4hep/key4hep-actions/cache-external-data@main
 
@@ -522,6 +526,7 @@ jobs:
             odd_url="$ODD_URL"
           fi
           git clone --depth 1 --branch "$ODD_REF" "$odd_url" "$ODD_DIR"
+          patch -d "$ODD_DIR" -p1 --forward < "$GITHUB_WORKSPACE/ci/patches/odd_calo_layerdata.patch"
 
       - name: Clone k4GaudiPandora
         env:
@@ -683,6 +688,7 @@ jobs:
             odd_url="$ODD_URL"
           fi
           git clone --depth 1 --branch "$ODD_REF" "$odd_url" "$ODD_DIR"
+          patch -d "$ODD_DIR" -p1 --forward < "$GITHUB_WORKSPACE/ci/patches/odd_calo_layerdata.patch"
 
       - name: Start container
         run: |
@@ -747,6 +753,7 @@ jobs:
             odd_url="$ODD_URL"
           fi
           git clone --depth 1 --branch "$ODD_REF" "$odd_url" "$ODD_DIR"
+          patch -d "$ODD_DIR" -p1 --forward < "$GITHUB_WORKSPACE/ci/patches/odd_calo_layerdata.patch"
 
       - name: Clone k4GaudiPandora
         env:
@@ -853,6 +860,7 @@ jobs:
             odd_url="$ODD_URL"
           fi
           git clone --depth 1 --branch "$ODD_REF" "$odd_url" "$ODD_DIR"
+          patch -d "$ODD_DIR" -p1 --forward < "$GITHUB_WORKSPACE/ci/patches/odd_calo_layerdata.patch"
 
       - uses: key4hep/key4hep-actions/cache-external-data@main
 
