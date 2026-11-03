@@ -38,20 +38,6 @@
         <MuonRmsCut>15.625</MuonRmsCut>
     </LCMuonId>
 
-    <!-- Electron ID (LCElectronId, LCContent 3.2.0 parameter names).
-         A real e- that radiates bremsstrahlung loses EM energy from its
-         track-matched cluster, so E_cluster/p_track sits above the default
-         MaxResidualEOverP (~0.2) and the cluster fails the electron test,
-         leaving the track labelled as a charged hadron (-211).
-         Loosen the E/p residual and the longitudinal-profile cuts so genuine
-         electron showers are tagged. Cannot affect a MIP muon: its near-MIP
-         cluster fails the EM shower-profile requirement irrespective of E/p. -->
-    <LCElectronId>
-        <MaxResidualEOverP>1.0</MaxResidualEOverP>
-        <MaxProfileDiscrepancy>1.0</MaxProfileDiscrepancy>
-        <ProfileDiscrepancyForAutoId>1.0</ProfileDiscrepancyForAutoId>
-    </LCElectronId>
-
     <!-- ALGORITHM SETTINGS -->
 
     <!-- Set calo hit properties, then select tracks and hits to use for clustering -->
@@ -120,8 +106,8 @@
         <ReplaceCurrentClusterList>false</ReplaceCurrentClusterList>
         <ShouldMakePdfHistograms>false</ShouldMakePdfHistograms>
         <ShouldDrawPdfHistograms>false</ShouldDrawPdfHistograms>
-        <!-- ODD-trained photon-ID likelihood (path is cwd-relative; reco runs from the k4ODD repo root). -->
-        <HistogramFile>k4ODD/options/PandoraLikelihoodData9EBin.xml</HistogramFile>
+        <!-- Photon-ID likelihood trained on ODD ttbar with these settings (path is cwd-relative; reco runs from the k4ODD repo root). -->
+        <HistogramFile>k4ODD/options/PandoraLikelihoodData9EBin_ttbar.xml</HistogramFile>
         <EnergyBinLowerEdges>0 0.2 0.5 1 1.5 2.5 5 10 20</EnergyBinLowerEdges>
         <NEnergyBins>9</NEnergyBins>
     </algorithm>

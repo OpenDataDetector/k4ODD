@@ -34,7 +34,7 @@ from k4FWCore.parseArgs import parser
 
 # --- DEFAULTS = the calibrated REALISTIC-digi constants (options/calib_constants_real.env,
 # --- derivation in doc/CALIBRATION_JOURNAL.md): realistic ECAL(Si)/HCAL(SiPM) digitisation ON,
-# --- EM scale 1.0307, ECAL->Had 1.10 / HCAL->Had 1.90 (R1 rebalance). Override via env for sweeps.
+# --- EM scale 1.0307, ECAL->Had 1.19 / HCAL->Had 2.05 (refit after the ODD calo layer-data fix). Override via env for sweeps.
 # --- Calibration knobs: env-overridable so the calibration loop can sweep digi +
 # --- Pandora constants without editing this file. Defaults reproduce the prior values.
 def _env_float(name, default):
@@ -312,7 +312,7 @@ params = {
     "UseUnmatchedNonVertexTracks": 0,
     "UseUnmatchedVertexTracks": 1,
     "Z0TrackCut": 200,
-    "Z0UnmatchedVertexTrackCut": 5,
+    "Z0UnmatchedVertexTrackCut": 200,  # z0 is measured from the origin; ODD beam spot is mm-scale in z
     "ZCutForNonVertexTracks": 250,
     "MaxTrackHits": 5000,
     # NOTE: ACTS's EDM4hepTrackOutputConverter writes an inflated omega covariance
@@ -377,15 +377,15 @@ params = {
             -0.223064,
         ],
     ),
-    "ECalToMipCalibration": "175.439",
-    "HCalToMipCalibration": "45.6621",
+    "ECalToMipCalibration": "371.3",
+    "HCalToMipCalibration": "47.66",
     "ECalMipThreshold": "0.5",
     "HCalMipThreshold": "0.3",
     "ECalToEMGeVCalibration": _env_float("K4ODD_ECAL_EM_SCALE", 1.0307411173318997),
     "HCalToEMGeVCalibration": _env_float("K4ODD_HCAL_EM_SCALE", 1.0307411173318997),
-    "ECalToHadGeVCalibrationBarrel": _env_float("K4ODD_ECAL_HAD_SCALE_BARREL", 1.10),
-    "ECalToHadGeVCalibrationEndCap": _env_float("K4ODD_ECAL_HAD_SCALE_ENDCAP", 1.10),
-    "HCalToHadGeVCalibration": _env_float("K4ODD_HCAL_HAD_SCALE", 1.90),
+    "ECalToHadGeVCalibrationBarrel": _env_float("K4ODD_ECAL_HAD_SCALE_BARREL", 1.19),
+    "ECalToHadGeVCalibrationEndCap": _env_float("K4ODD_ECAL_HAD_SCALE_ENDCAP", 1.19),
+    "HCalToHadGeVCalibration": _env_float("K4ODD_HCAL_HAD_SCALE", 2.05),
     "MuonToMipCalibration": "20703.9",
     "DigitalMuonHits": "0",
     "MaxHCalHitHadronicEnergy": "10000000.",
