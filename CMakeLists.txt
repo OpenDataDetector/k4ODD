@@ -46,7 +46,7 @@ function(set_test_env testname)
 endfunction()
 
 add_test(NAME "clone_ODD"
-  COMMAND bash -c "git clone --single-branch --branch addLayeredCalo_MuonCoil https://gitlab.cern.ch/azaborow/OpenDataDetector.git && cd OpenDataDetector && mkdir build install && cd build && cmake -S .. -B . -DCMAKE_INSTALL_PREFIX=../install && make install"
+  COMMAND bash -c "git clone --single-branch --branch addLayeredCalo_MuonCoil https://gitlab.cern.ch/azaborow/OpenDataDetector.git && cd OpenDataDetector && patch -p1 --forward < ${CMAKE_CURRENT_SOURCE_DIR}/ci/patches/odd_calo_layerdata.patch && mkdir build install && cd build && cmake -S .. -B . -DCMAKE_INSTALL_PREFIX=../install && make install"
 )
 set_test_env("clone_ODD")
 set_property(TEST "clone_ODD" APPEND PROPERTY FIXTURES_SETUP ODD)
