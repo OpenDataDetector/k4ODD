@@ -56,7 +56,7 @@ ddsim --steeringFile k4ODD/options/ODDsimulation.py --enableGun --gun.distributi
 # Digitisation
 
 ```bash
-k4run k4ODD/options/ODDdigitisation.py --inputFile gamma_10GeV_eta0_100ev_sim_edm4hep.root --outputFile gamma_10GeV_eta0_100ev_digi_edm4hep.root
+k4run k4ODD/options/ODDdigitisation.py --inputFile gamma_10GeV_eta0_100ev_sim_edm4hep.root --outputFile gamma_10GeV_eta0_100ev_digi_edm4hep.root --events 100
 ```
 
 # Reconstruction
