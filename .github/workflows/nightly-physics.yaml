@@ -53,6 +53,7 @@ jobs:
             odd_url="$ODD_URL"
           fi
           git clone --depth 1 --branch "$ODD_REF" "$odd_url" "$ODD_DIR"
+          patch -d "$ODD_DIR" -p1 --forward < "$GITHUB_WORKSPACE/ci/patches/odd_calo_layerdata.patch"
 
       - name: Download ttbar input fixture
         run: |
