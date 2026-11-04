@@ -203,6 +203,11 @@ for calodigicol, ecalorhcal, inputcol, outputcol, relcol in zip(
     calodigicol.HCALTimeResolution = 10.0
 
 
+# k4FWCore changed CollectionMerger.OutputCollection from a list to a single string;
+# follow whichever type this stack declares so both the release and the nightlies work.
+_merger_output = "digiRelationCaloHit"
+if isinstance(CollectionMerger.getDefaultProperty("OutputCollection"), list):
+    _merger_output = [_merger_output]
 merger = CollectionMerger(
     "CollectionMerger",
     InputCollections=[
@@ -211,7 +216,7 @@ merger = CollectionMerger(
         "digiLinkCaloHitHCALBarrel",
         "digiLinkCaloHitHCALEndcap",
     ],
-    OutputCollection=["digiRelationCaloHit"],
+    OutputCollection=_merger_output,
 )
 
 hps = RootHistSvc("HistogramPersistencySvc")
