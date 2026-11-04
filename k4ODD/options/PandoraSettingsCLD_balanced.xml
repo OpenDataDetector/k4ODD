@@ -1,32 +1,50 @@
+<!--
+-- Copyright (c) 2020-2024 Key4hep-Project.
+--
+-- This file is part of Key4hep.
+-- See https://key4hep.github.io/key4hep-doc/ for further info.
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
+  -->
 <pandora>
-    
+
     <IsMonitoringEnabled>true</IsMonitoringEnabled>
     <ShouldDisplayAlgorithmInfo>false</ShouldDisplayAlgorithmInfo>
     <ShouldCollapseMCParticlesToPfoTarget>true</ShouldCollapseMCParticlesToPfoTarget>
 
-    
+
     <HadronicEnergyCorrectionPlugins>SoftwareCompensation</HadronicEnergyCorrectionPlugins>
     <EmShowerPlugin>LCEmShowerId</EmShowerPlugin>
     <PhotonPlugin>LCPhotonId</PhotonPlugin>
     <ElectronPlugin>LCElectronId</ElectronPlugin>
     <MuonPlugin>LCMuonId</MuonPlugin>
 
-    
+
     <LCMuonId>
         <MinMuonTrackSegmentHitsCut>5</MinMuonTrackSegmentHitsCut>
         <MuonRmsCut>15.625</MuonRmsCut>
     </LCMuonId>
 
-    
+
     <LCElectronId>
         <MaxResidualEOverP>1.0</MaxResidualEOverP>
         <MaxProfileDiscrepancy>1.0</MaxProfileDiscrepancy>
         <ProfileDiscrepancyForAutoId>1.0</ProfileDiscrepancyForAutoId>
     </LCElectronId>
 
-    
 
-    
+
+
     <algorithm type="CaloHitPreparation" />
     <algorithm type="EventPreparation">
         <OutputTrackListName>Tracks</OutputTrackListName>
@@ -36,7 +54,7 @@
         <ReplacementCaloHitListName>CaloHits</ReplacementCaloHitListName>
     </algorithm>
 
-    
+
     <algorithm type="MuonReconstruction">
         <algorithm type="ConeClustering" description="MuonClusterFormation">
             <TanConeAngleCoarse>0.3</TanConeAngleCoarse>
@@ -55,24 +73,24 @@
         <MinClusterOccupiedLayers>5</MinClusterOccupiedLayers>
         <MinClusterLayerSpan>5</MinClusterLayerSpan>
         <MaxClusterCaloHits>30</MaxClusterCaloHits>
-        
+
         <InputTrackListName>Tracks</InputTrackListName>
         <InputCaloHitListName>CaloHits</InputCaloHitListName>
         <InputMuonCaloHitListName>MuonYokeHits</InputMuonCaloHitListName>
-        
+
         <OutputTrackListName>MuonRemovedTracks</OutputTrackListName>
         <OutputCaloHitListName>MuonRemovedCaloHits</OutputCaloHitListName>
         <OutputMuonCaloHitListName>MuonRemovedYokeHits</OutputMuonCaloHitListName>
         <OutputMuonClusterListName>MuonClusters</OutputMuonClusterListName>
         <OutputMuonPfoListName>MuonPfos</OutputMuonPfoListName>
-        
+
         <ReplacementTrackListName>MuonRemovedTracks</ReplacementTrackListName>
         <ReplacementCaloHitListName>MuonRemovedCaloHits</ReplacementCaloHitListName>
         <ReplaceCurrentClusterList>false</ReplaceCurrentClusterList>
         <ReplaceCurrentPfoList>false</ReplaceCurrentPfoList>
     </algorithm>
 
-    
+
     <algorithm type="PhotonReconstruction">
         <algorithm type="ConeClustering" description="PhotonClusterFormation">
             <ClusterSeedStrategy>0</ClusterSeedStrategy>
@@ -84,13 +102,13 @@
         <ReplaceCurrentClusterList>false</ReplaceCurrentClusterList>
         <ShouldMakePdfHistograms>false</ShouldMakePdfHistograms>
         <ShouldDrawPdfHistograms>false</ShouldDrawPdfHistograms>
-        
+
         <HistogramFile>k4ODD/options/PandoraLikelihoodData9EBin.xml</HistogramFile>
         <EnergyBinLowerEdges>0 0.2 0.5 1 1.5 2.5 5 10 20</EnergyBinLowerEdges>
         <NEnergyBins>9</NEnergyBins>
     </algorithm>
 
-    
+
     <algorithm type="ClusteringParent">
         <algorithm type="ConeClustering" description="ClusterFormation" />
         <algorithm type="TopologicalAssociationParent" description="ClusterAssociation">
@@ -129,7 +147,7 @@
         <ReplaceCurrentClusterList>true</ReplaceCurrentClusterList>
     </algorithm>
 
-    
+
     <algorithm type="SplitTrackAssociations" instance="SplitTrackAssociations1">
         <clusteringAlgorithms>
             <algorithm type="ConeClustering" instance="Reclustering1">
@@ -270,7 +288,7 @@
         <algorithm type="ForcedClustering" description="ForcedClustering" />
     <BestChi2ForReclusterHalt>2.0</BestChi2ForReclusterHalt><CurrentChi2ForReclusterHalt>9.0</CurrentChi2ForReclusterHalt><Chi2ForAutomaticClusterSelection>2.0</Chi2ForAutomaticClusterSelection></algorithm>
 
-    
+
     <algorithm type="ClusteringParent">
         <algorithm type="ConeClustering" description="ClusterFormation">
             <TanConeAngleCoarse>0.75</TanConeAngleCoarse>
@@ -296,7 +314,7 @@
         <CoilCorrectionMinInnerRadius>3719</CoilCorrectionMinInnerRadius>
     </algorithm>
 
-    
+
     <algorithm type="PhotonRecovery">
         <algorithm type="TrackClusterAssociation" />
     </algorithm>
@@ -305,7 +323,7 @@
         <algorithm type="TrackClusterAssociation" />
     </algorithm>
 
-    
+
     <algorithm type="TrackPreparation">
         <CandidateListNames>Input</CandidateListNames>
         <MergedCandidateListName>PfoCandidates</MergedCandidateListName>
@@ -331,7 +349,7 @@
     <algorithm type="PhotonSplitting" />
     <algorithm type="PhotonFragmentMerging" />
 
-    
+
     <algorithm type="ForceSplitTrackAssociations" />
     <algorithm type="PfoCreation">
         <OutputPfoListName>PrimaryAndPhotonPfos</OutputPfoListName>
@@ -342,9 +360,9 @@
         <MergedCandidateListName>OutputPfos</MergedCandidateListName>
     </algorithm>
 
-    
+
     <algorithm type="FinalParticleId" />
     <algorithm type="V0PfoCreation" />
-    
-    
+
+
 </pandora>
