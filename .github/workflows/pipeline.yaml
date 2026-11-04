@@ -53,7 +53,7 @@ env:
   ODD_URL: ${{ vars.ODD_URL || 'https://gitlab.cern.ch/azaborow/OpenDataDetector.git' }}
   K4GAUDIPANDORA_URL: ${{ vars.K4GAUDIPANDORA_URL || 'https://github.com/OpenDataDetector/k4GaudiPandora.git' }}
   ODD_REF: ${{ inputs.odd_ref || vars.ODD_REF || 'addLayeredCalo_MuonCoil' }}
-  K4GAUDIPANDORA_REF: ${{ inputs.pandora_ref || vars.K4GAUDIPANDORA_REF || 'colliderml-odd-edits.1' }}
+  K4GAUDIPANDORA_REF: ${{ inputs.pandora_ref || vars.K4GAUDIPANDORA_REF || 'colliderml-odd-edits.2' }}
   SIM_FILE: gamma_10GeV_eta0_100ev_sim_edm4hep.root
   DIGI_FILE: gamma_10GeV_eta0_100ev_digi_edm4hep.root
   RECO_FILE: gamma_10GeV_eta0_100ev_reco_edm4hep.root
