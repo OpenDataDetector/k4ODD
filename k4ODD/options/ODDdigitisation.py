@@ -145,7 +145,9 @@ for calodigicol, ecalorhcal, inputcol, outputcol, relcol in zip(
     calodigicol.energyPerEHpair = 3.6
     # ECAL
     calodigicol.IfDigitalEcal = 0
-    calodigicol.ECALLayers = [48, 48]
+    # DDCaloDigi takes the calibration of the range [0, L1), [L1, L2), ... holding the cell layer
+    # index; ODD numbers layers from 1 (ECAL 1..48), so the upper edge must be 49 or layer 48 gets 0.
+    calodigicol.ECALLayers = [49, 49]
     calodigicol.ECAL_default_layerConfig = "000000000000000"
     calodigicol.StripEcal_default_nVirtualCells = 9
     calodigicol.CalibECALMIP = 0.0001
@@ -176,7 +178,8 @@ for calodigicol, ecalorhcal, inputcol, outputcol, relcol in zip(
     calodigicol.ECALTimeResolution = 10.0
     # HCAL
     calodigicol.IfDigitalHcal = 0
-    calodigicol.HCALLayers = [36]
+    # ODD HCAL layers are 1..36; the upper edge must be 37 or layer 36 gets calibration 0.
+    calodigicol.HCALLayers = [37]
     calodigicol.CalibHCALMIP = 1.0e-4
     calodigicol.HCALThreshold = [0.00025]
     calodigicol.HCALThresholdUnit = "GeV"
